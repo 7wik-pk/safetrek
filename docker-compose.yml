@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  postgis:
+    build:
+      context: ./data
+    container_name: strek-db
+    shm_size: '256mb'
+    environment:
+      POSTGRES_DB: strek
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - ./data:/data
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: safetrek-api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:pass@postgis:5432/strek
+    depends_on:
+      - postgis
+
+volumes:
+  pgdata:

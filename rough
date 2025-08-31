@@ -1,0 +1,44 @@
+------------- iteration 1 -----------------
+
+install gdal first:
+apt-get update && apt-get install -y --no-install-recommends gdal-bin libgdal-dev
+
+then refer dockerfile of onb_db for postgres setup
+
+loading mesh block data for VIC only (mesh blocks downloaded from abs.gov.au):
+ogr2ogr PG:"dbname=strek user=postgres" "/data/MB_2021_AUST_SHP_GDA2020/MB_2021_AUST_GDA2020.shp" -nln mesh_block_vic_21 -where "STE_CODE21 = '2'" -lco GEOMETRY_NAME=geom -overwrite -nlt MULTIPOLYGON
+
+REALISATION: no need of geopackage from abs
+# loading main structure geopackage for VIC only (downloaded from abs.gov.au):
+# ogr2ogr PG:"dbname=strek user=postgres" \
+#   "/data/data/ASGS_2021_MAIN_STRUCTURE_GPKG_GDA2020/ASGS_2021_Main_Structure_GDA2020.gpkg" -nln asgs_mstruct_vic_21 \
+#   -sql "SELECT * FROM SA2_2021_AUST WHERE STATE_CODE_2021 = '2'" \
+#   -lco GEOMETRY_NAME=geom -nlt MULTIPOLYGON
+
+vicmap road data:
+
+ogr2ogr PG:"dbname=strek user=postgres" \
+  /data/vicmap_road/TR_ROAD.shp -nln vicmap_road \
+  -lco GEOMETRY_NAME=geom -nlt MULTILINESTRING
+
+additional layers:
+
+# Road infrastructure (bridges, tunnels, etc.)
+ogr2ogr PG:"dbname=strek user=postgres" \
+  /data/vicmap_road/TR_ROAD_INFRASTRUCTURE.shp -nln vicmap_road_structures \
+  -lco GEOMETRY_NAME=geom -nlt POINT
+
+# Road register (name + locality) -- DONT NEED
+# ogr2ogr PG:"dbname=strek user=postgres" \
+#   /data/vicmap_road/TR_ROAD_REGISTER.shp -nln vicmap_road_names \
+#   -lco GEOMETRY_NAME=geom -nlt MULTILINESTRING
+
+CLASSIFICATION
+ROADS: most dangerous can be classified only for SA3 and SA2 levels, SA4 is not feasible (queries take too long)
+
+curl -X POST http://localhost:8000/accident_stats  \
+  -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+ -d '{
+    "area_level": "sa2"
+  }'

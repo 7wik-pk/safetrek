@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgis:
+    shm_size: '256mb'
+    build: .
+    container_name: strek-db
+    environment:
+      POSTGRES_DB: strek
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - ./:/data
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:
