@@ -1,7 +1,6 @@
-/* src/assets/global.css */
-html,
-body,
-#app {
-  height: 100%;
+html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
 }
+body { overflow-x: hidden; } /* prevent any horizontal scroll */

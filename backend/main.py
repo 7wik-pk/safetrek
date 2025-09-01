@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Literal, Optional, List
 from datetime import date
-
+from fastapi.middleware.cors import CORSMiddleware
 # --- Database setup ---
 DATABASE_URL = "postgresql://postgres:pass@postgis:5432/strek"
 engine = create_engine(DATABASE_URL, echo=True)
@@ -39,6 +39,16 @@ class AccidentStatsRequest(BaseModel):
 
 # --- FastAPI app ---
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",   # Vue dev server
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/accident_stats")
 def get_accident_stats(req: AccidentStatsRequest, db: Session = Depends(get_db)):
