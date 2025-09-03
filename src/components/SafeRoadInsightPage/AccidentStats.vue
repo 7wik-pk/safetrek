@@ -1,125 +1,124 @@
 <template>
   <section class="acc-wrap">
-    <h2 class="title">Crash Statistics Explorer</h2>
+    <div class="card">
+      <h2 class="title">Crash Statistics Explorer</h2>
 
-    <!-- Row 1: free text (you can wire this to your own backend later) -->
-    <div class="row">
-      <label class="field">
-        <span>Keyword (optional)</span>
-        <input v-model="keyword" type="text" placeholder="Type anything…" />
-      </label>
-    </div>
+      <div class="layout">
+        <!-- topbar across main column -->
+        <div class="topbar">
+          <label class="field">
+            <span>Filter by area level</span>
+            <select v-model="filterLevel">
+              <option value="sa4">Region (SA4)</option>
+              <option value="sa3">Sub-region / District (SA3)</option>
+            </select>
+          </label>
 
-    <!-- Row 2: Filter level & area -->
-    <div class="row two">
-      <label class="field">
-        <span>Filter by area level</span>
-        <select v-model="filterLevel">
-          <option value="sa4">SA4</option>
-          <option value="sa3">SA3</option>
-        </select>
-      </label>
+          <label class="field">
+            <span>Area name</span>
+            <select v-model="filterAreaName">
+              <option disabled value="">
+                -- select {{ filterLevel.toUpperCase() }} --
+              </option>
+              <option v-for="a in currentFilterOptions" :key="a" :value="a">
+                {{ a }}
+              </option>
+            </select>
+          </label>
 
-      <label class="field">
-        <span>Area name</span>
-        <select v-model="filterAreaName">
-          <option disabled value="">-- select {{ filterLevel.toUpperCase() }} --</option>
-          <option v-for="a in currentFilterOptions" :key="a" :value="a">{{ a }}</option>
-        </select>
-      </label>
-    </div>
+          <label class="field">
+            <span>Group by</span>
+            <select v-model="groupLevel">
+              <option value="sa2">Local Area / Suburb (SA2)</option>
+              <option v-if="filterLevel === 'sa4'" value="sa3">Sub-region / District (SA3)</option>
+            </select>
+          </label>
+        </div>
 
-    <!-- Row 3: Group-by level -->
-    <div class="row two">
-      <label class="field">
-        <span>Group by</span>
-        <select v-model="groupLevel">
-          <!-- SA2 always allowed -->
-          <option value="sa2">SA2</option>
-          <!-- SA3 allowed only when filter is SA4 (backend rule: group lower than filter) -->
-          <option v-if="filterLevel === 'sa4'" value="sa3">SA3</option>
-        </select>
-      </label>
+        <!-- sidebar left -->
+        <aside class="sidebar">
+          <label class="field">
+            <span>Date from</span>
+            <input v-model="dateFrom" type="date" />
+          </label>
 
-      <!-- If grouping by SA2, you can optionally let users pre-narrow to a specific SA2 later -->
-      <div class="field info">
-        Group level must be <em>lower</em> than filter level (backend rule).
+          <label class="field">
+            <span>Date to</span>
+            <input v-model="dateTo" type="date" />
+          </label>
+
+          <label class="field">
+            <span>Order by</span>
+            <select v-model="orderBy">
+              <option value="count">Count</option>
+              <option value="density">Density</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Direction</span>
+            <select v-model="orderDir">
+              <option value="desc">Desc</option>
+              <option value="asc">Asc</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Top Number</span>
+            <input v-model.number="limit" type="number" min="1" max="100" />
+          </label>
+
+          <button class="btn" :disabled="!canQuery || loading" @click="fetchStats">
+            {{ loading ? "Loading…" : "Show Results" }}
+          </button>
+        </aside>
+
+        <!-- main results -->
+        <main class="main">
+
+          <div class="divider" />
+
+          <div v-if="results.length" class="results">
+            <h3>Top {{ limit }} ({{ orderBy }}) grouped by {{ groupLevel.toUpperCase() }}</h3>
+            <table>
+              <thead>
+              <tr>
+                <th>Area</th>
+                <th class="num">Accidents</th>
+                <th class="num">Area (km2)</th>
+                <th class="num">Density (/km2)</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="r in results" :key="r.sa_name">
+                <td>{{ r.sa_name }}</td>
+                <td class="num">{{ r.num_accs }}</td>
+                <td class="num">{{ fmt(r.geom_area_sq_km) }}</td>
+                <td class="num">{{ fmt(r.acc_per_sq_km) }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div v-else class="placeholder">
+            Select filters on the left and click <strong>Show Results</strong>.
+          </div>
+
+          <span v-if="error" class="error">{{ error }}</span>
+        </main>
       </div>
     </div>
-
-    <!-- Row 4: Dates -->
-    <div class="row two">
-      <label class="field">
-        <span>Date from</span>
-        <input v-model="dateFrom" type="date" />
-      </label>
-      <label class="field">
-        <span>Date to</span>
-        <input v-model="dateTo" type="date" />
-      </label>
-    </div>
-
-    <!-- Row 5: Ordering + Limit -->
-    <div class="row three">
-      <label class="field">
-        <span>Order by</span>
-        <select v-model="orderBy">
-          <option value="count">Count</option>
-          <option value="density">Density</option>
-        </select>
-      </label>
-
-      <label class="field">
-        <span>Direction</span>
-        <select v-model="orderDir">
-          <option value="desc">Desc</option>
-          <option value="asc">Asc</option>
-        </select>
-      </label>
-
-      <label class="field">
-        <span>Top N</span>
-        <input v-model.number="limit" type="number" min="1" max="100" />
-      </label>
-    </div>
-
-    <div class="actions">
-      <button class="btn" :disabled="!canQuery" @click="fetchStats">Show Results</button>
-      <span v-if="loading" class="loading">Loading…</span>
-      <span v-if="error" class="error">{{ error }}</span>
-    </div>
-
-    <!-- Results -->
-    <div v-if="results.length" class="results">
-      <h3>Top {{ limit }} ({{ orderBy }}) grouped by {{ groupLevel.toUpperCase() }}</h3>
-      <table>
-        <thead>
-        <tr>
-          <th>Area</th>
-          <th class="num">Accidents</th>
-          <th class="num">Area (km²)</th>
-          <th class="num">Density (/km²)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="r in results" :key="r.sa_name">
-          <td>{{ r.sa_name }}</td>
-          <td class="num">{{ r.num_accs }}</td>
-          <td class="num">{{ fmt(r.geom_area_sq_km) }}</td>
-          <td class="num">{{ fmt(r.acc_per_sq_km) }}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
   </section>
+  <div class="hazard hazard--bottom">
+    <img src="../../assets/images/hazard-stripes.svg" alt="" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
 import api from "@/lib/api";
 
-// --- UI state
-const keyword = ref(""); // optional; not sent to backend (reserved for your future filter)
+const keyword = ref("");
 const filterLevel = ref<"sa4" | "sa3">("sa4");
 const groupLevel  = ref<"sa2" | "sa3">("sa2");
 const filterAreaName = ref("");
@@ -134,64 +133,52 @@ const loading = ref(false);
 const error = ref("");
 const results = ref<any[]>([]);
 
-// --- Dropdown data
 const sa4Options = ref<string[]>([]);
 const sa3Options = ref<string[]>([]);
-const sa2Options = ref<string[]>([]); // loaded if you ever need SA2 list directly
 
-// Which list feeds the "Area name" select
 const currentFilterOptions = computed(() =>
   filterLevel.value === "sa4" ? sa4Options.value : sa3Options.value
 );
 
-// Enable/disable button
-const canQuery = computed(() => !!filterAreaName.value && !!filterLevel.value && !!groupLevel.value);
+const canQuery = computed(
+  () => !!filterAreaName.value && !!filterLevel.value && !!groupLevel.value
+);
 
-// Fetch distinct lists on mount
 onMounted(async () => {
-  await Promise.all([loadSA4(), loadSA3()]);
-});
-
-// When filter level changes, clear the chosen name and adjust allowed group level
-watch(filterLevel, (lvl) => {
-  filterAreaName.value = "";
-  // If user filters by SA3, group must be SA2
-  if (lvl === "sa3" && groupLevel.value !== "sa2") {
-    groupLevel.value = "sa2";
+  try {
+    const [sa4, sa3] = await Promise.all([
+      api.get<string[]>("/distinct_sa4"),
+      api.get<string[]>("/distinct_sa3"),
+    ]);
+    sa4Options.value = sa4.data;
+    sa3Options.value = sa3.data;
+  } catch (e: any) {
+    error.value = e?.response?.data?.detail || e.message || "Failed to load area lists";
   }
 });
 
-// --- API calls (distinct lists)
-async function loadSA4() {
-  const { data } = await api.get<string[]>("/distinct_sa4");
-  sa4Options.value = data;
-}
-async function loadSA3() {
-  const { data } = await api.get<string[]>("/distinct_sa3");
-  sa3Options.value = data;
-}
-// If you want an SA2 dropdown later:
-async function loadSA2() {
-  const { data } = await api.get<string[]>("/distinct_sa2");
-  sa2Options.value = data;
+watch(filterLevel, (lvl) => {
+  filterAreaName.value = "";
+  if (lvl === "sa3") groupLevel.value = "sa2";
+});
+
+function fmt(n: number) {
+  return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
 
-// --- Query stats
 async function fetchStats() {
   error.value = "";
   results.value = [];
   loading.value = true;
-
   try {
     const payload: any = {
       filter_area_level: filterLevel.value,
       filter_area_name: filterAreaName.value,
-      group_by_area_level: groupLevel.value,   // must be lower than filter level (backend rule)
-      order_by: orderBy.value,                 // "count" or "density"
-      order_dir: orderDir.value,               // "asc" or "desc"
+      group_by_area_level: groupLevel.value,
+      order_by: orderBy.value,
+      order_dir: orderDir.value,
       limit: limit.value,
     };
-
     if (dateFrom.value) payload.date_from = dateFrom.value;
     if (dateTo.value)   payload.date_to   = dateTo.value;
 
@@ -203,96 +190,234 @@ async function fetchStats() {
     loading.value = false;
   }
 }
-
-// formatting helper
-function fmt(n: number) {
-  return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
-}
 </script>
 
 <style scoped>
-.acc-wrap {
-  max-width: 980px;
-  margin: 24px auto 64px auto;
+/* ====== Theme tokens (SafeTrek) ====== */
+:root{
+  --amber: #e1a600;         /* matches your hero tint */
+  --amber-2: #000000;       /* lighter accent */
+  --charcoal: #0f1419;      /* near-black text */
+  --muted: #5b6470;         /* secondary text */
+  --panel: #ffffff;         /* cards */
+  --line: #e7eaee;          /* borders */
+  --line-2:#cbd5e1;
+  --radius-lg: 14px;
+  --radius: 10px;
+  --shadow: 0 12px 28px rgba(0,0,0,.12);
+  --shadow-soft: 0 2px 10px rgba(0,0,0,.06);
+}
+
+/* overall wrapper centers the white card */
+.acc-wrap{
+  max-width: 1200px;
+  margin: 26px auto 40px;
   padding: 0 16px;
-  color: #0f172a;
 }
 
-.title {
-  font-size: 1.6rem;
-  font-weight: 800;
-  margin: 0 0 1rem;
+/* white panel with soft shadow + rounded */
+.card{
+  background: var(--panel);
+  border: 1px solid rgba(15,20,25,.06);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 22px 24px 26px;
 }
 
-.row {
-  display: grid;
-  gap: 16px;
-  margin-bottom: 16px;
+/* title: bold + subtle amber underline */
+.title{
+  margin: 0 0 16px;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--charcoal);
+  position: relative;
 }
-.row.two   { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.title::after{
+  content:"";
+  position:absolute;
+  left:0; bottom:-8px;
+  width:88px; height:4px;
+  background: linear-gradient(90deg, var(--amber), transparent);
+  border-radius: 2px;
+}
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+/* grid layout (sidebar + main) */
+.layout{
+  display:grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 22px 24px;
 }
-.field > span {
-  font-size: .9rem;
-  font-weight: 600;
+
+/* top filters across main column */
+.topbar{
+  grid-column: 2 / 3;
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 14px;
 }
-.field input, .field select {
-  padding: 10px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+
+/* left sidebar with stacked controls */
+.sidebar{
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+/* main area */
+.main{
+  grid-column: 2 / 3;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+/* inputs */
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field > span{
+  font-size:.9rem; font-weight:800; color:var(--charcoal);
+  letter-spacing:.1px;
+}
+.field select, .field input{
+  padding: 12px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
   background: #fff;
+  color: var(--charcoal);
+  box-shadow: var(--shadow-soft);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.field select:focus, .field input:focus{
+  outline:none;
+  border-color:#aab7c7;
+  box-shadow: 0 0 0 3px rgba(241,193,66,.3);
 }
 
-.info {
-  align-self: end;
-  color: #475569;
-  font-size: .9rem;
+/* keyword field */
+.keyword input{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid var(--line-2);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
 }
 
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 12px 0 20px;
-}
-.btn {
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: 0;
-  background: #111827;
-  color: #fbbf24;
-  font-weight: 700;
-  cursor: pointer;
-}
-.btn:disabled {
-  opacity: .5; cursor: not-allowed;
-}
-.loading { color: #2563eb; }
-.error   { color: #dc2626; }
-
-.results h3 {
-  margin: 24px 0 8px;
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-table {
+/* hazard-style divider between filters and table */
+.divider{
+  height: 10px;
   width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      #111 0 16px,
+      var(--amber) 16px 32px
+    );
+  opacity: .15;              /* subtle — not shouting */
 }
-th, td { padding: 10px 12px; border-bottom: 1px solid #eef2f7; }
-th { background: #f8fafc; text-align: left; }
-.num { text-align: right; }
-@media (max-width: 780px) {
-  .row.two   { grid-template-columns: 1fr; }
-  .row.three { grid-template-columns: 1fr; }
+
+/* primary action button (black/amber) */
+.btn{
+  height: 46px;
+  border: 0;
+  border-radius: 12px;
+  background: #dfa500;
+  color: var(--amber-2);
+  font-weight: 900;
+  letter-spacing:.2px;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform .05s ease, filter .18s ease, opacity .15s ease;
+}
+.btn:hover{ filter: brightness(1.55); }
+.btn:active{ transform: translateY(1px); }
+.btn:disabled{ opacity:.85; cursor:not-allowed; }
+
+/* results */
+.results h3{
+  margin: 6px 6px 10px;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--charcoal);
+}
+
+/* table */
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius: 12px;
+  overflow:hidden;
+  box-shadow: var(--shadow-soft);
+}
+thead th{
+  background: linear-gradient(#fffdfa, #fff7e1);
+  color:#151922;
+  text-align:left;
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+  font-weight:900;
+}
+tbody td{
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+  color:#1b2330;
+}
+tbody tr:nth-child(odd) td{
+  background:#fafbff;
+}
+tbody tr:last-child td{
+  border-bottom:0;
+}
+.num{ text-align:right; }
+
+
+
+/* empty state + errors */
+.placeholder{
+  padding: 22px;
+  color: var(--muted);
+  border:1px dashed var(--line-2);
+  border-radius: 12px;
+  background:#fffef7;
+}
+.error{ color:#c81e1e; font-weight:700; }
+
+/* responsive */
+@media (max-width: 980px){
+  .layout{
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .topbar{
+    grid-column: 1 / 2;
+    grid-template-columns: 1fr;
+  }
+  .sidebar{
+    grid-column: 1 / 2; grid-row: auto;
+    flex-direction: row; flex-wrap: wrap;
+  }
+  .sidebar .field{ min-width: 200px; flex: 1 1 220px; }
+  .btn{ width: 200px; }
+}
+.hazard {
+  position: relative;
+  width: 100%;
+  z-index: 2;
+}
+.hazard img {
+  width: 100%;
+  height: 30px;
+  object-fit: cover;
+}
+.hazard--top {
+  margin-bottom: 120px; /* tuck neatly */
+}
+.hazard--bottom {
+  margin-top: -10px;
+  transform: rotate(180deg);
 }
 </style>

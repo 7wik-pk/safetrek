@@ -3,7 +3,7 @@ import HeroSection from '@/components/Homepage/HeroSection.vue'
 import MissionSection from '@/components/Homepage/MissionSection.vue'
 import WhySafetySection from '@/components/Homepage/WhySafetySection.vue'
 import BlogSection from '@/components/Homepage/BlogSection.vue'
-import FooterSection from '@/components/Homepage/FooterSection.vue'
+import FooterSection from '@/components/FooterSection.vue'
 </script>
 
 <template>

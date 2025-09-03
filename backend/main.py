@@ -151,3 +151,80 @@ def get_distinct_sa4(db: Session = Depends(get_db)):
         ORDER BY sa4_name21
     """)).fetchall()
     return [row[0] for row in result]
+# --- Yearly trend (accidents + serious injuries + injuries total) ---
+
+class YearlyTrendItem(BaseModel):
+    year: conint(ge=1900, le=2100)
+    crashes: int
+    total_injuries: int
+    serious_injuries: int
+
+@app.get("/trends/yearly", response_model=List[YearlyTrendItem])
+def get_yearly_trend(
+    year_from: conint(ge=1900, le=2100) = 2020,
+    year_to:   conint(ge=1900, le=2100) = 2024,
+    db: Session = Depends(get_db),
+):
+    sql = text("""
+        SELECT
+          EXTRACT(YEAR FROM accident_date)::int AS year,
+          COUNT(*)                               AS crashes,
+          COALESCE(SUM(inj_or_fatal), 0)         AS total_injuries,
+          COALESCE(SUM(seriousinjury), 0)        AS serious_injuries
+        FROM accident
+        WHERE accident_date BETWEEN :start_date AND :end_date
+        GROUP BY year
+        ORDER BY year;
+    """)
+
+    params = {
+        "start_date": f"{year_from}-01-01",
+        "end_date":   f"{year_to}-12-31",
+    }
+
+    rows = db.execute(sql, params).fetchall()
+    return [YearlyTrendItem(**dict(r._mapping)) for r in rows]
+
+# --- Monthly trend (accidents + serious injuries + injuries total) ---
+
+class MonthlyTrendItem(BaseModel):
+    period: str              # 'YYYY-MM'
+    crashes: int             # number of accidents per month
+    total_injuries: int      # sum of total injuries
+    serious_injuries: int    # sum of seriousinjury
+
+class MonthlyTrendResponse(BaseModel):
+    year: conint(ge=1900, le=2100)
+    data: List[MonthlyTrendItem]
+
+@app.get("/trends/monthly", response_model=MonthlyTrendResponse)
+def get_monthly_trend(year: conint(ge=1900, le=2100), db: Session = Depends(get_db)):
+
+    sql = text("""
+        WITH months AS (
+            SELECT generate_series(1, 12) AS m
+        ),
+        agg AS (
+            SELECT
+              EXTRACT(MONTH FROM accident_date)::int AS m,
+              COUNT(*)                                AS crashes,
+              COALESCE(SUM(inj_or_fatal), 0)          AS total_injuries,
+              COALESCE(SUM(seriousinjury), 0)         AS serious_injuries
+            FROM accident
+            WHERE EXTRACT(YEAR FROM accident_date) = :year
+            GROUP BY 1
+        )
+        SELECT
+          to_char(make_date(:year, months.m, 1), 'YYYY-MM') AS period,
+          COALESCE(agg.crashes, 0)                          AS crashes,
+          COALESCE(agg.total_injuries, 0)                   AS total_injuries,
+          COALESCE(agg.serious_injuries, 0)                 AS serious_injuries
+        FROM months
+        LEFT JOIN agg ON agg.m = months.m
+        ORDER BY period;
+    """)
+
+    rows = db.execute(sql, {"year": year}).fetchall()
+    data = [MonthlyTrendItem(**dict(row._mapping)) for row in rows]
+    return MonthlyTrendResponse(year=year, data=data)
+
