@@ -19,6 +19,7 @@ onMounted(async () => {
     progress.value = i
   }
   loading.value = false
+  document.title = import.meta.env.VITE_APP_NAME || 'SafeTrek'
 })
 </script>
 

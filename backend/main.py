@@ -5,9 +5,30 @@ from sqlalchemy.orm import sessionmaker, Session
 from typing import Literal, Optional, List
 from datetime import date
 from fastapi.middleware.cors import CORSMiddleware
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv(".env")  # Load variables from .env file
+
+from pydantic_settings import BaseSettings
+from typing import List
+
+class Settings(BaseSettings):
+    database_url: str
+    allowed_origins_raw: str = ""  # Raw string from .env
+
+    @property
+    def allowed_origins(self) -> List[str]:
+        return [origin.strip() for origin in self.allowed_origins_raw.split(",") if origin.strip()]
+
+    class Config:
+        env_file = ".env"
+
+settings = Settings()
+
 # --- Database setup ---
-DATABASE_URL = "postgresql://postgres:pass@postgis:5432/strek"
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(settings.database_url, echo=True)
 SessionLocal = sessionmaker(bind=engine)
 
 def get_db():
@@ -39,16 +60,21 @@ class AccidentStatsRequest(BaseModel):
 
 # --- FastAPI app ---
 app = FastAPI()
+
+allowed_origins = settings.allowed_origins or ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",   # Vue dev server
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
 
 @app.post("/accident_stats")
 def get_accident_stats(req: AccidentStatsRequest, db: Session = Depends(get_db)):
