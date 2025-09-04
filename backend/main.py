@@ -61,12 +61,19 @@ class AccidentStatsRequest(BaseModel):
 # --- FastAPI app ---
 app = FastAPI()
 
-allowed_origins = settings.allowed_origins or ["*"]
+# allowed_origins = settings.allowed_origins or ["*"]
+allowed_origins = ["*"]  # temporary, to allow all origins
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
+
+    # allow all origins (temporary)
+    allow_credentials=False,
+    
+    # to disallow all origins later
+    # allow_credentials=True,
+
+    allow_origins = settings.allowed_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
