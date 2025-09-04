@@ -4,6 +4,7 @@
 
 # build output
 /dist
+/frontend-dist
 /.vite
 
 # editors/IDE
