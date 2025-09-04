@@ -1,6 +1,6 @@
 services:
   postgis:
-    image: 7wikmonash/postgis
+    image: 7wikmonash/safetrek-postgis
     container_name: strek-db
     shm_size: '256mb'
     environment:
@@ -24,7 +24,7 @@ services:
       - postgis
 
   frontend:
-    image: 7wikmonash/safetrek-postgis
+    image: 7wikmonash/safetrek-frontend
     container_name: safetrek-web
     ports:
       - "80:80"
