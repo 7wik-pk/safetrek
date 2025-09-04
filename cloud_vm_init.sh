@@ -20,3 +20,4 @@ sudo systemctl enable docker
 
 # Add your user to docker group so you can run docker without sudo
 sudo usermod -aG docker $USER
+newgrp docker
