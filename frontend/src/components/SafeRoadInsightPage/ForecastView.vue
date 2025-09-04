@@ -279,19 +279,37 @@ function fmt(n: number) {
   color: var(--black);
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
-.btn{
-  height: 44px;
-  border: 0;
-  border-radius: var(--radius);
-  background: var(--black);
-  color: var(--amber);
-  font-weight: 900;
-  letter-spacing: .2px;
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background-color: #111111; /* solid black */
+  color: #f6b300;            /* gold text */
+  font-weight: 700;
+  letter-spacing: 0.2px;
   cursor: pointer;
-  padding: 0 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  box-shadow: var(--shadow-soft, 0 2px 6px rgba(0,0,0,0.2));
+  transition: background-color 0.2s ease, transform 0.05s ease, filter 0.18s ease, opacity 0.15s ease;
 }
-.btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+.btn:hover {
+  background-color: #1a1a1a; /* slightly lighter black for hover */
+  filter: brightness(1.2);   /* subtle glow */
+}
+
+.btn:active {
+  transform: scale(0.98);
+  background-color: #1a1a1a; /* maintain hover color on click */
+  color: #f6b300;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #111111; /* prevent transparency */
+  color: #999999;            /* muted text for disabled state */
+}
 
 .chart-box{
   height: 380px;
