@@ -193,14 +193,13 @@ async function fetchStats() {
 </script>
 
 <style scoped>
-/* ====== Theme tokens (SafeTrek) ====== */
 :root{
-  --amber: #e1a600;         /* matches your hero tint */
+  --amber: #0047e1;         /* matches hero tint */
   --amber-2: #000000;       /* lighter accent */
   --charcoal: #0f1419;      /* near-black text */
   --muted: #5b6470;         /* secondary text */
   --panel: #ffffff;         /* cards */
-  --line: #e7eaee;          /* borders */
+  --line: #ef0000;          /* borders */
   --line-2:#cbd5e1;
   --radius-lg: 14px;
   --radius: 10px;
@@ -315,7 +314,7 @@ async function fetchStats() {
       #111 0 16px,
       var(--amber) 16px 32px
     );
-  opacity: .15;              /* subtle — not shouting */
+  opacity: .15;
 }
 
 /* primary action button (black/amber) */
@@ -414,7 +413,7 @@ tbody tr:last-child td{
   object-fit: cover;
 }
 .hazard--top {
-  margin-bottom: 120px; /* tuck neatly */
+  margin-bottom: 120px;
 }
 .hazard--bottom {
   margin-top: -10px;

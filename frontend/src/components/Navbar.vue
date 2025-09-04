@@ -1,6 +1,9 @@
 <template>
   <nav class="nav">
-    <div class="nav__brand">SafeTrek</div>
+    <div class="nav__brand">
+      <router-link to="/" class="link" ><img src="@/assets/images/safetrek_logo.svg" alt="SafeTrek Logo" class="logo" /></router-link>
+    </div>
+
 
     <button class="nav__toggle" type="button" @click="toggleMenu">
       MENU
@@ -27,7 +30,6 @@ const closeMenu = () => {
   isMenuOpen.value = false
 }
 
-// Auto-close any time the route changes
 watch(
   () => route.fullPath,
   () => {
@@ -37,29 +39,39 @@ watch(
 </script>
 
 <style scoped>
+
 .nav {
-  position: relative;
-  z-index: 10000;              /* Make sure button sits above hero, etc. */
+  height: 90px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  background: transparent;     /* Your style */
 }
-
 .nav__brand {
-  font-weight: 700;
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .nav__toggle {
   appearance: none;
   border: 0;
   border-radius: 999px;
-  padding: 8px 16px;
+  padding: 16px 32px;
   background: #0a0a0a;
   color: #ffc21a;
   cursor: pointer;
   font-weight: 700;
   letter-spacing: .02em;
 }
+
+.nav__brand img.logo {
+  height: 85px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+
 </style>

@@ -14,9 +14,12 @@
     "format": "prettier --write src"
   },
   "dependencies": {
+    "@types/three": "^0.180.0",
     "axios": "^1.11.0",
     "bootstrap": "^5.3.8",
     "chart.js": "^4.5.0",
+    "gsap": "^3.13.0",
+    "three": "^0.180.0",
     "vue": "^3.5.18",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.1"

@@ -1,5 +1,4 @@
 <template>
-  <!-- full-bleed hazard bar sitting on top of the footer -->
   <div class="footer-divider">
     <div class="footer-divider__inner"></div>
   </div>
@@ -37,7 +36,8 @@
       <nav class="footer__col">
         <h4>Explore</h4>
         <ul>
-          <li><a href="#">Safe road insight</a></li>
+          <li><router-link to="/" class="link">Home</router-link></li>
+          <li><router-link to="/safe-road-insight" class="link">Safer road insight</router-link></li>
           <li><a href="#">Crash Risk Explorer</a></li>
           <li><a href="#">Blackspot &amp; Corridor</a></li>
           <li><a href="#">Equity &amp; Vulnerability</a></li>
@@ -80,7 +80,6 @@
 </template>
 
 <script setup lang="ts">
-// purely presentational; no script needed
 </script>
 
 <style scoped>

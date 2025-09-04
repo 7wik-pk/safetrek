@@ -9,7 +9,6 @@
           <div class="content">
             <!-- LEFT: the road work sign -->
             <div class="sign">
-              <!-- If you pass signSrc prop, it shows. If not, fallback text box -->
               <img v-if="signSrc" :src="signSrc" alt="Road Work sign" />
               <div v-else class="sign-fallback">ROAD<br />WORK</div>
             </div>
@@ -38,7 +37,6 @@ const props = defineProps({
   progress: { type: Number, default: 30 },
   title: { type: String, default: 'IDENTIFY SAFER ROADS..PLEASE WAIT' },
   hint: { type: String, default: 'Loading all the pages' },
-  // pass an absolute path (/roadwork.svg) OR an imported URL
   signSrc: { type: String, default: '' },
 })
 </script>
@@ -49,11 +47,11 @@ const props = defineProps({
   position: fixed;
   inset: 0;
   width: 100vw;
-  height: 100svh; /* better on mobile */
+  height: 100svh;
   display: grid;
   place-items: center;
   background: #ffbb00;
-  z-index: 999999; /* above anything */
+  z-index: 999999;
 }
 
 /* Card */

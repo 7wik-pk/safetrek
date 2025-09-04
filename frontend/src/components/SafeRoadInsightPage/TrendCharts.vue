@@ -38,6 +38,9 @@
 
     <footer v-if="error" class="error">{{ error }}</footer>
   </section>
+  <div class="hazard hazard--bottom">
+    <img src="../../assets/images/hazard-stripes.svg" alt="" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -69,7 +72,7 @@ ChartJS.register(
   Filler
 );
 
-// Soft gold chart-area background plugin
+// chart-area background plugin
 const chartAreaBg = {
   id: "chartAreaBg",
   beforeDraw(chart: any, _args: any, opts: any) {
@@ -77,14 +80,14 @@ const chartAreaBg = {
     if (!chartArea) return;
     const { left, top, width, height } = chartArea;
     ctx.save();
-    ctx.fillStyle = opts?.color || "rgba(246,179,0,0.12)"; // SafeTrek gold tint
+    ctx.fillStyle = opts?.color || "rgba(246,179,0,0.12)";
     ctx.fillRect(left, top, width, height);
     ctx.restore();
   },
 };
 ChartJS.register(chartAreaBg as any);
 
-// ----- Types from your API -----
+
 type MonthlyItem = {
   period: string; // 'YYYY-MM'
   crashes: number;
@@ -107,9 +110,9 @@ const THEME = {
   text: "#111111",
   grid: "rgba(17,17,17,0.10)",
   // series
-  crashes: "#111827",          // charcoal
-  injuries: "#0004ff",         // SafeTrek gold
-  serious: "#b91c1c",          // deep red highlight
+  crashes: "#111827",
+  injuries: "#0004ff",
+  serious: "#b91c1c",
   crashesFill: "rgba(17,24,39,0.08)",
   injuriesFill: "rgb(0,4,253)",
   seriousFill: "rgba(185,28,28,0.12)",
@@ -133,13 +136,13 @@ watchEffect(() => {
   }
 });
 
-// ----- State -----
+// State
 const loading = ref(false);
 const error = ref("");
 const monthly = ref<MonthlyItem[] | null>(null);
 const yearly = ref<YearlyItem[] | null>(null);
 
-// ----- Load from API -----
+// Load from API
 async function load() {
   error.value = "";
   loading.value = true;
@@ -169,7 +172,7 @@ async function load() {
 
 onMounted(load);
 
-// ----- Chart data -----
+//  Chart data
 function mkSeries(
   label: string,
   data: number[],
@@ -247,7 +250,7 @@ const chartOptions = {
 .trend-card {
   margin: 24px 0;
   padding: 16px;
-  background: transparent; /* blend with your gold page */
+  background: transparent;
   border: 1px solid rgba(17, 17, 17, 0.1);
   border-radius: 12px;
 }
@@ -272,7 +275,7 @@ h3 {
   padding: 8px 10px;
   border: 1px solid rgba(17,17,17,0.25);
   border-radius: 10px;
-  background: #fff7d6;           /* light gold to match theme */
+  background: #fff7d6;
   color: #111111;
 }
 .arrow {
@@ -296,7 +299,7 @@ h3 {
   height: 380px;
   margin-top: 10px;
   border-radius: 10px;
-  overflow: hidden; /* keep chart bg rounded */
+  overflow: hidden;
 }
 .placeholder {
   color: #333;
@@ -316,5 +319,22 @@ h3 {
   font-weight: 800;
   margin: 0 0 1rem;
 }
-
+/* hazard stripes */
+.hazard {
+  position: relative;
+  width: 100%;
+  z-index: 2;
+}
+.hazard img {
+  width: 100%;
+  height: 30px;
+  object-fit: cover;
+}
+.hazard--top {
+  margin-bottom: 120px; /* tuck neatly */
+}
+.hazard--bottom {
+  margin-top: -10px;
+  transform: rotate(180deg);
+}
 </style>

@@ -1,5 +1,8 @@
 <template>
   <section class="hero">
+    <div class="relative w-full h-[600px]">
+
+    </div>
     <!-- hazard stripes -->
     <div class="hazard hazard--top">
       <img src="../../assets/images/hazard-stripes.svg" alt="" />
@@ -15,7 +18,7 @@
     <div class="hero__content">
       <img class="sign" src="@/assets/images/roadwork.png" alt="Road Work Sign" />
       <div class="text">
-        <h1>Identify for safer road</h1>
+        <h1>Identify safer roads</h1>
         <p>
           Stay prepared, stay safe. Our goal is to help every road user make
           informed decisions by combining planning, awareness, and real-time
@@ -127,3 +130,5 @@
   }
 }
 </style>
+<script setup lang="ts">
+</script>

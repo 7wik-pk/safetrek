@@ -11,15 +11,14 @@
         <div class="panel" @click.stop>
           <div class="panel__header">
             <span class="panel__title">Menu</span>
-            <button class="close" type="button" @click="emit('close')">✕</button>
           </div>
 
           <nav class="links">
             <router-link to="/" class="link" @click="emit('close')">Home</router-link>
             <router-link to="/safe-road-insight" class="link" @click="emit('close')">
-              Safe Road Insight
+              Safer Road Insight
             </router-link>
-            <!-- Add more links as needed -->
+            <!-- Add more links as needed in the future interation-->
           </nav>
         </div>
       </div>

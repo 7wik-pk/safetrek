@@ -14,11 +14,11 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
 
     <div class="container blog__grid">
       <article class="card">
-        <div class="card__media">
+        <div class="card__media" >
           <img :src="blog1" alt="Transport accidents" />
         </div>
         <h3 class="card__kicker">Articles</h3>
-        <p class="card__title">Transport accidents</p>
+        <a class="card__title" href="https://www.aihw.gov.au/reports/injury/transport-accidents">Australian Institute of Health and Welfare</a>
       </article>
 
       <article class="card">
@@ -26,9 +26,9 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
           <img :src="blog2" alt="Human cost, machine insight" />
         </div>
         <h3 class="card__kicker">Articles</h3>
-        <p class="card__title">
-          Human cost, machine insight: A data-driven analysis of Australian road crashes
-        </p>
+        <a class="card__title" href="https://www.sciencedirect.com/science/article/pii/S2213624X2500077X?via%3Dihub">
+          A journal paper published by Dr Ali Soltani from Flinders University
+        </a>
       </article>
 
       <article class="card">
@@ -36,9 +36,9 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
           <img :src="blog3" alt="How work planners can improve road safety awareness" />
         </div>
         <h3 class="card__kicker">Articles</h3>
-        <p class="card__title">
-          How Work Planners Can Improve Road Safety Awareness
-        </p>
+        <a class="card__title" href="https://www.theguardian.com/australia-news/2025/jan/27/australia-road-toll-2024-1300-deaths-highest-in-more-than-a-decade">
+          The Guardian’s recent article on rising road accidents
+        </a>
       </article>
     </div>
 
@@ -110,7 +110,7 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
 .card__media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;           /* ✅ crop instead of stretch */
+  object-fit: cover;
 }
 
 /* text */
@@ -125,11 +125,11 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
   font-size: 15px;
   line-height: 1.4;
   color: #111;
-  /* keep bottoms aligned even if text lengths differ */
-  min-height: 3.2em;           /* ~2 lines */
+
+  min-height: 3.2em;
 }
 
-/* Full-bleed: escape any parent padding/max-width */
+
 .stopline-bleed {
   position: relative;
   left: 50%;
@@ -144,8 +144,8 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
   margin-top:20px;
 
   position: relative;
-  height: 90px;           /* adjust thickness here */
-  overflow: hidden;       /* clip overshoot from rotation */
+  height: 90px;
+  overflow: hidden;
 }
 
 

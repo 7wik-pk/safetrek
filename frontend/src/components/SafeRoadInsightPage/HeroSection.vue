@@ -13,9 +13,20 @@
 
     <!-- content -->
     <div class="hero__content">
-      <div class="text">
-        <h1>Safer Roads Start With Insight</h1>
-      </div>
+        <SplitText
+          text="Safer roads start with insights"
+          class-name="forecast-title"
+          :delay="100"
+          :duration="0.6"
+          ease="power3.out"
+          split-type="chars"
+          :from="{ opacity: 0, y: 40 }"
+          :to="{ opacity: 1, y: 0 }"
+          :threshold="0.1"
+          root-margin="-100px"
+          text-align="center"
+          @animation-complete="handleAnimationComplete"
+        />
     </div>
 
     <div class="hazard hazard--bottom">
@@ -119,6 +130,19 @@
     width: 120px;
   }
 }
+.forecast-title {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: 2px;
+  padding-bottom: 50px;
+}
+
 </style>
 <script setup lang="ts">
+import SplitText from "@/assets/VueAnimation/SplitText .vue";
+
+const handleAnimationComplete = () => {
+  console.log('All letters have animated!');
+};
 </script>
