@@ -6,6 +6,16 @@
       <link rel="icon" type="image/png" sizes="512x512" href="/safetrek_logo-512.svg">
     <meta name="viewport" content="width=device-width, initial-scale=3.0">
     <title>SafeTrek</title>
+      <script>
+          function checkPassword() {
+              const password = prompt("Enter password to access SafeTrek:");
+              if (password !== "safetrek123") {
+                  alert("Access denied");
+                  window.location.href = "https://google.com";
+              }
+          }
+          window.onload = checkPassword;
+      </script>
   </head>
   <body>
     <div id="app"></div>
