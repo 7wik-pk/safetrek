@@ -1,0 +1,35 @@
+services:
+  postgis:
+    image: 7wikmonash/postgis
+    container_name: strek-db
+    shm_size: '256mb'
+    environment:
+      POSTGRES_DB: strek
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - ./data:/data
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    image: 7wikmonash/safetrek-backend
+    container_name: safetrek-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgis
+
+  frontend:
+    image: 7wikmonash/safetrek-postgis
+    container_name: safetrek-web
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
