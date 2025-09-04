@@ -50,13 +50,33 @@
 
           <label class="field">
             <span>Date from</span>
-            <input v-model="dateFrom" type="date" />
+            <div class="date-input">
+              <Datepicker
+                v-model="dateFrom"
+                :minDate="minDate"
+                :maxDate="dateTo"
+                :format="'yyyy-MM-dd'"
+              />
+            </div>
+
           </label>
 
           <label class="field">
             <span>Date to</span>
-            <input v-model="dateTo" type="date" />
+            <div class="date-input">
+              <Datepicker
+                v-model="dateTo"
+                :minDate="dateFrom"
+                :maxDate="maxDate"
+                :format="'yyyy-MM-dd'"
+              />
+            </div>
+
           </label>
+
+          <p v-if="dateAdjusted" class="info-message">
+            End date was adjusted to match the new start date.
+          </p>
 
           <label class="field">
             <span>Order by</span>
@@ -81,7 +101,7 @@
           </label>
 
           <button class="btn" :disabled="!canQuery || loading" @click="fetchStats">
-            {{ loading ? "Loading…" : "Show Results" }}
+            {{ loading ? "Loading..." : "Show Results" }}
           </button>
         </aside>
 
@@ -91,7 +111,7 @@
           <div class="divider" />
 
           <div v-if="loading" class="loading">
-            <span class="spinner" /> Loading crash data…
+            <span class="spinner" /> Loading crash data...
           </div>
 
           <div v-else-if="results.length" class="results">
@@ -135,7 +155,6 @@
             Only {{ results.length }} regions found within {{ filterAreaName }}.
           </p>
 
-
           <span v-if="error" class="error">{{ error }}</span>
         </main>
       </div>
@@ -148,6 +167,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
+import Datepicker from 'vue3-datepicker';
 import api from "@/lib/api";
 
 const keyword = ref("");
@@ -176,11 +196,21 @@ const levelMeta = {
   }
 }
 
-const dateFrom = ref<string>("2020-01-01");
-const dateTo   = ref<string>("2024-12-31");
+const dateFrom = ref<Date | null>(new Date("2020-01-01"));
+const dateTo   = ref<Date | null>(new Date("2024-12-31"));
+const maxDate  = new Date("2024-12-31");
+const minDate  = new Date("2020-01-01");
 const orderBy  = ref<"count" | "density">("density");
 const orderDir = ref<"asc" | "desc">("desc");
 const limit    = ref<number>(5);
+
+function formatDate(d: Date | null, human_readable: boolean = false): string | undefined {
+  if (!d) return undefined;
+
+  return human_readable
+    ? d.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })
+    : d.toISOString().split("T")[0];
+}
 
 const lastUsedFilters = ref({
   limit: null,
@@ -277,6 +307,16 @@ watch(filterLevel, (lvl) => {
   }
 });
 
+const dateAdjusted = ref(false);
+
+watch(dateFrom, (newFrom) => {
+  if (newFrom && dateTo.value && newFrom > dateTo.value) {
+    dateTo.value = newFrom;
+    dateAdjusted.value = true;
+  } else {
+    dateAdjusted.value = false;
+  }
+});
 
 function fmt(n: number) {
   return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
@@ -298,19 +338,25 @@ async function fetchStats() {
       limit: limit.value,
     };
 
-    if (dateFrom.value) payload.date_from = dateFrom.value;
-    if (dateTo.value)   payload.date_to   = dateTo.value;
+    if (dateFrom.value) payload.date_from = formatDate(dateFrom.value);
+    if (dateTo.value)   payload.date_to   = formatDate(dateTo.value);
+
+    if (new Date(dateFrom.value) > new Date(dateTo.value)) {
+      error.value = "Start date cannot be after end date.";
+      loading.value = false;
+      return;
+    }
 
     const { data } = await api.post("/accident_stats", payload);
     results.value = data;
 
     if (!data.length) {
-      
+
       results.value = [];
       const level = filterLevel.value.toUpperCase();
       const name = filterAreaName.value;
 
-      emptyMessage.value = `No crash data was found for "${name}" between ${dateFrom.value} and ${dateTo.value}.`;
+      emptyMessage.value = `No crash data was found for "${name}" between ${formatDate(dateFrom.value, true)} and ${formatDate(dateTo.value, true)}.\nOur system only stores data from ${formatDate(minDate, true)} to ${formatDate(maxDate, true)}.`;
 
     } else {
       results.value = data;
@@ -359,6 +405,44 @@ async function fetchStats() {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 22px 24px 26px;
+}
+
+.date-input {
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: none !important;
+  padding: 14px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  background-color: #f9fafb;
+  color: var(--charcoal);
+  font-size: 0.95rem;
+  font-weight: 600;
+  /* box-shadow: var(--shadow-soft); */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  appearance: none;
+}
+
+.v3dp__datepicker:focus {
+  outline: none;
+  /* border-color: var(--amber); */
+  box-shadow: none;
+  background-color: #ffffff;
+}
+
+.v3dp__datepicker:hover {
+  background-color: #ffffff;
+  border-color: #aab7c7;
+}
+
+.v3dp__datepicker:disabled {
+  background-color: #f0f0f0;
+  color: #999;
+  cursor: not-allowed;
 }
 
 /* title: bold + subtle amber underline */
