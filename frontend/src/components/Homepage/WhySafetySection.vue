@@ -14,11 +14,8 @@ import hazardBottom   from '@/assets/images/hazard-stripes02.svg'
         <img :src="noteTape" alt="" class="note-tape" />
         <h2>Why Safety First?</h2>
         <p>
-          Safety must be the starting point for all planning decisions.
-          Reactive approaches to crashes often waste resources and fail to
-          protect vulnerable communities. By embedding safety at the core of
-          infrastructure, traffic management, and policy planning, we can
-          shift from responding to accidents toward preventing them.
+          Safety is the foundation of thriving communities and sustainable cities Every road crash not only impacts individuals and families but also places a burden on health systems and economies By prioritising safety first we shift from reactive responses
+          to proactive prevention ensuring that decisions are guided by evidence and designed to protect the most vulnerable road users
         </p>
         <button class="btn-primary">Learn more</button>
       </div>

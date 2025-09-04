@@ -23,11 +23,8 @@ import noteTape     from '@/assets/images/Homepage/note_tape.svg'
       <div class="mission__text">
         <h2>Our Mission</h2>
         <p>
-          Our mission is to equip city planners and policymakers with the tools
-          needed to make data-driven, proactive road safety decisions. By
-          transforming fragmented crash, demographic, and socio-economic data
-          into clear, location-specific insights, we enable smarter planning and
-          more equitable interventions.
+          Our mission is to equip city planners and
+          policymakers with the tools needed to make data-driven proactive road safety decisions By transforming fragmented crash demographic and socio-economic data into clear location-specific insights we enable smarter planning and more equitable interventions
         </p>
         <button class="btn-primary">Learn more</button>
       </div>
