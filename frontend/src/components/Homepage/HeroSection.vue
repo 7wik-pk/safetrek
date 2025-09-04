@@ -18,12 +18,17 @@
     <div class="hero__content">
       <img class="sign" src="@/assets/images/roadwork.png" alt="Road Work Sign" />
       <div class="text">
-        <h1>Identify Safer Roads with SafeTrek</h1>
+        
+        <h1>Identify Risky Areas & Roads with SafeTrek</h1>
         <p>
           Road crashes cause 40,000+ serious injuries in Australia every year. The challenge isn’t lack of data – it’s that valuable crash information is fragmented, hard to access, and rarely presented in a way that helps policymakers act.
           SafeTrek is an interactive web platform that transforms raw crash records into actionable insights. By combining crash data with demographics, vehicle type, weather, and road conditions.
         </p>
-        <button class="btn-primary">Learn more</button>
+
+        <router-link to="/stats-trends">
+          <button class="btn-primary">Explore Statistics & Insights</button>
+        </router-link>
+
       </div>
     </div>
 

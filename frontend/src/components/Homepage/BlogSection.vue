@@ -8,8 +8,8 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
 <template>
   <section class="blog">
     <div class="container blog__header">
-      <h2>News & Blog</h2>
-      <RouterLink to="/articles" class="btn-outline">ALL Articles</RouterLink>
+      <h2>News Articles & Journals</h2>
+      <!-- <RouterLink to="/articles" class="btn-outline">ALL Articles</RouterLink> -->
     </div>
 
     <div class="container blog__grid">
@@ -17,7 +17,7 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
         <div class="card__media" >
           <img :src="blog1" alt="Transport accidents" />
         </div>
-        <h3 class="card__kicker">Articles</h3>
+        <!-- <h3 class="card__kicker">Articles</h3> -->
         <a class="card__title" href="https://www.aihw.gov.au/reports/injury/transport-accidents">Australian Institute of Health and Welfare</a>
       </article>
 
@@ -25,7 +25,7 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
         <div class="card__media">
           <img :src="blog2" alt="Human cost, machine insight" />
         </div>
-        <h3 class="card__kicker">Articles</h3>
+        <!-- <h3 class="card__kicker">Articles</h3> -->
         <a class="card__title" href="https://www.sciencedirect.com/science/article/pii/S2213624X2500077X?via%3Dihub">
           A journal paper published by Dr Ali Soltani from Flinders University
         </a>
@@ -35,9 +35,9 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
         <div class="card__media">
           <img :src="blog3" alt="How work planners can improve road safety awareness" />
         </div>
-        <h3 class="card__kicker">Articles</h3>
+        <!-- <h3 class="card__kicker">Articles</h3> -->
         <a class="card__title" href="https://www.theguardian.com/australia-news/2025/jan/27/australia-road-toll-2024-1300-deaths-highest-in-more-than-a-decade">
-          The Guardian’s recent article on rising road accidents
+          The Guardian's recent article on rising road accidents
         </a>
       </article>
     </div>
@@ -121,6 +121,8 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
   margin-top: 10px;
 }
 .card__title {
+  margin-top: 2%;
+  margin-bottom: 2%;
   margin-left: 10px;
   font-size: 15px;
   line-height: 1.4;

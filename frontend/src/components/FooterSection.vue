@@ -9,22 +9,21 @@
       <div class="footer__brand">
         <h3 class="footer__logo">SafeTrek</h3>
         <p class="footer__blurb">
-          Helping every road user make informed decisions with planning, awareness,
-          and real-time insights — for safer journeys.
+          Helping planners make informed decisions with statistics, visuals and insights - for safer roads and neighbourhood.
         </p>
 
         <div class="footer__social">
-          <a href="#" aria-label="Twitter" class="social">
+          <!-- <a href="#" aria-label="Twitter" class="social">
             <svg viewBox="0 0 24 24" class="icon"><path fill="currentColor"
                                                         d="M22 5.8c-.7.3-1.4.5-2.1.6.8-.5 1.3-1.2 1.6-2.1-.7.5-1.6.8-2.5 1A3.7 3.7 0 0 0 12 7.8c0 .3 0 .6.1.9-3-.1-5.7-1.6-7.5-4-.3.5-.5 1.1-.5 1.8 0 1.2.6 2.3 1.6 3A3.7 3.7 0 0 1 3 9.1v.1c0 1.7 1.2 3.2 2.9 3.6-.3.1-.6.1-.9.1-.2 0-.4 0-.6-.1.4 1.4 1.8 2.5 3.4 2.6A7.4 7.4 0 0 1 2 17.6c-.3 0-.6 0-.9-.1A10.5 10.5 0 0 0 6.7 19C14.4 19 19 12.9 19 7.8v-.5c.7-.5 1.3-1.1 1.8-1.8z"/>
             </svg>
-          </a>
-          <a href="#" aria-label="LinkedIn" class="social">
+          </a> -->
+          <!-- <a href="#" aria-label="LinkedIn" class="social">
             <svg viewBox="0 0 24 24" class="icon"><path fill="currentColor"
                                                         d="M6.9 21H3.5V9h3.4v12zM5.2 7.6c-1.1 0-2-.9-2-2s.9-2 2-2a2 2 0 110 4zM21 21h-3.4v-6.3c0-1.5-.5-2.6-1.8-2.6-1 0-1.6.7-1.9 1.3-.1.2-.1.5-.1.7V21h-3.4s.1-10.4 0-12.1H12v1.7c.4-.6 1.2-1.5 3-1.5 2.2 0 3.9 1.4 3.9 4.5V21z"/>
             </svg>
-          </a>
-          <a href="#" aria-label="GitHub" class="social">
+          </a> -->
+          <a href="https://github.com/7wik-pk/safetrek" aria-label="GitHub" class="social">
             <svg viewBox="0 0 24 24" class="icon"><path fill="currentColor"
                                                         d="M12 2a10 10 0 00-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.3-3.4-1.3-.5-1.1-1.2-1.4-1.2-1.4-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 .1.8-.7 1.6-1 .7-.4 1.6-.4 2.4 0 .2-.7.6-1 .9-1.2-2.3-.3-4.6-1.2-4.6-5.1 0-1.1.4-2 1.1-2.8-.1-.3-.5-1.4.1-2.9 0 0 .9-.3 2.9 1.1.8-.2 1.7-.3 2.6-.3s1.8.1 2.6.3c2-1.4 2.9-1.1 2.9-1.1.6 1.5.3 2.6.1 2.9.7.8 1.1 1.7 1.1 2.8 0 3.9-2.3 4.8-4.6 5.1.6.5 1 .1 1 2v3c0 .3.2.6.7.5A10 10 0 0012 2z"/>
             </svg>
@@ -37,15 +36,15 @@
         <h4>Explore</h4>
         <ul>
           <li><router-link to="/" class="link">Home</router-link></li>
-          <li><router-link to="/safe-road-insight" class="link">Safer road insight</router-link></li>
-          <li><a href="#">Crash Risk Explorer</a></li>
-          <li><a href="#">Blackspot &amp; Corridor</a></li>
-          <li><a href="#">Equity &amp; Vulnerability</a></li>
+          <li><router-link to="/stats-trends" class="link">Statistics & Trends</router-link></li>
+          <li><a class="a-disabled">Crash Risk Explorer</a></li>
+          <li><a class="a-disabled">Blackspot &amp; Corridor</a></li>
+          <li><a class="a-disabled">Equity &amp; Vulnerability</a></li>
         </ul>
       </nav>
 
       <!-- Resources -->
-      <nav class="footer__col">
+      <!-- <nav class="footer__col">
         <h4>Resources</h4>
         <ul>
           <li><a href="#">Docs</a></li>
@@ -53,7 +52,7 @@
           <li><a href="#">Changelog</a></li>
           <li><a href="#">FAQ</a></li>
         </ul>
-      </nav>
+      </nav> -->
 
       <!-- Contact -->
       <div class="footer__col">
@@ -66,7 +65,7 @@
       </div>
     </div>
 
-    <div class="footer__copy">
+    <!-- <div class="footer__copy">
       <div class="container copy__inner">
         <span>© {{ new Date().getFullYear() }} SafeTrek. All rights reserved.</span>
         <div class="copy__links">
@@ -75,7 +74,7 @@
           <a href="#">Cookies</a>
         </div>
       </div>
-    </div>
+    </div> -->
   </footer>
 </template>
 

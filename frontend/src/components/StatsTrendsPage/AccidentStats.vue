@@ -108,7 +108,7 @@
         <!-- main results -->
         <main class="main">
 
-          <div class="divider" />
+          <!-- <div class="divider" /> -->
 
           <div v-if="loading" class="loading">
             <span class="spinner" /> Loading crash data...

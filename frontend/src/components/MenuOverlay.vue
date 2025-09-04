@@ -15,8 +15,8 @@
 
           <nav class="links">
             <router-link to="/" class="link" @click="emit('close')">Home</router-link>
-            <router-link to="/safe-road-insight" class="link" @click="emit('close')">
-              Safer Road Insight
+            <router-link to="/stats-trends" class="link" @click="emit('close')">
+              Statistics & Trends
             </router-link>
             <!-- Add more links as needed in the future interation-->
           </nav>

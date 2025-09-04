@@ -35,8 +35,8 @@
 const props = defineProps({
   show: { type: Boolean, default: false },
   progress: { type: Number, default: 30 },
-  title: { type: String, default: 'IDENTIFY SAFER ROADS..PLEASE WAIT' },
-  hint: { type: String, default: 'Loading all the pages' },
+  title: { type: String, default: 'Loading SafeTrek' },
+  hint: { type: String, default: 'Please wait...' },
   signSrc: { type: String, default: '' },
 })
 </script>

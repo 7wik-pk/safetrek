@@ -2,6 +2,15 @@
 import missionImage from '@/assets/images/Homepage/our-mission01.jpg'
 import missionFrame from '@/assets/images/Homepage/our-mission02.svg'
 import noteTape     from '@/assets/images/Homepage/note_tape.svg'
+
+import { ref } from 'vue'
+
+const showNotice = ref(false)
+
+function showComingSoon() {
+  showNotice.value = true
+}
+
 </script>
 
 <template>
@@ -26,7 +35,11 @@ import noteTape     from '@/assets/images/Homepage/note_tape.svg'
           Our mission is to equip city planners and
           policymakers with the tools needed to make data-driven proactive road safety decisions By transforming fragmented crash demographic and socio-economic data into clear location-specific insights we enable smarter planning and more equitable interventions
         </p>
-        <button class="btn-primary">Learn more</button>
+        <button class="btn-primary coming-soon" @click="showComingSoon">Learn more</button>
+
+        <div v-if="showNotice" class="coming-soon-box">
+          This section is coming soon. Stay tuned!
+        </div>
       </div>
     </div>
   </section>
@@ -98,18 +111,36 @@ import noteTape     from '@/assets/images/Homepage/note_tape.svg'
   color: #222;
 }
 
-/* button */
-.btn-primary {
-  background: #111;
-  color: #f6b300;
+/* coming soon button */
+.btn-primary.coming-soon {
+  background: #333;
+  color: #aaa300;
   padding: 10px 24px;
   border: none;
   border-radius: 20px;
   font-weight: 700;
   cursor: pointer;
+  opacity: 0.6;
+  pointer-events: auto; /* still clickable */
+  transition: background 0.3s ease;
 }
-.btn-primary:hover {
-  background: #222;
+
+/* coming soon message */
+.coming-soon-box {
+  margin-top: 16px;
+  padding: 12px 20px;
+  background: #fff8e1;
+  border-left: 4px solid #f6b300;
+  color: #222;
+  font-weight: 600;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------- Full-bleed hazard divider ---------- */

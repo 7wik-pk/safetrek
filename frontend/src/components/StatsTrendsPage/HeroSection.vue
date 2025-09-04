@@ -7,7 +7,7 @@
 
     <!-- background + overlay -->
     <div class="hero__bg">
-      <img src="@/assets/images/SafeRoadInsightPage/hero-image.jpg" alt="Background" />
+      <img src="@/assets/images/StatsTrendsPage/hero-image.jpg" alt="Background" />
       <div class="overlay"></div>
     </div>
 

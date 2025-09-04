@@ -3,6 +3,14 @@ import whySafetyImage from '@/assets/images/Homepage/why-safety.jpg'
 import noteTape       from '@/assets/images/Homepage/note_tape.svg'
 import hazardTop      from '@/assets/images/hazard-stripes.svg'
 import hazardBottom   from '@/assets/images/hazard-stripes02.svg'
+
+import { ref } from 'vue'
+
+const showNotice = ref(false)
+
+function showComingSoon() {
+  showNotice.value = true
+}
 </script>
 
 <template>
@@ -17,7 +25,12 @@ import hazardBottom   from '@/assets/images/hazard-stripes02.svg'
           Safety is the foundation of thriving communities and sustainable cities Every road crash not only impacts individuals and families but also places a burden on health systems and economies By prioritising safety first we shift from reactive responses
           to proactive prevention ensuring that decisions are guided by evidence and designed to protect the most vulnerable road users
         </p>
-        <button class="btn-primary">Learn more</button>
+        <button class="btn-primary coming-soon" @click="showComingSoon">
+          Learn more
+        </button>
+        <div v-if="showNotice" class="coming-soon-box">
+          This section is coming soon. Stay tuned!
+        </div>
       </div>
 
       <!-- right image -->
@@ -102,18 +115,31 @@ import hazardBottom   from '@/assets/images/hazard-stripes02.svg'
   box-shadow: 0 12px 30px rgba(0,0,0,.35);
 }
 
-/* button */
-.btn-primary {
-  background: #111;
-  color: #f6b300;
-  padding: 10px 22px;
-  border-radius: 24px;
-  font-weight: 700;
+/* coming soon button */
+.btn-primary.coming-soon {
+  background: #333;
+  color: #aaa300;
+  padding: 10px 24px;
   border: none;
+  border-radius: 20px;
+  font-weight: 700;
   cursor: pointer;
+  opacity: 0.6;
+  pointer-events: auto; /* still clickable */
+  transition: background 0.3s ease;
 }
-.btn-primary:hover {
-  background: #222;
+
+/* coming soon message */
+.coming-soon-box {
+  margin-top: 16px;
+  padding: 12px 20px;
+  background: #fff8e1;
+  border-left: 4px solid #f6b300;
+  color: #222;
+  font-weight: 600;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: fadeIn 0.3s ease-out;
 }
 
 

@@ -2,14 +2,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 
-import SafeRoadInsightView from '../views/RoadInsightsView.vue'
+import StatsTrendsView from '../views/StatsTrendsView.vue'
 import HomeView from "../views/HomeView.vue";
 
 
 
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
-  { path: '/safe-road-insight', name: 'safe-road-insight', component: SafeRoadInsightView }
+  { path: '/stats-trends', name: 'stats-trends', component: StatsTrendsView }
 ]
 
 const router = createRouter({
