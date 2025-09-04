@@ -394,7 +394,7 @@ async function fetchStats() {
 /* overall wrapper centers the white card */
 .acc-wrap{
   max-width: 1200px;
-  margin: 26px auto 40px;
+  margin: 22px auto 40px;
   padding: 0 16px;
 }
 

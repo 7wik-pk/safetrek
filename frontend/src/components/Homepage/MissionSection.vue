@@ -115,11 +115,11 @@ import noteTape     from '@/assets/images/Homepage/note_tape.svg'
 /* ---------- Full-bleed hazard divider ---------- */
 .footer-divider {
   position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  width: 100vw;
+  left: 0;
+  right: 0;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
   background: linear-gradient(180deg, #d19600 0%, #c18500 100%);
 }
 .footer-divider__inner {

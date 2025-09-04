@@ -248,8 +248,9 @@ const chartOptions = {
 
 <style scoped>
 .trend-card {
-  margin: 24px 0;
-  padding: 16px;
+  margin: 22px auto 40px;
+  max-width: 1400px;
+  padding: 16px 16px;
   background: transparent;
   border: 1px solid rgba(17, 17, 17, 0.1);
   border-radius: 12px;
