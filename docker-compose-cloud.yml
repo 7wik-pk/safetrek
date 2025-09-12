@@ -40,7 +40,7 @@ services:
     image: 7wikmonash/safetrek-frontend
     container_name: safetrek-web
     ports:
-      - "80:80"
+      - "81:80"
     depends_on:
       - backend
 
