@@ -1,0 +1,1 @@
+This directory contains some essential files required to spin up an Nginx reverse proxy container that handles HTTPS authentication.
