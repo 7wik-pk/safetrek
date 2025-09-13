@@ -4,6 +4,7 @@
     <accident-stats/>
     <TrendCharts/>
     <ForecastView/>
+    <RiskExplorer/>
     <FooterSection/>
   </div>
 </template>
@@ -14,6 +15,7 @@ import AccidentStats from "@/components/StatsTrendsPage/AccidentStats.vue";
 import TrendCharts from "@/components/StatsTrendsPage/TrendCharts.vue";
 import FooterSection from "@/components/FooterSection.vue";
 import ForecastView from "@/components/StatsTrendsPage/ForecastView.vue";
+import RiskExplorer from "@/components/StatsTrendsPage/RiskExplorer.vue";
 
 </script>
 

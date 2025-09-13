@@ -49,14 +49,17 @@ class AccidentStatsRequest(BaseModel):
     order_dir: Literal["asc", "desc"] = "desc"
     limit: conint(ge=1, le=100) = 10
 
-    @model_validator(mode="before")
-    def validate_area_hierarchy(cls, values):
-        hierarchy = ["sa2", "sa3", "sa4"]
-        filter_level = values.get("filter_area_level")
-        group_level = values.get("group_by_area_level")
-        if hierarchy.index(group_level) >= hierarchy.index(filter_level):
-            raise ValueError("group_by_area_level must be lower than filter_area_level")
-        return values
+@model_validator(mode="before")
+def validate_area_hierarchy(cls, values):
+    hierarchy = ["sa2", "sa3", "sa4"]
+    filter_level = values.get("filter_area_level")
+    group_level = values.get("group_by_area_level")
+
+    # Allow equal; only forbid strictly higher
+    if hierarchy.index(group_level) > hierarchy.index(filter_level):
+        raise ValueError("EW RULE: group_by must NOT be higher")
+
+    return values
 
 # --- FastAPI app ---
 app = FastAPI()
@@ -73,7 +76,7 @@ app.add_middleware(
     # to disallow all origins later
     # allow_credentials=True,
 
-    allow_origins = settings.allowed_origins,
+    allow_origins = (settings.allowed_origins or ["*"]),
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -133,6 +136,16 @@ def get_accident_stats(req: AccidentStatsRequest, db: Session = Depends(get_db))
             COUNT(a.accident_no) AS num_accs,
             ST_Area(s.geom::geography)/1000000 AS geom_area_sq_km,
             COUNT(a.accident_no)/(ST_Area(s.geom::geography)/1000000) AS acc_per_sq_km,
+            ST_Y(
+              ST_Centroid(
+                ST_Transform(s.geom, 4326)
+              )
+            ) AS centroid_lat,
+            ST_X(
+              ST_Centroid(
+                ST_Transform(s.geom, 4326)
+              )
+            ) AS centroid_lon,
             s.sa_name,
             ST_AsText(s.geom) AS geom
         FROM accident a
