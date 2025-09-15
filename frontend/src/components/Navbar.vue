@@ -1,15 +1,32 @@
 <template>
   <nav class="nav">
+    <!-- Brand -->
     <div class="nav__brand">
-      <router-link to="/" class="link" ><img src="@/assets/images/safetrek_logo.svg" alt="SafeTrek Logo" class="logo" /></router-link>
+      <router-link to="/" class="link">
+        <img
+          src="@/assets/images/safetrek_logo.svg"
+          alt="SafeTrek Logo"
+          class="logo"
+        />
+        <span class="brand-name">SafeTrek</span>
+      </router-link>
     </div>
 
+    <!-- Desktop menu -->
+    <ul class="nav__links">
+      <li><router-link to="/" class="link" active-class="active">Home</router-link></li>
+      <li><router-link to="/about" class="link" active-class="active">Statistics & Trends</router-link></li>
+      <li><router-link to="/services" class="link" active-class="active">Crash Risk Explorer</router-link></li>
+      <li><router-link to="/projects" class="link" active-class="active">Blackspot & Corridor</router-link></li>
+      <li><router-link to="/contact" class="link" active-class="active">Equity & Vulnerability</router-link></li>
+    </ul>
 
+    <!-- Mobile toggle -->
     <button class="nav__toggle" type="button" @click="toggleMenu">
       MENU
     </button>
 
-    <!-- Overlay menu -->
+    <!-- Overlay menu for mobile -->
     <MenuOverlay :open="isMenuOpen" @close="closeMenu" />
   </nav>
 </template>
@@ -39,39 +56,76 @@ watch(
 </script>
 
 <style scoped>
-
 .nav {
   height: 90px;
   padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: rgba(0, 0, 0, 0.7); /* semi-transparent over hero */
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(6px);
 }
+
+/* Brand */
 .nav__brand {
-  padding-top: 10px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
+.nav__brand img.logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+}
+.brand-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
 
+/* Links */
+.nav__links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+.link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.link:hover,
+.link.active {
+  color: #f15a24; /* orange accent */
+}
+
+/* Mobile toggle */
 .nav__toggle {
+  display: none; /* hidden on desktop */
   appearance: none;
   border: 0;
   border-radius: 999px;
-  padding: 16px 32px;
+  padding: 12px 24px;
   background: #0a0a0a;
   color: #ffc21a;
   cursor: pointer;
   font-weight: 700;
-  letter-spacing: .02em;
+  letter-spacing: 0.02em;
 }
 
-.nav__brand img.logo {
-  height: 85px;
-  width: auto;
-  display: block;
-  object-fit: contain;
+/* Responsive */
+@media (max-width: 900px) {
+  .nav__links {
+    display: none;
+  }
+  .nav__toggle {
+    display: block;
+  }
 }
-
-
 </style>

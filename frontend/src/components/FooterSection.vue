@@ -1,211 +1,235 @@
 <template>
-  <div class="footer-divider">
-    <div class="footer-divider__inner"></div>
-  </div>
-
-  <footer class="footer">
-    <div class="container footer__grid">
-      <!-- Brand / short blurb -->
-      <div class="footer__brand">
-        <h3 class="footer__logo">SafeTrek</h3>
-        <p class="footer__blurb">
-          Helping planners make informed decisions with statistics, visuals and insights - for safer roads and neighbourhood.
-        </p>
-
-        <div class="footer__social">
-          <!-- <a href="#" aria-label="Twitter" class="social">
-            <svg viewBox="0 0 24 24" class="icon"><path fill="currentColor"
-                                                        d="M22 5.8c-.7.3-1.4.5-2.1.6.8-.5 1.3-1.2 1.6-2.1-.7.5-1.6.8-2.5 1A3.7 3.7 0 0 0 12 7.8c0 .3 0 .6.1.9-3-.1-5.7-1.6-7.5-4-.3.5-.5 1.1-.5 1.8 0 1.2.6 2.3 1.6 3A3.7 3.7 0 0 1 3 9.1v.1c0 1.7 1.2 3.2 2.9 3.6-.3.1-.6.1-.9.1-.2 0-.4 0-.6-.1.4 1.4 1.8 2.5 3.4 2.6A7.4 7.4 0 0 1 2 17.6c-.3 0-.6 0-.9-.1A10.5 10.5 0 0 0 6.7 19C14.4 19 19 12.9 19 7.8v-.5c.7-.5 1.3-1.1 1.8-1.8z"/>
-            </svg>
-          </a> -->
-          <!-- <a href="#" aria-label="LinkedIn" class="social">
-            <svg viewBox="0 0 24 24" class="icon"><path fill="currentColor"
-                                                        d="M6.9 21H3.5V9h3.4v12zM5.2 7.6c-1.1 0-2-.9-2-2s.9-2 2-2a2 2 0 110 4zM21 21h-3.4v-6.3c0-1.5-.5-2.6-1.8-2.6-1 0-1.6.7-1.9 1.3-.1.2-.1.5-.1.7V21h-3.4s.1-10.4 0-12.1H12v1.7c.4-.6 1.2-1.5 3-1.5 2.2 0 3.9 1.4 3.9 4.5V21z"/>
-            </svg>
-          </a> -->
-          <a href="https://github.com/7wik-pk/safetrek" aria-label="GitHub" class="social">
-            <svg viewBox="0 0 24 24" class="icon"><path fill="currentColor"
-                                                        d="M12 2a10 10 0 00-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.3-3.4-1.3-.5-1.1-1.2-1.4-1.2-1.4-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 .1.8-.7 1.6-1 .7-.4 1.6-.4 2.4 0 .2-.7.6-1 .9-1.2-2.3-.3-4.6-1.2-4.6-5.1 0-1.1.4-2 1.1-2.8-.1-.3-.5-1.4.1-2.9 0 0 .9-.3 2.9 1.1.8-.2 1.7-.3 2.6-.3s1.8.1 2.6.3c2-1.4 2.9-1.1 2.9-1.1.6 1.5.3 2.6.1 2.9.7.8 1.1 1.7 1.1 2.8 0 3.9-2.3 4.8-4.6 5.1.6.5 1 .1 1 2v3c0 .3.2.6.7.5A10 10 0 0012 2z"/>
-            </svg>
-          </a>
-        </div>
+  <!-- Top strip -->
+  <div class="footer-top">
+    <div class="container footer-top__inner">
+      <div class="footer-top__social">
+        <a href="https://github.com/7wik-pk/safetrek" aria-label="GitHub" class="social">
+          <svg viewBox="0 0 24 24" class="icon"><path fill="currentColor"
+                                                      d="M12 2a10 10 0 00-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.3-3.4-1.3-.5-1.1-1.2-1.4-1.2-1.4-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 .1.8-.7 1.6-1 .7-.4 1.6-.4 2.4 0 .2-.7.6-1 .9-1.2-2.3-.3-4.6-1.2-4.6-5.1 0-1.1.4-2 1.1-2.8-.1-.3-.5-1.4.1-2.9 0 0 .9-.3 2.9 1.1.8-.2 1.7-.3 2.6-.3s1.8.1 2.6.3c2-1.4 2.9-1.1 2.9-1.1.6 1.5.3 2.6.1 2.9.7.8 1.1 1.7 1.1 2.8 0 3.9-2.3 4.8-4.6 5.1.6.5 1 .1 1 2v3c0 .3.2.6.7.5A10 10 0 0012 2z"/>
+          </svg>
+        </a>
       </div>
 
-      <!-- Quick links -->
+      <nav class="footer__top-links">
+        <a class="link" href="#">Setting &amp; Privacy</a>
+        <a class="link" href="#">Terms of Use</a>
+        <a class="link" href="#">Site Map</a>
+      </nav>
+
+      <div class="brand-plate">
+        <div class="brand-plate__logo">🛡️</div>
+        <div class="brand-plate__text">
+          <div class="brand-plate__name">SafeTrek</div>
+          <div class="brand-plate__sub">Construction &amp; Industry</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main dotted footer -->
+  <footer class="footer">
+    <div class="container footer__grid">
+      <!-- Column 1: brand blurb -->
+      <div class="footer__brand">
+        <h3 class="footer__title">About Company</h3>
+        <p class="footer__blurb">
+          Helping planners make informed decisions with statistics, visuals and insights – for safer roads and neighbourhood.
+        </p>
+        <a class="footer__cta" href="#">Continue Reading</a>
+      </div>
+
+      <!-- Column 2: Explore -->
       <nav class="footer__col">
-        <h4>Explore</h4>
+        <h4 class="footer__title">Quick Links</h4>
         <ul>
           <li><router-link to="/" class="link">Home</router-link></li>
-          <li><router-link to="/stats-trends" class="link">Statistics & Trends</router-link></li>
+          <li><router-link to="/stats-trends" class="link">Statistics &amp; Trends</router-link></li>
           <li><a class="a-disabled">Crash Risk Explorer</a></li>
           <li><a class="a-disabled">Blackspot &amp; Corridor</a></li>
           <li><a class="a-disabled">Equity &amp; Vulnerability</a></li>
         </ul>
       </nav>
 
-      <!-- Resources -->
-      <!-- <nav class="footer__col">
-        <h4>Resources</h4>
-        <ul>
-          <li><a href="#">Docs</a></li>
-          <li><a href="#">Blog</a></li>
-          <li><a href="#">Changelog</a></li>
-          <li><a href="#">FAQ</a></li>
-        </ul>
-      </nav> -->
-
-      <!-- Contact -->
+      <!-- Column 3: Latest News (placeholder) -->
       <div class="footer__col">
-        <h4>Contact</h4>
+        <h4 class="footer__title">Latest News</h4>
+        <ul class="news">
+          <li class="news__item">
+            <div class="news__media"></div>
+            <div class="news__body">
+              <a href="#" class="news__title">Making Distributed Product Teams Work More Eff…</a>
+              <span class="news__meta">25 Sep 2019</span>
+            </div>
+          </li>
+          <li class="news__item">
+            <div class="news__media"></div>
+            <div class="news__body">
+              <a href="#" class="news__title">Complete Anatomy of the Gutenberg WordPress Editor</a>
+              <span class="news__meta">25 Sep 2019</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Column 4: Contact -->
+      <div class="footer__col">
+        <h4 class="footer__title">Contact Us</h4>
         <ul class="footer__contact">
+          <li>Melbourne, AU</li>
           <li><a href="mailto:hello@safetrek.dev">hello@safetrek.dev</a></li>
           <li><a href="tel:+0000000000">+00 0000 0000</a></li>
-          <li>Melbourne, AU</li>
         </ul>
       </div>
     </div>
 
-    <!-- <div class="footer__copy">
+    <div class="footer__copy">
       <div class="container copy__inner">
-        <span>© {{ new Date().getFullYear() }} SafeTrek. All rights reserved.</span>
+        <span>Copyright © 2025 SafeTrek. All rights reserved.</span>
         <div class="copy__links">
           <a href="#">Privacy</a>
           <a href="#">Terms</a>
           <a href="#">Cookies</a>
         </div>
       </div>
-    </div> -->
+    </div>
   </footer>
 </template>
-
-<script setup lang="ts">
-</script>
-
 <style scoped>
-:root {
-  --gold-1: #e0a70a;
-  --gold-2: #c48800;
-  --dark: #141414;
-  --dark-2: #1b1c20;
-  --text: #f8f6ee;
-  --muted: #cfc8b0;
+:root{
+  --bg: #111;                 /* main dark background */
+  --bg-dot: #0d0d0d;          /* for dotted texture contrast */
+  --dot: rgba(255,255,255,.04);
+  --text: #e9e9e9;
+  --muted:#a9a9a9;
+  --gold:#f6b300;
+  --tile: 22px;               /* size for dotted pattern tile */
 }
 
-/* ---------- Full-bleed hazard divider ---------- */
-.footer-divider {
-  position: relative;
-  left: 0;
-  right: 0;
-  margin-left: 0;
-  margin-right: 0;
-  width: 100%;
-  background: linear-gradient(180deg, #d19600 0%, #c18500 100%);
+/* ------------ Top Bar ------------ */
+.footer-top{
+  background:#1a1a1a;
+  border-bottom:1px solid rgba(255,255,255,.06);
 }
-.footer-divider__inner {
-  /* visible height of the divider */
-  height: 64px;
-  background-image: url('@/assets/images/hazard-stripes.svg');
-  background-repeat: repeat-x;
-  background-size: auto 100%;
-  background-position: center;
-  filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));
+.footer-top__inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:12px 20px;
+  display:grid;
+  grid-template-columns: 1fr auto auto;
+  gap:16px;
+  align-items:center;
+}
+.footer-top__social{display:flex;gap:10px}
+.social{
+  width:36px;height:36px;border-radius:6px;
+  background:#222;display:grid;place-items:center;
+  transition:transform .2s ease, background .25s ease;
+}
+.social:hover{transform:translateY(-2px);background:var(--gold)}
+.icon{width:18px;height:18px;color:#fff}
+
+.footer__top-links{display:flex;gap:18px}
+.footer__top-links .link{
+  color:#cfcfcf;text-decoration:none;font-size:14px;
+}
+.footer__top-links .link:hover{color:#fff}
+
+.brand-plate{
+  background:var(--gold);
+  padding:10px 16px;
+  border-radius:6px;
+  display:flex;gap:10px;align-items:center;
+}
+.brand-plate__logo{font-size:18px}
+.brand-plate__name{font-weight:900}
+.brand-plate__sub{font-size:12px;opacity:.85}
+
+/* ------------ Main Footer ------------ */
+.footer{
+  color:var(--text);
+  background:
+    radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 1px) /* dots */,
+    var(--bg);
+  background-size: var(--tile) var(--tile), auto;
+}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+
+.footer__grid{
+  display:grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr;
+  gap:40px;
+  padding:48px 0 32px;
 }
 
-/* ---------- Footer ---------- */
-.footer {
-  background: linear-gradient(180deg, #c18500 0%, #b27700 100%);
-  color: var(--text);
-  padding-top: 32px;
+/* Headings */
+.footer__title{
+  margin:0 0 14px;
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:.2px;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
+/* Brand blurb & CTA */
+.footer__blurb{color:var(--muted);line-height:1.7;margin:0 0 16px}
+.footer__cta{
+  display:inline-block;
+  color:var(--gold);
+  font-weight:800;
+  text-decoration:none;
+  position:relative;
+}
+.footer__cta::after{
+  content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--gold);
 }
 
-/* main grid */
-.footer__grid {
-  display: grid;
-  grid-template-columns: 1.2fr repeat(3, 1fr);
-  gap: 32px 40px;
-  padding: 32px 0 20px;
+/* Column lists */
+.footer__col ul{list-style:none;margin:0;padding:0}
+.footer__col li+li{margin-top:8px}
+.footer__col a{
+  color:var(--muted);text-decoration:none;transition:color .2s ease;
+}
+.footer__col a:hover{color:#fff;text-decoration:underline}
+
+/* Disabled stub links */
+.a-disabled{color:#666;pointer-events:none}
+
+/* News list (simple, matches look) */
+.news{display:grid;gap:14px}
+.news__item{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center}
+.news__media{
+  width:64px;height:48px;border-radius:4px;background:#2b2b2b;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.news__title{color:#ddd;text-decoration:none;font-weight:600}
+.news__title:hover{color:#fff;text-decoration:underline}
+.news__meta{display:block;color:#8e8e8e;font-size:12px;margin-top:4px}
+
+/* Contact */
+.footer__contact li{color:var(--muted)}
+
+/* Bottom copy bar */
+.footer__copy{
+  background:#121212;border-top:1px solid rgba(255,255,255,.06);
+}
+.copy__inner{
+  max-width:1200px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  color:#cfcfcf;font-size:14px;
+}
+.copy__links{display:flex;gap:16px}
+.copy__links a{color:#cfcfcf;text-decoration:none}
+.copy__links a:hover{color:#fff;text-decoration:underline}
+
+/* ------------ Responsive ------------ */
+@media (max-width: 1024px){
+  .footer__grid{grid-template-columns: 1fr 1fr;gap:28px}
+}
+@media (max-width: 640px){
+  .footer-top__inner{grid-template-columns:1fr;justify-items:start}
+  .brand-plate{justify-self:start}
+  .footer__grid{grid-template-columns:1fr}
+  .copy__inner{flex-direction:column;align-items:flex-start}
 }
 
-/* brand / socials */
-.footer__logo {
-  font-size: 28px;
-  font-weight: 800;
-  margin: 0 0 6px;
-}
-.footer__blurb {
-  color: var(--muted);
-  margin: 0 0 16px;
-  line-height: 1.5;
-}
-.footer__social {
-  display: flex;
-  gap: 12px;
-}
-.social {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  background: #0f0f0f;
-  display: grid;
-  place-items: center;
-  transition: transform .15s ease, background .2s ease;
-}
-.social:hover { transform: translateY(-2px); background: #000; }
-.icon { width: 18px; height: 18px; color: #ffd770; }
 
-/* columns */
-.footer__col h4 {
-  font-size: 16px;
-  margin: 0 0 12px;
-  letter-spacing: .3px;
-}
-.footer__col ul { list-style: none; margin: 0; padding: 0; }
-.footer__col li + li { margin-top: 8px; }
-.footer__col a {
-  color: var(--text);
-  text-decoration: none;
-  opacity: .9;
-}
-.footer__col a:hover { opacity: 1; text-decoration: underline; }
-.footer__contact li { color: var(--text); opacity: .9; }
-
-/* bottom copy bar */
-.footer__copy {
-  margin-top: 18px;
-  border-top: 1px solid rgba(0,0,0,.25);
-  background: rgba(0,0,0,.1);
-}
-.copy__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 0;
-  font-size: 14px;
-}
-.copy__links {
-  display: flex;
-  gap: 16px;
-}
-.copy__links a {
-  color: var(--text);
-  opacity: .85;
-  text-decoration: none;
-}
-.copy__links a:hover { opacity: 1; text-decoration: underline; }
-
-/* ---------- Responsive ---------- */
-@media (max-width: 960px) {
-  .footer__grid { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 640px) {
-  .footer__grid { grid-template-columns: 1fr; }
-  .copy__inner { flex-direction: column; align-items: flex-start; }
-}
 </style>

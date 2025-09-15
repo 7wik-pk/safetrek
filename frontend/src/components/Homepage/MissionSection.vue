@@ -1,177 +1,144 @@
-<script setup>
-import missionImage from '@/assets/images/Homepage/our-mission01.jpg'
-import missionFrame from '@/assets/images/Homepage/our-mission02.svg'
-import noteTape     from '@/assets/images/Homepage/note_tape.svg'
-
-import { ref } from 'vue'
-
-const showNotice = ref(false)
-
-function showComingSoon() {
-  showNotice.value = true
-}
-
-</script>
-
 <template>
   <section class="mission">
-    <div class="mission__content container">
-      <!-- left: taped image -->
-      <div class="mission__image">
-        <!-- frame -->
-        <img :src="missionFrame" alt="" class="mission-frame" />
-
-        <!-- tape -->
-        <img :src="noteTape" alt="Note tape" class="note-tape" />
-
-        <!-- photo -->
-        <img :src="missionImage" alt="Our Mission" class="photo" />
+    <div class="mission__container">
+      <!-- Top row -->
+      <div class="mission__intro">
+        <div class="intro-left">
+          <h4>WHO WE ARE</h4>
+          <h2>Quality &amp; Integrity<br />Service Agency</h2>
+        </div>
+        <div class="intro-right">
+          <h3>Company History</h3>
+          <p>
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+            doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+            veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
+            ipsam voluptatem quia voluptas sit aspernatur aut odit.
+          </p>
+          <a href="#" class="learn-more">LEARN MORE →</a>
+        </div>
       </div>
 
-      <!-- right: text -->
-      <div class="mission__text">
-        <h2>Our Mission</h2>
-        <p>
-          Our mission is to equip city planners and
-          policymakers with the tools needed to make data-driven proactive road safety decisions By transforming fragmented crash demographic and socio-economic data into clear location-specific insights we enable smarter planning and more equitable interventions
-        </p>
-        <button class="btn-primary coming-soon" @click="showComingSoon">Learn more</button>
+      <!-- Bottom row (cards) -->
+      <div class="mission__services">
+        <div class="service-card">
+          <img src="/img/features/01.jpg" alt="Electrical Engineering" />
+          <div class="card-content">
+            <h4>Electrical Engineering</h4>
+            <a href="#" class="learn-more">LEARN MORE →</a>
+          </div>
+        </div>
 
-        <div v-if="showNotice" class="coming-soon-box">
-          This section is coming soon. Stay tuned!
+        <div class="service-card">
+          <img src="/img/features/02.jpg" alt="Construction Service" />
+          <div class="card-content">
+            <h4>Construction Service</h4>
+            <a href="#" class="learn-more">LEARN MORE →</a>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <img src="/img/features/03.jpg" alt="Chemical Services" />
+          <div class="card-content">
+            <h4>Chemical Services</h4>
+            <a href="#" class="learn-more">LEARN MORE →</a>
+          </div>
         </div>
       </div>
     </div>
   </section>
-
-  <div class="footer-divider">
-    <div class="footer-divider__inner"></div>
-  </div>
 </template>
+
+<script setup>
+// static section, no JS needed yet
+</script>
 
 <style scoped>
 .mission {
-  position: relative;
-  background: linear-gradient(180deg, #f6b300 0%, #e5a100 100%);
-  padding: 70px 20px;
+  background: #fff;  /* plain white */
+  padding: 80px 20px;
+  color: #111;
 }
 
-/* layout */
-.mission__content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: center;
-  max-width: 1100px;
+.mission__container {
+  max-width: 1200px;
   margin: 0 auto;
 }
 
-/* image group */
-.mission__image {
-  position: relative;
-  display: inline-block;
+/* Top row */
+.mission__intro {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 60px;
 }
-.mission-frame {
-  position: absolute;
-  top: -30px;
-  left: -30px;
-  width: 100%;
-  height: auto;
-  z-index: 0;
+.intro-left {
+  flex: 1;
+  background: #ffc21a;
+  padding: 40px;
+  color: #000;
 }
-.note-tape {
-  position: absolute;
-  top: -60px;
-  left: -30px;
-  width: 150px;
-  transform: rotate(5deg);
-  z-index: 2;
-}
-.photo {
-  position: relative;
-  display: block;
-  width: 100%;
-  border-radius: 8px;
-  border: 10px solid #111;
-  box-shadow: 0 12px 30px rgba(0,0,0,.35);
-  z-index: 1;
-}
-
-/* text */
-.mission__text h2 {
-  font-size: 2rem;
-  font-weight: 900;
-  margin-bottom: 16px;
-  color: #111;
-}
-.mission__text p {
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  color: #222;
-}
-
-/* coming soon button */
-.btn-primary.coming-soon {
-  background: #333;
-  color: #aaa300;
-  padding: 10px 24px;
-  border: none;
-  border-radius: 20px;
-  font-weight: 700;
-  cursor: pointer;
-  opacity: 0.6;
-  pointer-events: auto; /* still clickable */
-  transition: background 0.3s ease;
-}
-
-/* coming soon message */
-.coming-soon-box {
-  margin-top: 16px;
-  padding: 12px 20px;
-  background: #fff8e1;
-  border-left: 4px solid #f6b300;
-  color: #222;
+.intro-left h4 {
+  font-size: 0.9rem;
   font-weight: 600;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  animation: fadeIn 0.3s ease-out;
+  margin-bottom: 10px;
+}
+.intro-left h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.intro-right {
+  flex: 2;
+}
+.intro-right h3 {
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+}
+.intro-right p {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.learn-more {
+  color: #000;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.learn-more:hover {
+  color: #f15a24;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Bottom row (cards) */
+.mission__services {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
 }
-
-/* ---------- Full-bleed hazard divider ---------- */
-.footer-divider {
+.service-card {
   position: relative;
-  left: 0;
-  right: 0;
-  margin-left: 0;
-  margin-right: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.service-card img {
   width: 100%;
-  background: linear-gradient(180deg, #d19600 0%, #c18500 100%);
+  height: 250px;
+  object-fit: cover;
 }
-.footer-divider__inner {
-  /* visible height of the divider */
-  height: 64px;
-  background-image: url('@/assets/images/hazard-stripes.svg');
-  background-repeat: repeat-x;
-  background-size: auto 100%;
-  background-position: center;
-  filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));
+.card-content {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
-/* responsive */
-@media (max-width: 860px) {
-  .mission__content {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-  .note-tape {
-    left: 50%;
-    transform: translateX(-50%) rotate(-10deg);
-  }
+.service-card:hover .card-content {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
 }
 </style>

@@ -1,181 +1,221 @@
 <script setup>
-import whySafetyImage from '@/assets/images/Homepage/why-safety.jpg'
-import noteTape       from '@/assets/images/Homepage/note_tape.svg'
-import hazardTop      from '@/assets/images/hazard-stripes.svg'
-import hazardBottom   from '@/assets/images/hazard-stripes02.svg'
+import { Swiper, SwiperSlide } from "swiper/vue"
+import "swiper/css"
+import "swiper/css/navigation"
 
-import { ref } from 'vue'
+import { Navigation } from "swiper/modules"
 
-const showNotice = ref(false)
-
-function showComingSoon() {
-  showNotice.value = true
-}
+// images
+import whySafetyImage from "/images/bg1.jpg"
+import service1 from "/images/bg2.jpg"
+import service2 from "/images/bg3.jpg"
 </script>
 
 <template>
   <section class="why-safety">
+    <h2 class="section-title">Latest Services</h2>
 
-    <div class="why-safety__content container">
-      <!-- left sticky note style -->
-      <div class="why-safety__note">
-        <img :src="noteTape" alt="" class="note-tape" />
-        <h2>Why Safety First?</h2>
-        <p>
-          Safety is the foundation of thriving communities and sustainable cities Every road crash not only impacts individuals and families but also places a burden on health systems and economies By prioritising safety first we shift from reactive responses
-          to proactive prevention ensuring that decisions are guided by evidence and designed to protect the most vulnerable road users
-        </p>
-        <button class="btn-primary coming-soon" @click="showComingSoon">
-          Learn more
-        </button>
-        <div v-if="showNotice" class="coming-soon-box">
-          This section is coming soon. Stay tuned!
+    <Swiper
+      :modules="[Navigation]"
+      navigation
+      :loop="true"
+      :space-between="30"
+      class="services-swiper"
+    >
+      <!-- Slide 1 -->
+      <SwiperSlide>
+        <div class="slide-content">
+          <img :src="whySafetyImage" alt="Why Safety First" class="slide-image" />
+          <div class="slide-card">
+            <h3>Why Safety First?</h3>
+            <p>
+              Safety is the foundation of thriving communities and sustainable cities.
+              Every road crash not only impacts individuals and families but also
+              places a burden on health systems and economies.
+            </p>
+            <button class="btn">VIEW DETAILS</button>
+          </div>
         </div>
-      </div>
+      </SwiperSlide>
 
-      <!-- right image -->
-      <div class="why-safety__image">
-        <img :src="whySafetyImage" alt="Why Safety" />
-      </div>
-    </div>
+      <!-- Slide 2 -->
+      <SwiperSlide>
+        <div class="slide-content">
+          <img :src="service1" alt="Service 1" class="slide-image" />
+          <div class="slide-card">
+            <h3>Building Construction</h3>
+            <p>
+              Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.
+            </p>
+            <button class="btn">VIEW DETAILS</button>
+          </div>
+        </div>
+      </SwiperSlide>
 
-    <div class="footer-divider">
-      <div class="footer-divider__inner"></div>
-    </div>
+      <!-- Slide 3 -->
+      <SwiperSlide>
+        <div class="slide-content">
+          <img :src="service2" alt="Service 2" class="slide-image" />
+          <div class="slide-card">
+            <h3>Road Planning</h3>
+            <p>
+              Proactive planning ensures sustainable and safe urban growth.
+            </p>
+            <button class="btn">VIEW DETAILS</button>
+          </div>
+        </div>
+      </SwiperSlide>
+    </Swiper>
   </section>
 </template>
 
 <style scoped>
+/* make the section white */
 .why-safety {
-  position: relative;
-  background: linear-gradient(180deg, #e5a100 0%, #c98600 100%);
-  padding: 60px 20px;
-  overflow: hidden;
-}
-
-/* hazard stripes */
-.hazard {
-  display: block;
-  width: 110%;
-  height: 90px;
-  object-fit: cover;
-}
-.hazard--top {
-  margin-bottom: 30px;
-}
-.hazard--bottom {
-  margin-top: 40px;
-}
-
-/* layout */
-.why-safety__content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: center;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-/* sticky note card */
-.why-safety__note {
-  position: relative;
-  background: #f6b300;
-  border-radius: 14px;
-  padding: 30px;
-  border: 3px solid #111;
-  box-shadow: 6px 6px 0 rgba(0,0,0,.3);
-}
-.note-tape {
-  position: absolute;
-  top: -30px;
-  left: -20px;
-  width: 100px;
-  transform: rotate(-6deg);
-}
-.why-safety__note h2 {
-  font-size: 1.8rem;
-  font-weight: 900;
-  margin-bottom: 16px;
+  background: #fff;
+  padding: 56px 20px 80px;
   color: #111;
 }
-.why-safety__note p {
+
+.section-title {
+  text-align: center;
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 900;
+  margin-bottom: 28px;
+}
+
+/* ---- Swiper frame ---- */
+.services-swiper {
+  padding-inline: 70px;              /* space for arrows */
+  --slide-h: 520px;
+}
+
+/* allow bleed beyond container */
+.services-swiper :deep(.swiper),
+.services-swiper :deep(.swiper-wrapper),
+.services-swiper :deep(.swiper-slide) {
+  overflow: visible;
+}
+
+/* center slides */
+.services-swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+}
+
+/* ---- Stage (image + overlay card) ---- */
+.slide-content {
+  position: relative;
+  width: min(100%, 1140px);
+  height: var(--slide-h);
+  margin: 0 auto;
+  overflow: visible; /* allow image/card overflow */
+  box-shadow: 0 12px 38px rgba(0,0,0,.18);
+}
+
+/* Image fills stage and bleeds past edges */
+.slide-image {
+  position: absolute;
+  inset: 0;
+  width: 112%;          /* wider than container */
+  height: 100%;
+  left: -6%;            /* center the bleed */
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 12px 36px rgba(0,0,0,.18);
+}
+
+/* Yellow overlay card */
+.slide-card {
+  position: absolute;
+  top: 45%;
+  left: 80%;
+  right: clamp(40px, 6vw, 90px);
+  transform: translateY(-50%);
+  width: clamp(300px, 34%, 520px);
+  background: #f6b300;
+  border-radius: 6px;
+  padding: 28px 32px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.25);
+  z-index: 2;
+}
+
+.slide-card h3 {
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  margin: 0 0 12px;
+  color: #111;
+}
+
+.slide-card p {
   font-size: 1rem;
   line-height: 1.6;
-  margin-bottom: 20px;
-  color: #222;
+  margin: 0 0 16px;
+  color: #1a1a1a;
 }
 
-/* right image */
-.why-safety__image img {
-  width: 100%;
-  display: block;
-  border: 6px solid #111; /* stroke */
-  border-radius: 6px;
-  box-shadow: 0 12px 30px rgba(0,0,0,.35);
-}
-
-/* coming soon button */
-.btn-primary.coming-soon {
-  background: #333;
-  color: #aaa300;
-  padding: 10px 24px;
-  border: none;
-  border-radius: 20px;
-  font-weight: 700;
-  cursor: pointer;
-  opacity: 0.6;
-  pointer-events: auto; /* still clickable */
-  transition: background 0.3s ease;
-}
-
-/* coming soon message */
-.coming-soon-box {
-  margin-top: 16px;
-  padding: 12px 20px;
-  background: #fff8e1;
-  border-left: 4px solid #f6b300;
-  color: #222;
-  font-weight: 600;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  animation: fadeIn 0.3s ease-out;
-}
-
-
-/* ---------- Full-bleed hazard divider ---------- */
-.footer-divider {
+.btn {
   position: relative;
-  left: 50%;
-  right: 50%;
-  margin-top: 4vw;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  width: 100vw;
-  background: linear-gradient(180deg, #d19600 0%, #c18500 100%);
+  padding: 12px 20px;
+  background: #111;
+  color: #fff;
+  font-weight: 800;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform .15s ease, background .2s ease;
 }
-.footer-divider__inner {
-  /* visible height of the divider */
-  height: 64px;
-  margin-top: 20px;
-  background-image: url('@/assets/images/hazard-stripes02.svg');
-  background-repeat: repeat-x;
-  background-size: auto 100%;
-  background-position: center;
-  filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));
+.btn:hover { background: #2c2c2c; transform: translateY(-1px); }
+
+/* small square accent like ref */
+.btn::after {
+  content: '';
+  position: absolute;
+  right: -14px;
+  bottom: 8px;
+  width: 10px;
+  height: 10px;
+  background: #111;
 }
-/* responsive */
-@media (max-width: 860px) {
-  .why-safety__content {
-    grid-template-columns: 1fr;
-    text-align: center;
+
+/* ---- Swiper arrows ---- */
+.services-swiper :deep(.swiper-button-prev),
+.services-swiper :deep(.swiper-button-next) {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(0,0,0,.15);
+}
+.services-swiper :deep(.swiper-button-prev:after),
+.services-swiper :deep(.swiper-button-next:after) {
+  color: #111;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 980px) {
+  .services-swiper { padding-inline: 0; }
+  .slide-content { height: 420px; }
+  .slide-card {
+    position: static;
+    transform: none;
+    width: auto;
+    margin: 14px 16px 0;
+    box-shadow: 0 6px 18px rgba(0,0,0,.18);
   }
-  .why-safety__note {
-    margin-bottom: 30px;
-  }
-  .note-tape {
-    left: 50%;
-    transform: translateX(-50%) rotate(-6deg);
+  .services-swiper :deep(.swiper-button-prev),
+  .services-swiper :deep(.swiper-button-next) {
+    display: none;
   }
 }
+
+@media (max-width: 600px) {
+  .slide-content { height: 360px; }
+}
+
 </style>
+

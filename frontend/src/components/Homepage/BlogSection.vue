@@ -2,110 +2,117 @@
 import blog1 from '@/assets/images/Homepage/blog1.jpg'
 import blog2 from '@/assets/images/Homepage/blog2.jpg'
 import blog3 from '@/assets/images/Homepage/blog3.jpg'
-import hazardBottom from "@/assets/images/hazard-stripes02.svg";
 </script>
 
 <template>
   <section class="blog">
     <div class="container blog__header">
       <h2>News Articles & Journals</h2>
-      <!-- <RouterLink to="/articles" class="btn-outline">ALL Articles</RouterLink> -->
     </div>
 
     <div class="container blog__grid">
+      <!-- Article 1 -->
       <article class="card">
-        <div class="card__media" >
+        <div class="card__media">
           <img :src="blog1" alt="Transport accidents" />
         </div>
-        <!-- <h3 class="card__kicker">Articles</h3> -->
-        <a class="card__title" href="https://www.aihw.gov.au/reports/injury/transport-accidents">Australian Institute of Health and Welfare</a>
+        <div class="card__body">
+          <h3 class="card__title">
+            Australian Institute of Health and Welfare
+          </h3>
+          <a class="card__link" href="https://www.aihw.gov.au/reports/injury/transport-accidents" target="_blank">
+            Read More →
+          </a>
+          <div class="card__meta">
+            <span>12 Feb 2025</span>
+          </div>
+        </div>
       </article>
 
+      <!-- Article 2 -->
       <article class="card">
         <div class="card__media">
           <img :src="blog2" alt="Human cost, machine insight" />
         </div>
-        <!-- <h3 class="card__kicker">Articles</h3> -->
-        <a class="card__title" href="https://www.sciencedirect.com/science/article/pii/S2213624X2500077X?via%3Dihub">
-          A journal paper published by Dr Ali Soltani from Flinders University
-        </a>
+        <div class="card__body">
+          <h3 class="card__title">
+            A journal paper published by Dr Ali Soltani from Flinders University
+          </h3>
+          <a class="card__link" href="https://www.sciencedirect.com/science/article/pii/S2213624X2500077X?via%3Dihub" target="_blank">
+            Read More →
+          </a>
+          <div class="card__meta">
+            <span>10 Feb 2025</span>
+          </div>
+        </div>
       </article>
 
+      <!-- Article 3 -->
       <article class="card">
         <div class="card__media">
           <img :src="blog3" alt="How work planners can improve road safety awareness" />
         </div>
-        <!-- <h3 class="card__kicker">Articles</h3> -->
-        <a class="card__title" href="https://www.theguardian.com/australia-news/2025/jan/27/australia-road-toll-2024-1300-deaths-highest-in-more-than-a-decade">
-          The Guardian's recent article on rising road accidents
-        </a>
+        <div class="card__body">
+          <h3 class="card__title">
+            The Guardian's recent article on rising road accidents
+          </h3>
+          <a class="card__link" href="https://www.theguardian.com/australia-news/2025/jan/27/australia-road-toll-2024-1300-deaths-highest-in-more-than-a-decade" target="_blank">
+            Read More →
+          </a>
+          <div class="card__meta">
+            <span>27 Jan 2025</span>
+          </div>
+        </div>
       </article>
     </div>
-
   </section>
 </template>
 
 <style scoped>
-/* section wrapper */
 .blog {
-  background: linear-gradient(180deg, #f6b300 0%, #c98600 100%);
-  padding: 56px 20px 64px;
+  background: #fff;
+  padding: 80px 20px;
   color: #111;
-
 }
 
 /* header */
 .blog__header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 28px;
+  justify-content: center;
+  margin-bottom: 40px;
 }
 .blog__header h2 {
-  font-weight: 900;
-  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 800;
+  font-size: clamp(26px, 3vw, 40px);
   margin: 0;
 }
-.btn-outline {
-  appearance: none;
-  background: #dfac29;
-  color: #111;
-  border: 2px solid #111;
-  border-radius: 999px;
-  padding: 8px 18px;
-  font-weight: 800;
-  cursor: pointer;
-  text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,.15);
-}
-.btn-outline:hover { background: #ff7a17; }
 
 /* grid */
 .blog__grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 34px;
-  align-items: start;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
 }
 
-/* cards */
+/* card */
 .card {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
+  transition: transform .3s ease, box-shadow .3s ease;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: #df9d00;
+}
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.15);
 }
 
-/* uniform media sizing */
 .card__media {
-  aspect-ratio: 16 / 9;
   width: 100%;
-  border: 4px solid #111;
-  border-radius: 6px;
+  height: 220px;
   overflow: hidden;
-  box-shadow: 0 8px 22px rgba(0,0,0,.25);
-  background: #000;
 }
 .card__media img {
   width: 100%;
@@ -113,50 +120,46 @@ import hazardBottom from "@/assets/images/hazard-stripes02.svg";
   object-fit: cover;
 }
 
-/* text */
-.card__kicker {
-  font-size: 18px;
-  font-weight: 900;
-  margin-left: 10px;
-  margin-top: 10px;
+.card__body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
+
 .card__title {
-  margin-top: 2%;
-  margin-bottom: 2%;
-  margin-left: 10px;
-  font-size: 15px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #222;
   line-height: 1.4;
-  color: #111;
-
-  min-height: 3.2em;
+  margin: 0;
 }
 
-
-.stopline-bleed {
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  width: 100vw;           /* span the viewport */
+.card__link {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f15a24;
+  text-decoration: none;
+}
+.card__link:hover {
+  text-decoration: underline;
 }
 
-/* Tape track (height = visual thickness) */
-.stopline-wrap {
-  margin-top:20px;
-
-  position: relative;
-  height: 90px;
-  overflow: hidden;
+.card__meta {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: auto;
 }
-
 
 /* responsive */
-@media (max-width: 1200px) {
-  .blog__grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+@media (max-width: 1024px) {
+  .blog__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 @media (max-width: 640px) {
-  .blog__grid { grid-template-columns: 1fr; }
-  .blog__header { flex-direction: column; align-items: flex-start; }
+  .blog__grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

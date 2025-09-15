@@ -4,6 +4,7 @@ import MissionSection from '@/components/Homepage/MissionSection.vue'
 import WhySafetySection from '@/components/Homepage/WhySafetySection.vue'
 import BlogSection from '@/components/Homepage/BlogSection.vue'
 import FooterSection from '@/components/FooterSection.vue'
+import Banner from "@/components/Homepage/Banner.vue";
 </script>
 
 <template>
@@ -11,6 +12,7 @@ import FooterSection from '@/components/FooterSection.vue'
     <HeroSection />
     <MissionSection />
     <WhySafetySection />
+    <Banner/>
     <BlogSection />
     <FooterSection />
   </div>

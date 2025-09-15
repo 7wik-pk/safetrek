@@ -1,138 +1,156 @@
 <template>
   <section class="hero">
-    <div class="relative w-full h-[600px]">
+    <Swiper
+      :modules="[Autoplay, Pagination, Navigation, EffectFade]"
+      :loop="true"
+      :autoplay="{ delay: 4000, disableOnInteraction: false }"
+      :speed="1000"
+      :effect="'fade'"
+      :pagination="{ clickable: true }"
+      :navigation="true"
+      class="hero-swiper"
+    >
+      <!-- Slide 1 -->
+      <SwiperSlide>
+        <div class="slide">
+          <img class="bg" src="/images/slider/01.jpg" alt="Slide 1" />
+          <div class="overlay"></div>
+          <div class="caption">
+            <h2 class="title animate-fade-in-up">Offering Best Platform</h2>
+            <p class="subtitle animate-fade-in-up delay-1">BUILDER</p>
+            <a href="#" class="btn animate-fade-in-up delay-2">Purchase Now</a>
+          </div>
+        </div>
+      </SwiperSlide>
 
-    </div>
-    <!-- hazard stripes -->
-    <div class="hazard hazard--top">
-      <img src="../../assets/images/hazard-stripes.svg" alt="" />
-    </div>
+      <!-- Slide 2 -->
+      <SwiperSlide>
+        <div class="slide">
+          <img class="bg" src="/images/slider/02.jpg" alt="Slide 2" />
+          <div class="overlay"></div>
+          <div class="caption">
+            <h2 class="title animate-fade-in-up">We Build Your Dreams</h2>
+            <p class="subtitle animate-fade-in-up delay-1">
+              From sketches to final construction
+            </p>
+            <a href="#" class="btn animate-fade-in-up delay-2">Get a Quote</a>
+          </div>
+        </div>
+      </SwiperSlide>
 
-    <!-- background + overlay -->
-    <div class="hero__bg">
-      <img src="@/assets/images/Homepage/top-image.jpg" alt="Background" />
-      <div class="overlay"></div>
-    </div>
-
-    <!-- content -->
-    <div class="hero__content">
-      <img class="sign" src="@/assets/images/roadwork.png" alt="Road Work Sign" />
-      <div class="text">
-        
-        <h1>Identify Risky Areas & Roads with SafeTrek</h1>
-        <p>
-          Road crashes cause 40,000+ serious injuries in Australia every year. The challenge isn’t lack of data – it’s that valuable crash information is fragmented, hard to access, and rarely presented in a way that helps policymakers act.
-          SafeTrek is an interactive web platform that transforms raw crash records into actionable insights. By combining crash data with demographics, vehicle type, weather, and road conditions.
-        </p>
-
-        <router-link to="/stats-trends">
-          <button class="btn-primary">Explore Statistics & Insights</button>
-        </router-link>
-
-      </div>
-    </div>
-
-    <div class="hazard hazard--bottom">
-      <img src="../../assets/images/hazard-stripes.svg" alt="" />
-    </div>
+      <!-- Slide 3 -->
+      <SwiperSlide>
+        <div class="slide">
+          <img class="bg" src="/images/slider/03.jpg" alt="Slide 3" />
+          <div class="overlay"></div>
+          <div class="caption">
+            <h2 class="title animate-fade-in-up">Sketching & Building</h2>
+            <p class="subtitle animate-fade-in-up delay-1">
+              Sketching your ideas & building your future
+            </p>
+            <a href="#" class="btn animate-fade-in-up delay-2">Get Started</a>
+          </div>
+        </div>
+      </SwiperSlide>
+    </Swiper>
   </section>
-
 </template>
 
+<script setup lang="ts">
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Autoplay, Pagination, Navigation, EffectFade } from 'swiper/modules'
+
+// Swiper CSS
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+import 'swiper/css/effect-fade'
+</script>
+
 <style scoped>
-.hero {
-  position: relative;
-  overflow: hidden;
-  text-align: left;
+.hero-swiper {
+  width: 100%;
+  height: 90vh;
+  min-height: 600px;
 }
 
-/* background */
-.hero__bg {
+.slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.bg {
   position: absolute;
   inset: 0;
-}
-.hero__bg img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.hero__bg .overlay {
+
+.overlay {
   position: absolute;
   inset: 0;
-  background: rgba(246, 179, 0, 0.65); /* softer yellow */
+  background: rgba(0, 0, 0, 0.55); /* dark overlay */
+  z-index: 1;
 }
 
-/* hazard stripes */
-.hazard {
+.caption {
   position: relative;
-  width: 100%;
   z-index: 2;
-}
-.hazard img {
-  width: 100%;
-  height: 30px;
-  object-fit: cover;
-}
-.hazard--top {
-  margin-bottom: 120px; /* tuck neatly */
-}
-.hazard--bottom {
-  margin-top: -10px;
-  transform: rotate(180deg);
+  top: 40%;
+  left: 10%;
+  color: #fff;
+  max-width: 600px;
 }
 
-/* content */
-.hero__content {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 60px 20px;
-  color: #111;
+.title {
+  font-size: clamp(32px, 5vw, 64px);
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #fff;
 }
-.sign {
-  width: 160px;
-  flex-shrink: 0;
+
+.subtitle {
+  font-size: clamp(16px, 2vw, 24px);
+  margin-bottom: 1.5rem;
+  color: #f1f1f1;
 }
-.text h1 {
-  font-size: 2.2rem;
-  font-weight: 900;
-  margin-bottom: 12px;
-}
-.text p {
-  font-size: 1rem;
-  line-height: 1.5;
-  margin-bottom: 20px;
+
+.btn {
+  display: inline-block;
+  padding: 12px 28px;
+  border: 2px solid #fff;
+  color: #fff;
   font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.btn:hover {
+  background: #f15a24;
+  border-color: #f15a24;
 }
 
-/* button */
-.btn-primary {
-  background: #111;
-  color: #f6b300;
-  padding: 10px 24px;
-  border: none;
-  border-radius: 20px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.btn-primary:hover {
-  background: #222;
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* responsive */
-@media (max-width: 768px) {
-  .hero__content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .sign {
-    width: 120px;
-  }
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fadeInUp 1s ease forwards;
+}
+.delay-1 {
+  animation-delay: 0.4s;
+}
+.delay-2 {
+  animation-delay: 0.8s;
 }
 </style>
-<script setup lang="ts">
-</script>
