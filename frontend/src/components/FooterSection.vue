@@ -10,11 +10,6 @@
         </a>
       </div>
 
-      <nav class="footer__top-links">
-        <a class="link" href="#">Setting &amp; Privacy</a>
-        <a class="link" href="#">Terms of Use</a>
-        <a class="link" href="#">Site Map</a>
-      </nav>
 
       <div class="brand-plate">
         <div class="brand-plate__logo">🛡️</div>
@@ -29,15 +24,6 @@
   <!-- Main dotted footer -->
   <footer class="footer">
     <div class="container footer__grid">
-      <!-- Column 1: brand blurb -->
-      <div class="footer__brand">
-        <h3 class="footer__title">About Company</h3>
-        <p class="footer__blurb">
-          Helping planners make informed decisions with statistics, visuals and insights – for safer roads and neighbourhood.
-        </p>
-        <a class="footer__cta" href="#">Continue Reading</a>
-      </div>
-
       <!-- Column 2: Explore -->
       <nav class="footer__col">
         <h4 class="footer__title">Quick Links</h4>
@@ -50,36 +36,6 @@
         </ul>
       </nav>
 
-      <!-- Column 3: Latest News (placeholder) -->
-      <div class="footer__col">
-        <h4 class="footer__title">Latest News</h4>
-        <ul class="news">
-          <li class="news__item">
-            <div class="news__media"></div>
-            <div class="news__body">
-              <a href="#" class="news__title">Making Distributed Product Teams Work More Eff…</a>
-              <span class="news__meta">25 Sep 2019</span>
-            </div>
-          </li>
-          <li class="news__item">
-            <div class="news__media"></div>
-            <div class="news__body">
-              <a href="#" class="news__title">Complete Anatomy of the Gutenberg WordPress Editor</a>
-              <span class="news__meta">25 Sep 2019</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Column 4: Contact -->
-      <div class="footer__col">
-        <h4 class="footer__title">Contact Us</h4>
-        <ul class="footer__contact">
-          <li>Melbourne, AU</li>
-          <li><a href="mailto:hello@safetrek.dev">hello@safetrek.dev</a></li>
-          <li><a href="tel:+0000000000">+00 0000 0000</a></li>
-        </ul>
-      </div>
     </div>
 
     <div class="footer__copy">
