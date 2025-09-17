@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 import mapboxgl from 'mapbox-gl'
-import "mapbox-gl/dist/mapbox-gl.css"
+import 'mapbox-gl-css'
 
 // ---------- API & Mapbox ----------
 const API = import.meta.env.VITE_API_BASE ?? '/api'

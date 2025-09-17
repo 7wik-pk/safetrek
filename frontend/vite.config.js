@@ -6,13 +6,17 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  optimizeDeps: {
+    include: ['mapbox-gl']
+  },
   plugins: [
     vue(),
     vueDevTools(),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      'mapbox-gl-css': 'mapbox-gl/dist/mapbox-gl.css'
     },
   },
   build: {

@@ -5,7 +5,7 @@ import signUrl from './assets/images/roadwork.png'
 import Navbar from './components/Navbar.vue'
 import MenuOverlay from './components/MenuOverlay.vue'
 import HomeView from "@/views/HomeView.vue";
-import 'mapbox-gl/dist/mapbox-gl.css'
+import 'mapbox-gl-css'
 
 const loading = ref(true)
 const progress = ref(0)
