@@ -1,0 +1,75 @@
+services:
+  postgis:
+    build:
+      context: ./data
+    container_name: strek-db
+    shm_size: '256mb'
+    environment:
+      POSTGRES_DB: strek
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - ./data:/data
+      - pgdata:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    restart: always
+
+  backend:
+    build:
+      context: ./backend
+    container_name: safetrek-api
+    expose:
+      - "8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgis
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: safetrek-web
+    expose:
+      - "80"
+    environment:
+      - VIRTUAL_HOST=${DOMAIN}
+      - LETSENCRYPT_HOST=${DOMAIN}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    depends_on:
+      - backend
+    restart: always
+  
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: safetrek-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/usr/share/nginx/html
+    environment:
+      - DEFAULT_HOST=${DOMAIN}
+    restart: always
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: safetrek-certbot
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/usr/share/nginx/html
+    environment:
+      - NGINX_PROXY_CONTAINER=safetrek-proxy
+    restart: always
+
+volumes:
+  pgdata:
