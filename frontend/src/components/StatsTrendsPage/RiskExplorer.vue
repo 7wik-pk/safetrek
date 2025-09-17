@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import {ref, onMounted, watch, computed, nextTick} from 'vue'
 import mapboxgl from 'mapbox-gl'
 import "mapbox-gl/dist/mapbox-gl.css"
 
@@ -42,6 +42,7 @@ function wktToGeoJSON(wkt) {
 const mapEl = ref(null)
 const map = ref(null)
 const isReady = ref(false)
+let ro = null
 
 const filterAreaLevel = ref('sa4') // 'sa2' | 'sa3' | 'sa4'
 const filterAreaName  = ref('')
@@ -107,11 +108,11 @@ const DENSITY_STOPS = [
 const COUNT_STOPS = [
   { t: 0,   color: '#f1eef6' },
   { t: 10,  color: '#d0d1e6' },
-  { t: 25,  color: '#a6bddb' },
-  { t: 50,  color: '#74a9cf' },
-  { t: 75,  color: '#3690c0' },
-  { t: 100, color: '#0570b0' },
-  { t: 150, color: '#034e7b' },
+  { t: 25,  color: '#aa4a56' },
+  { t: 50,  color: '#7d0088' },
+  { t: 75,  color: '#7a003d' },
+  { t: 100, color: '#510030' },
+  { t: 150, color: '#290000' },
 ]
 const stopsForMetric = (m) => (m === 'density' ? DENSITY_STOPS : COUNT_STOPS)
 
@@ -237,6 +238,7 @@ async function refresh() {
 
 // ---------- Lifecycle ----------
 onMounted(async () => {
+  await nextTick();
   map.value = new mapboxgl.Map({
     container: mapEl.value,
     style: 'mapbox://styles/mapbox/light-v11',
@@ -250,6 +252,13 @@ onMounted(async () => {
     isReady.value = true
     await loadNamesForLevel()
     await refresh()
+
+    requestAnimationFrame(() => map.value && map.value.resize())
+
+    if (window.ResizeObserver && mapEl.value) {
+           ro = new ResizeObserver(() => map.value && map.value.resize())
+             ro.observe(mapEl.value)
+    }
 
     map.value.on('mousemove', 'acc-polys-fill', (e) => {
       map.value.getCanvas().style.cursor = 'pointer'
@@ -362,4 +371,27 @@ input, select { padding: 8px 10px; border: 1px solid #ccc; border-radius: 8px; }
 .legend-title { font-weight: 700; margin-bottom: 6px; }
 .legend-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
 .swatch { width: 16px; height: 10px; border-radius: 2px; display: inline-block; }
+
+.row label {
+  justify-self: start;        /* keep to the content width */
+  width: max-content;         /* compact cell */
+}
+
+
+label select,
+label input[type="date"],
+label input[type="text"] {
+  width: 200px;               /* tweak to taste (e.g. 220–280px) */
+  max-width: 100%;            /* allow shrinking on small screens */
+}
+
+
+@media (max-width: 640px) {
+  label select,
+  label input[type="date"],
+  label input[type="text"] {
+    width: 100%;
+  }
+}
+
 </style>

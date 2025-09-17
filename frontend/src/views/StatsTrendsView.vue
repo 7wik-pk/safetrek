@@ -1,10 +1,10 @@
 <template>
   <div class="homepage">
     <HeroSection />
-    <accident-stats/>
-    <TrendCharts/>
-    <ForecastView/>
-    <RiskExplorer/>
+   <!-- <accident-stats/> -->
+   <!-- <TrendCharts/>-->
+   <!-- <ForecastView/>-->
+   <!-- <RiskExplorer/>-->
     <FooterSection/>
   </div>
 </template>

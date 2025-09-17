@@ -160,9 +160,6 @@
       </div>
     </div>
   </section>
-  <div class="hazard hazard--bottom">
-    <img src="../../assets/images/hazard-stripes.svg" alt="" />
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -747,4 +744,140 @@ tbody tr:last-child td{
   margin-top: -10px;
   transform: rotate(180deg);
 }
+/* --- Datepicker theming (works with @vuepic/vue-datepicker or vue3-datepicker) --- */
+
+/* Shell already looks good; make it interactive on focus */
+.date-input {
+  position: relative;
+  padding: 0;           /* let the inner input control vertical rhythm */
+  height: 44px;         /* consistent with other fields */
+  display: flex;
+  align-items: center;
+}
+.date-input:focus-within {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(0, 71, 225, 0.2);
+  background-color: #fff;
+}
+
+/* Inner input (hit common classnames via :deep) */
+.date-input :deep(input),
+.date-input :deep(.dp__input),
+.date-input :deep(.v3dp__input) {
+  border: 0 !important;
+  outline: none !important;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  padding: 0 42px 0 16px;     /* left padding matches selects; right leaves space for icon */
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--charcoal);
+  box-shadow: none !important;
+}
+
+/* Wraps around the input in many libs */
+.date-input :deep(.dp__input_wrap),
+.date-input :deep(.v3dp__datepicker) {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* Hide default icons if present; we add our own */
+.date-input :deep(.dp__icon),
+.date-input :deep(.v3dp__clear-button),
+.date-input :deep(.v3dp__calendar-button) {
+  display: none !important;
+}
+
+/* Custom calendar icon aligned with your selects’ chevrons */
+.date-input::after{
+  content:"";
+  position:absolute;
+  right: 12px; top: 50%;
+  transform: translateY(-50%);
+  width: 18px; height: 18px;
+  opacity: .6;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  /* simple calendar glyph in your charcoal */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230f1419'%3E%3Cpath d='M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1Zm12 8H5v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9ZM19 6H5v2h14V6Z'/%3E%3C/svg%3E");
+}
+
+/* --- Popup / calendar panel --- */
+:deep(.dp__menu),
+:deep(.v3dp__calendar) {
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* Header (month/year + arrows) */
+:deep(.dp__month_year_select),
+:deep(.v3dp__heading) {
+  font-weight: 900;
+  color: var(--charcoal);
+}
+:deep(.dp__btn),
+:deep(.v3dp__nav-button) {
+  color: var(--charcoal);
+  opacity: .7;
+}
+:deep(.dp__btn:hover),
+:deep(.v3dp__nav-button:hover) {
+  opacity: 1;
+}
+
+/* Weekday row */
+:deep(.dp__calendar_header),
+:deep(.v3dp__weekdays) {
+  background: linear-gradient(#fffdfa, #fff7e1);
+  border-bottom: 1px solid var(--line-2);
+  font-weight: 800;
+  color: #151922;
+}
+
+/* Day cells */
+:deep(.dp__cell_inner),
+:deep(.v3dp__day) {
+  border-radius: 10px;
+}
+:deep(.dp__cell_inner:hover),
+:deep(.v3dp__day:hover) {
+  background: #eef3ff; /* subtle highlight */
+}
+
+/* Selected day */
+:deep(.dp__active_date),
+:deep(.dp__range_start),
+:deep(.dp__range_end),
+:deep(.v3dp__day--selected) {
+  background: var(--amber) !important;
+  color: #fff !important;
+}
+
+/* In-range (if range mode is ever enabled) */
+:deep(.dp__range_between) {
+  background: rgba(0,71,225,0.08) !important;
+}
+
+/* Disabled days */
+:deep(.dp__cell_disabled),
+:deep(.v3dp__day--disabled) {
+  color: #999 !important;
+  opacity: .55;
+}
+
+/* Error state harmonized with your inputs (optional helper class) */
+.date-input.is-invalid,
+.field.is-invalid .date-input {
+  border-color: #c81e1e;
+  box-shadow: 0 0 0 3px rgba(200, 30, 30, 0.15);
+}
+
 </style>

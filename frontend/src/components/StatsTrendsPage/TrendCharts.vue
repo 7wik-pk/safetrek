@@ -38,9 +38,6 @@
 
     <footer v-if="error" class="error">{{ error }}</footer>
   </section>
-  <div class="hazard hazard--bottom">
-    <img src="../../assets/images/hazard-stripes.svg" alt="" />
-  </div>
 </template>
 
 <script setup lang="ts">

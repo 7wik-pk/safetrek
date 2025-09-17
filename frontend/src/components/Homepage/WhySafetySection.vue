@@ -6,7 +6,7 @@ import "swiper/css/navigation"
 import { Navigation } from "swiper/modules"
 
 // images
-import whySafetyImage from "/images/bg1.jpg"
+import whySafetyImage from "/images/latest-projects/Building-Trades-373x373.jpg"
 import service1 from "/images/bg2.jpg"
 import service2 from "/images/bg3.jpg"
 </script>

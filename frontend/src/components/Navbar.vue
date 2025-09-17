@@ -15,7 +15,7 @@
     <!-- Desktop menu -->
     <ul class="nav__links">
       <li><router-link to="/" class="link" active-class="active">Home</router-link></li>
-      <li><router-link to="/about" class="link" active-class="active">Statistics & Trends</router-link></li>
+      <li><router-link to="/stats-trends" class="link" active-class="active">Statistics & Trends</router-link></li>
       <li><router-link to="/services" class="link" active-class="active">Crash Risk Explorer</router-link></li>
       <li><router-link to="/projects" class="link" active-class="active">Blackspot & Corridor</router-link></li>
       <li><router-link to="/contact" class="link" active-class="active">Equity & Vulnerability</router-link></li>

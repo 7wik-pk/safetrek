@@ -1,44 +1,68 @@
 <template>
-
   <section class="theme-wrap">
     <div class="theme-inner">
       <div class="header-row">
         <h2 class="title">Crash & Injury Forecast</h2>
-        <div class="controls">
 
-          <label class="field">
-            <span>From year</span>
-            <input type="number" v-model.number="yearFrom" min="2000" max="2100" />
-          </label>
+        <!-- Cards -->
+        <div class="cards">
+          <!-- Card 1: Time range -->
+          <div class="card">
+            <h3 class="card-title">Time range</h3>
+            <div class="fields">
+              <label class="field">
+                <span>From year</span>
+                <select v-model.number="yearFrom">
+                  <option disabled value="">Select year</option>
+                  <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
+                </select>
+              </label>
 
-          <label class="field">
-            <span>To year</span>
-            <input type="number" v-model.number="yearTo" :min="yearFrom" max="2100" />
-          </label>
+              <label class="field">
+                <span>To year</span>
+                <select v-model.number="yearTo">
+                  <option disabled value="">Select year</option>
+                  <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
+                </select>
+              </label>
 
-          <label class="field">
-            <span>Target year</span>
-            <input type="number" v-model.number="targetYear" :min="yearTo" max="2100" />
-          </label>
+              <label class="field">
+                <span>Target year</span>
+                <input type="number" v-model.number="targetYear" :min="yearTo" max="2100" />
+              </label>
+            </div>
+          </div>
 
-          <label class="field">
-            <span>Method</span>
-            <select v-model="method">
-              <option value="ols">Trend (OLS)</option>
-              <option value="mean">Average (Mean)</option>
-            </select>
-          </label>
+          <!-- Card 2: Options -->
+          <div class="card">
+            <h3 class="card-title">Forecast options</h3>
+            <div class="fields">
+              <label class="field">
+                <span>Method</span>
+                <select v-model="method">
+                  <option value="ols">Trend (OLS)</option>
+                  <option value="mean">Average (Mean)</option>
+                </select>
+              </label>
 
-          <button class="btn" :disabled="loading" @click="load">
-            {{ loading ? "Loading…" : "Refresh" }}
-          </button>
+              <div class="field action-slot">
+                <button class="btn" :disabled="loading" @click="load">
+                  {{ loading ? "Loading…" : "Refresh" }}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <p v-if="yearError" class="error">{{ yearError }}</p>
       </div>
 
       <!-- Chart -->
-      <div class="chart-box">
-        <Line v-if="chartData" :data="chartData" :options="chartOptions" />
-        <div v-else class="placeholder">Pick a range and press <b>Refresh</b>.</div>
+      <div class="chart-card">
+        <div class="chart-box">
+          <Line v-if="chartData" :data="chartData" :options="chartOptions" />
+          <div v-else class="placeholder">Pick a range and press <b>Refresh</b>.</div>
+        </div>
       </div>
 
       <div class="divider"></div>
@@ -73,9 +97,11 @@
       </div>
 
       <p v-if="error" class="error">{{ error }}</p>
+      <p v-if="yearError" class="error">{{ yearError }}</p>
     </div>
   </section>
 </template>
+
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
@@ -105,9 +131,33 @@ type ForecastPayload = {
   forecast: YearItem;
   model_info?: any;
 };
+const minYear = 2012
+const maxYear = 2024
+const yearFrom   = ref(2019);
+const yearTo     = ref(2024);
 
-const yearFrom   = ref<number>(2012);
-const yearTo     = ref<number>(2024);
+const years = computed(() => {
+  const a = []
+  for (let y = minYear; y <= maxYear; y++) a.push(y)
+  return a})
+
+// validation years
+const yearError = computed(() => {
+  if (yearFrom.value == null || yearTo.value == null) return ''
+
+  if (yearFrom.value < minYear || yearFrom.value > maxYear) {
+    return `“From year” must be between ${minYear} and ${maxYear}.`
+  }
+  if (yearTo.value < minYear || yearTo.value > maxYear) {
+    return `“To year” must be between ${minYear} and ${maxYear}.`
+  }
+  if (yearFrom.value > yearTo.value) {
+    return '“From year” cannot be after “To year”.'
+  }
+  return '' // valid
+})
+
+const isYearValid = computed(() => yearError.value === '')
 const targetYear = ref<number>(2028);
 const method     = ref<"ols" | "mean">("ols");
 
@@ -225,152 +275,176 @@ function fmt(n: number) {
 </script>
 
 <style scoped>
-/* Theme tokens */
-:root{
-  --amber: #e14f00;
-  --amber-soft: rgba(255, 0, 0, 0.15);
-  --black: #111111;
-  --muted: #5b6470;
-  --white: #0048e8;
-  --line: rgba(0,0,0,.12);
-  --radius: 12px;
-  --shadow: 0 8px 28px rgba(0,0,0,.12);
+/* Page shell */
+.theme-wrap {
+  background: #fff;
+}
+.theme-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px 22px 28px;
 }
 
-.theme-wrap{
-  max-width: 1200px;
-  margin: 22px auto 40px;
-  padding: 0 16px;
+/* Header */
+.header-row {
+  display: grid;
+  gap: 12px;
 }
-.theme-inner{
-  background: transparent;
+.title {
+  margin: 0;
+  font-size: clamp(22px, 3.2vw, 28px);
+  font-weight: 900;
+  color: #111;
 }
 
-.header-row{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+/* Card layout for control blocks */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
-.title{
+@media (max-width: 860px){
+  .cards { grid-template-columns: 1fr; }
+}
+
+/* Card */
+.card {
+  background: #fff;
+  border: 1px solid #ece7d5;
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(0,0,0,.06);
+  padding: 14px 14px 12px;
+}
+.card-title {
   margin: 0 0 8px;
-  font-weight: 900;
-  font-size: 32px;
-  color: var(--black);
-  letter-spacing: .3px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  color: #111;
 }
 
-.controls{
-  display:grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+/* Fields grid inside a card */
+.fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
   gap: 10px;
-  align-items:end;
-  min-width: 560px;
 }
-.field{ display:flex; flex-direction:column; gap:6px; }
-.field > span{ font-size:.9rem; font-weight:800; color:var(--black); }
-.field input, .field select{
-  height: 44px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background:white;
-  color: var(--black);
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+@media (max-width: 960px){
+  .fields { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px){
+  .fields { grid-template-columns: 1fr; }
 }
 
-.btn {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  background-color: #111111; /* solid black */
-  color: #f6b300;            /* gold text */
+.field {
+  display: grid;
+  gap: 6px;
+}
+.field > span {
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.2px;
+  color: #555;
+  letter-spacing: .02em;
+}
+select, input[type="number"] {
+  padding: 10px 12px;
+  border: 1px solid #d9d5c6;
+  border-radius: 10px;
+  background: #f6fbf7;                  /* soft light fill */
+  color: #222;
+  font-size: 14px;
+  line-height: 1;
+}
+select:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: #f0c24b;                /* brand gold-ish */
+  box-shadow: 0 0 0 3px rgba(246,179,0,.18);
+}
+
+/* Put the button at the bottom-right of the card */
+.action-slot {
+  display: grid;
+  align-content: end;
+  justify-content: end;
+}
+
+/* Primary action */
+.btn {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  background: linear-gradient(180deg, #f6b300, #c98600);
+  color: #111;
   cursor: pointer;
-  box-shadow: var(--shadow-soft, 0 2px 6px rgba(0,0,0,0.2));
-  transition: background-color 0.2s ease, transform 0.05s ease, filter 0.18s ease, opacity 0.15s ease;
+  box-shadow: 0 10px 20px rgba(0,0,0,.12);
+  transition: transform .12s ease, filter .2s ease;
+}
+.btn:hover { filter: brightness(1.03); transform: translateY(-1px); }
+.btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+/* Chart card for consistent look */
+.chart-card {
+  background: #fff;
+  border: 1px solid #ece7d5;
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(0,0,0,.06);
+  padding: 14px;
+  margin-top: 6px;
+}
+.chart-box { min-height: 320px; }
+.placeholder { color: #666; padding: 30px 6px; }
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: #efefef;
+  margin: 14px 0;
 }
 
-.btn:hover {
-  background-color: #1a1a1a; /* slightly lighter black for hover */
-  filter: brightness(1.2);   /* subtle glow */
+/* Table card */
+.table-card {
+  background: #fff;
+  border: 1px solid #ece7d5;
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(0,0,0,.06);
+  padding: 14px;
 }
-
-.btn:active {
-  transform: scale(0.98);
-  background-color: #1a1a1a; /* maintain hover color on click */
-  color: #f6b300;
+.table-card h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 800;
 }
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background-color: #111111; /* prevent transparency */
-  color: #999999;            /* muted text for disabled state */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
+thead th {
+  text-align: left;
+  color: #555;
+  font-weight: 700;
+  border-bottom: 1px solid #eee7d7;
+  padding: 8px 6px;
+}
+tbody td {
+  padding: 8px 6px;
+  border-bottom: 1px solid #f3f0e6;
+}
+tbody tr:last-child td { border-bottom: 0; }
+.num { text-align: right; }
+.forecast-row td { font-weight: 700; background: #fffdf3; }
 
-.chart-box{
-  height: 380px;
-  margin-top: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--amber-soft);
-  box-shadow: var(--shadow);
+/* Error */
+.error {
+  color: #7f1d1d;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
   padding: 8px 10px;
-}
-.placeholder{ padding: 18px; color: var(--muted); }
-
-.divider{
-  height: 14px;
-  margin: 14px 0 10px;
   border-radius: 8px;
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      #111 0 18px,
-      var(--amber) 18px 36px
-    );
-  opacity: .2;
-}
-
-/* Table */
-.table-card{
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 10px 10px 4px;
-}
-.table-card h3{
-  margin: 4px 6px 10px;
-  font-weight: 900;
-  color: var(--black);
-}
-table{ width:100%; border-collapse: collapse; }
-thead th{
-  background: #d89c00;
-  text-align:left;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--line);
-  font-weight: 900;
-  color: #151922;
-}
-tbody td{
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--line);
-  color: #1b2330;
-}
-tbody tr:last-child td{ border-bottom: 0; }
-.num{ text-align:right; }
-.forecast-row td{ background: #ff0000; font-weight: 800; }
-.error{ color:#c81e1e; font-weight:700; margin-top:10px; }
-
-@media (max-width: 980px){
-  .controls{
-    grid-template-columns: 1fr 1fr;
-  }
-  .btn{ grid-column: 1 / -1; }
+  margin-top: 8px;
 }
 </style>
+

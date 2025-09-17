@@ -1,148 +1,229 @@
+<script setup lang="ts">
+import { ref, onMounted, nextTick, onBeforeUnmount } from 'vue'
+
+// Your existing modules – unchanged
+import AccidentStats from './AccidentStats.vue'
+import RiskExplorer   from './RiskExplorer.vue'
+import TrendCharts    from './TrendCharts.vue'
+import ForecastView   from './ForecastView.vue'
+
+// order = the 4 “parts” you want to switch
+const tabs = [
+  { label: 'Accident Stats',        comp: AccidentStats },
+  { label: 'Crash Risk Explorer',   comp: RiskExplorer },
+  { label: 'Statistics & Trends',   comp: TrendCharts },
+  { label: 'Forecast View',         comp: ForecastView },
+]
+
+const active = ref(0)
+
+// refs for sliding ink
+const inkEl   = ref<HTMLElement | null>(null)
+const chipEls = ref<HTMLElement[]>([])
+
+// explicit setter for chip refs (more reliable than ref="chipEls" in v-for)
+function setChipEl(el: HTMLElement | null, i: number) {
+  if (el) chipEls.value[i] = el
+}
+
+function moveInkOnly(i: number) {
+  nextTick(() => {
+    const el = chipEls.value[i]
+    if (el && inkEl.value) {
+      inkEl.value.style.left  = `${el.offsetLeft}px`
+      inkEl.value.style.width = `${el.offsetWidth}px`
+    }
+  })
+}
+
+function moveInk(i: number) {
+  active.value = i
+  moveInkOnly(i)
+}
+
+function onResize() {
+  moveInkOnly(active.value)
+}
+
+onMounted(() => {
+  moveInkOnly(active.value)
+  window.addEventListener('resize', onResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize)
+})
+</script>
+
 <template>
-  <section class="hero">
-    <!-- hazard stripes -->
-    <div class="hazard hazard--top">
-      <img src="../../assets/images/hazard-stripes.svg" alt="" />
-    </div>
-
-    <!-- background + overlay -->
-    <div class="hero__bg">
-      <img src="@/assets/images/StatsTrendsPage/hero-image.jpg" alt="Background" />
-      <div class="overlay"></div>
-    </div>
-
-    <!-- content -->
-    <div class="hero__content">
-        <SplitText
-          text="Safer roads start with insights"
-          class-name="forecast-title"
-          :delay="100"
-          :duration="0.6"
-          ease="power3.out"
-          split-type="chars"
-          :from="{ opacity: 0, y: 40 }"
-          :to="{ opacity: 1, y: 0 }"
-          :threshold="0.1"
-          root-margin="-100px"
-          text-align="center"
-          @animation-complete="handleAnimationComplete"
-        />
-    </div>
-
-    <div class="hazard hazard--bottom">
-      <img src="../../assets/images/hazard-stripes.svg" alt="" />
+  <section class="analytics-hero">
+    <div class="overlay" />
+    <div class="container">
+      <div class="hero-inner">
+        <button class="back" @click="$router.back()">‹ Back</button>
+        <p class="eyebrow">ANALYTICS</p>
+        <h1 class="title">Explore insights across four lenses.</h1>
+        <p class="sub">Switch between modules using the chips below.</p>
+      </div>
     </div>
   </section>
 
+  <!-- Metric selector -->
+  <div class="container">
+    <div class="metrics">
+      <span ref="inkEl" class="ink"></span>
+      <button
+        v-for="(t, i) in tabs"
+        :key="t.label"
+        :ref="el => setChipEl(el as HTMLElement, i)"
+        class="chip"
+        :aria-selected="i === active"
+        @click="moveInk(i)"
+      >
+        {{ t.label }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Panels: keep all mounted, switch with v-show -->
+  <div class="content">
+    <div class="container panels">
+      <div class="panel" v-show="active === 0">
+        <AccidentStats />
+      </div>
+      <div class="panel" v-show="active === 1">
+        <RiskExplorer />
+      </div>
+      <div class="panel" v-show="active === 2">
+        <TrendCharts />
+      </div>
+      <div class="panel" v-show="active === 3">
+        <ForecastView />
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.hero {
+:root {
+  --gold: #f6b300;
+  --gold-2: #c98600;
+  --ink: #0b0b0b;
+}
+
+/* ---------- Hero (light) ---------- */
+.analytics-hero {
   position: relative;
-  overflow: hidden;
-  text-align: center;
+  min-height: 36vh;
+  display: grid;
+  align-items: end;
+  background: #fff;
+  color: #111;
+  border-bottom: 1px solid #ececec;
+}
+.analytics-hero .overlay {
+  position: absolute; inset: 0;
+  background: transparent;
 }
 
-/* background */
-.hero__bg {
-  position: absolute;
-  inset: 0;
-}
-.hero__bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.hero__bg .overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(246, 179, 0, 0.65); /* softer yellow */
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 22px;
 }
 
-/* hazard stripes */
-.hazard {
-  position: relative;
-  width: 100%;
-  z-index: 2;
-}
-.hazard img {
-  width: 100%;
-  height: 30px;
-  object-fit: cover;
-}
-.hazard--top {
-  margin-bottom: 120px; /* tuck neatly */
-}
-.hazard--bottom {
-  margin-top: -10px;
-  transform: rotate(180deg);
-}
-
-/* content */
-.hero__content {
+.hero-inner {
   position: relative;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  justify-content: center;
-  flex-direction: column;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 60px 20px;
-  color: #111;
+  padding: 28px 0 20px;
 }
 
-.text h1 {
-  font-size: 2.2rem;
-  font-weight: 900;
-  margin-bottom: 50px;
-  text-align: center;
-}
-.text p {
-  font-size: 1rem;
-  line-height: 1.5;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-/* button */
-.btn-primary {
-  background: #111;
-  color: #f6b300;
-  padding: 10px 24px;
-  border: none;
-  border-radius: 20px;
+.back {
+  appearance: none;
+  border: 0;
+  background: #f4f4f4;
+  color: #333;
   font-weight: 700;
+  padding: 9px 14px;
+  border-radius: 999px;
+  margin-bottom: 10px;
   cursor: pointer;
+  transition: background .2s ease, transform .1s ease;
 }
-.btn-primary:hover {
-  background: #222;
+.back:hover { background: #eaeaea; }
+.back:active { transform: translateY(1px); }
+
+.eyebrow {
+  margin: 0 0 4px;
+  letter-spacing: .08em;
+  font-weight: 800;
+  color: #777;
 }
 
-/* responsive */
-@media (max-width: 768px) {
-  .hero__content {
-    flex-direction: column;
-    text-align: center;
-  }
-  .sign {
-    width: 120px;
-  }
+.title {
+  margin: 0 0 6px;
+  font-size: clamp(22px, 3.4vw, 34px);
+  line-height: 1.15;
+  font-weight: 900;
 }
-.forecast-title {
-  font-size: 4rem;
-  font-weight: 700;
-  color: #000;
-  letter-spacing: 2px;
-  padding-bottom: 50px;
+.sub { margin: 0; color: #666; font-size: clamp(13px, 1.8vw, 16px); }
+
+/* ---------- Metric switcher ---------- */
+.metrics {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 14px auto 8px;
+  background: #fff;
+  border: 1px solid #ece7d5;
+  border-radius: 12px;
+  padding: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,.06);
 }
 
+.chip {
+  position: relative;
+  z-index: 1;
+  appearance: none;
+  border: 0;
+  height: 42px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: clamp(13px, 1.6vw, 15px);
+  letter-spacing: .02em;
+  color: #333;
+  background: transparent;
+  cursor: pointer;
+  transition: color .2s ease, transform .1s ease;
+}
+.chip[aria-selected="true"] { color: #111; }
+.chip:active { transform: translateY(1px); }
+
+/* sliding indicator */
+.ink {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  height: calc(100% - 16px);
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-2));
+  transition: left .25s ease, width .25s ease;
+  z-index: 0;
+  box-shadow: 0 8px 18px rgba(0,0,0,.18);
+}
+
+/* ---------- Panels ---------- */
+.content { background: #fff; padding: 14px 0 40px; }
+.panels { position: relative; }
+.panel { /* let each module control its own height */ }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 820px){
+  .metrics { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px){
+  .metrics { grid-template-columns: 1fr; }
+}
 </style>
-<script setup lang="ts">
-import SplitText from "@/assets/VueAnimation/SplitText .vue";
-
-const handleAnimationComplete = () => {
-  console.log('All letters have animated!');
-};
-</script>
