@@ -21,7 +21,8 @@ const WEATHER = ['clear','dust','fog','not known','raining','smoke','snowing','s
 const ROAD_TYPES = [
   'major','suburban','rural_and_low_traffic','infrastructure','commerical_and_civic','pedestrian_and_recreational_paths'
 ]
-const ORDER_BY_OPTS = ['accident_count','accident_density_per_km']
+const ORDER_BY_OPTS = {'accident_count' : "Accident Count", 'accident_density_per_km' : "Accident Density (/km)"}
+
 const MIN_ACCIDENTS_OPTIONS = [0,1,2,3,5,10]
 const MIN_LENGTH_OPTIONS   = [0.2,0.5,1,2,5]
 const LIMIT_OPTIONS        = [5,10,20,50,100]
@@ -50,8 +51,8 @@ const atmosph_cond_desc = ref('')
 const min_accidents_per_road = ref(0)
 const min_road_length_km = ref(0.2)
 const order_by = ref('accident_density_per_km')
-// REMOVED order_desc control; always ascending
-const limit = ref(50)
+const order_descending = ref(true)
+const limit = ref(10)
 
 /* ---------- UI ---------- */
 const loading = ref(false)
@@ -84,7 +85,7 @@ function buildBody () {
     sa_name : sa_name.value,
     road_type: road_type.value,
     order_by: order_by.value,
-    order_desc: false,              // always ascending
+    order_desc: order_descending.value,              // always descending
     limit: Number(limit.value)
   }
   const opt = {
@@ -130,7 +131,8 @@ async function clearForm() {
   min_accidents_per_road.value = 0
   min_road_length_km.value = 0.2
   order_by.value = 'accident_density_per_km'
-  limit.value = 50
+  order_descending.value = true
+  limit.value = 10
   rows.value = []
   errorMsg.value = ''
 }
@@ -171,9 +173,15 @@ watch(sa_level, loadSANames)
           <option v-for="t in ROAD_TYPES" :key="t" :value="t">{{ t }}</option>
         </select>
 
-        <label>Order by</label>
+        <label>Sort by</label>
         <select v-model="order_by">
-          <option v-for="o in ORDER_BY_OPTS" :key="o" :value="o">{{ o }}</option>
+          <option v-for="(label,o) in ORDER_BY_OPTS" :key="o" :value="o">{{ label }}</option>
+        </select>
+
+        <label>Sort direction</label>
+        <select v-model="order_descending">
+          <option :value="false">Safest First (Ascending)</option>
+          <option :value="true">Riskiest First (Descending)</option>
         </select>
 
         <label>Limit</label>
