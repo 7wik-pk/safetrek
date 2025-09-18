@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
-from pydantic import BaseModel, model_validator, conint
+from pydantic import BaseModel, Field, model_validator, conint
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Literal, Optional, List, Dict
-from datetime import date
+from datetime import date, time
 from fastapi.middleware.cors import CORSMiddleware
 
 import os
@@ -63,9 +63,6 @@ def validate_area_hierarchy(cls, values):
 
 # --- FastAPI app ---
 app = FastAPI()
-
-# allowed_origins = settings.allowed_origins or ["*"]
-allowed_origins = ["*"]  # temporary, to allow all origins
 
 app.add_middleware(
     CORSMiddleware,
@@ -197,6 +194,14 @@ def get_distinct_sa4(db: Session = Depends(get_db)):
         ORDER BY sa4_name21
     """)).fetchall()
     return [row[0] for row in result]
+
+@app.get('/max_accident_date', response_model=str)
+def get_max_accident_date(db: Session = Depends(get_db)):
+    result = db.execute(text("""
+        SELECT MAX(accident_date) FROM accident
+    """)).fetchone()
+    return result[0].isoformat() if result and result[0] else None
+
 # --- Yearly trend (accidents + serious injuries + injuries total) ---
 
 class YearlyTrendItem(BaseModel):
@@ -364,3 +369,149 @@ def forecast_yearly(
         forecast=forecast_row,
         model_info=model_info if method == "ols" else None
     )
+
+### Roads within a given SA2/SA3/SA4 area
+
+class RoadAccidentDensityRequest(BaseModel):
+    sa_level: Literal["sa2", "sa3"]  # required param
+    sa_name: str  # required - SA2/SA3 name
+
+    road_type: Literal[
+        "commerical_and_civic", "infrastructure", "major",
+        "pedestrian_and_recreational_paths", "rural_and_low_traffic", "suburban"
+    ] = "major"
+
+    date_from: Optional[date] = None
+    date_to: Optional[date] = None
+
+    time_from: Optional[time] = None
+    time_to: Optional[time] = None
+
+    severity: Optional[
+        Literal["fatal accident", "non injury accident", "other injury accident", "serious injury accident"]
+    ] = None
+
+    speed_zone: Optional[
+        Literal[
+            "100 km/hr", "110 km/hr", "30km/hr", "40 km/hr", "50 km/hr", "60 km/hr",
+            "70 km/hr", "75 km/hr", "80 km/hr", "90 km/hr", "camping grounds or off road"
+        ]
+    ] = None
+
+    age_group: Optional[str] = None
+    sex: Optional[Literal["M", "F", "U"]] = None
+    road_user_type_desc: Optional[
+        Literal[
+            "bicyclists", "drivers", "e-scooter rider", "motorcyclists", "not known",
+            "passengers", "pedestrians", "pillion passengers"
+        ]
+    ] = None
+
+    victims_hospitalised: Optional[Literal["y", "n"]] = None
+
+    atmosph_cond_desc: Optional[
+        Literal["clear", "dust", "fog", "not known", "raining", "smoke", "snowing", "strong winds"]
+    ] = None
+
+    min_accidents_per_road: Optional[int] = None
+    min_road_length_km: Optional[float] = 0.2
+
+    order_by: Literal["accident_count", "accident_density_per_km"] = "accident_density_per_km"
+    order_desc: bool = True
+
+    limit: conint(ge=1, le=100) = 5
+
+    @model_validator(mode="before")
+    def set_default_dates(cls, values):
+        road_type = values.get("road_type", "major")
+        if not values.get("date_from"):
+            values["date_from"] = date(2023, 1, 1) if road_type == "major" else date(2020, 1, 1)
+        if not values.get("date_to"):
+            values["date_to"] = date(2024, 12, 31)
+        return values
+
+@app.post("/road_accident_density")
+def get_road_accident_density(req: RoadAccidentDensityRequest, db: Session = Depends(get_db)):
+    
+    sa_column = {
+        "sa2": "sa2_name21",
+        "sa3": "sa3_name21",
+        # "sa4": "sa4_name21"
+    }[req.sa_level]
+
+    filters = [
+        f"lower(mbv.{sa_column}) = lower(:sa_name)",
+        "h_road_type = :road_type",
+        "accident_date BETWEEN :date_from AND :date_to"
+    ]
+
+    if req.time_from and req.time_to:
+        filters.append("a.accident_time BETWEEN :time_from AND :time_to")
+    if req.severity:
+        filters.append("lower(a.severity) = lower(:severity)")
+    if req.speed_zone:
+        filters.append("lower(a.speed_zone) = lower(:speed_zone)")
+    if req.age_group:
+        filters.append("p.age_group = :age_group")
+    if req.sex:
+        filters.append("p.sex = :sex")
+    if req.road_user_type_desc:
+        filters.append("lower(p.road_user_type_desc) = lower(:road_user_type_desc)")
+    if req.victims_hospitalised:
+        filters.append("lower(p.taken_hospital) = :victims_hospitalised")
+    if req.atmosph_cond_desc:
+        filters.append("lower(ac.atmosph_cond_desc) = lower(:atmosph_cond_desc)")
+
+    having_clause = []
+    if req.min_accidents_per_road:
+        having_clause.append("COUNT(*) > :min_accidents_per_road")
+    if req.min_road_length_km is not None:
+        having_clause.append("st_length(r.geom::geography)/1000 > :min_road_length_km")
+
+    sql = text(f"""
+        WITH sax AS (
+            SELECT ST_Union(mbv.geom) AS geom
+            FROM mesh_block_vic_21 mbv
+            WHERE {filters[0]}
+        ),
+        roads_in_sax AS (
+            SELECT ST_Union(vr.geom) AS geom, vr.ezirdnmlbl AS road_name
+            FROM vicmap_road vr, sax
+            WHERE ST_Intersects(vr.geom, sax.geom)
+              AND {filters[1]}
+            GROUP BY road_name
+        ),
+        accidents_in_sax AS (
+            SELECT a.geom
+            FROM accident a
+            JOIN person p ON a.accident_no = p.accident_no
+            JOIN accident_conditions ac ON a.accident_no = ac.accident_no,
+            sax
+            WHERE ST_Intersects(a.geom, sax.geom)
+              AND {filters[2]}
+              {"AND " + " AND ".join(filters[3:]) if len(filters) > 3 else ""}
+        )
+        SELECT
+            r.road_name,
+            ST_AsText(ST_Union(a.geom)::geography) AS acc_geom_union,
+            ST_AsText(r.geom::geography) AS road_geom,
+            COUNT(*) AS accident_count,
+            ST_Length(r.geom::geography)/1000 AS road_length_km,
+            COUNT(*)/(ST_Length(r.geom::geography)/1000) AS accident_density_per_km
+        FROM accidents_in_sax a
+        JOIN LATERAL (
+            SELECT road_name, rm.geom
+            FROM roads_in_sax rm
+            ORDER BY rm.geom <-> a.geom
+            LIMIT 1
+        ) r ON true
+        WHERE ST_DWithin(a.geom::geography, r.geom::geography, 5)
+        GROUP BY r.road_name, r.geom
+        {"HAVING " + " AND ".join(having_clause) if having_clause else ""}
+        ORDER BY {req.order_by} {"DESC" if req.order_desc else "ASC"}
+        LIMIT :limit
+    """)
+
+    params = req.model_dump()
+    result = db.execute(sql, params).fetchall()
+    return [dict(row._mapping) for row in result]

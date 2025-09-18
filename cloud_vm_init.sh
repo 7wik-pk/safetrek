@@ -24,5 +24,5 @@ newgrp docker
 
 chmod 777 ./cloud_deploy.sh
 
-rm docker-compose.yml
-mv docker-compose-cloud.yml docker-compose.yml
+# rm docker-compose.yml
+# mv docker-compose-cloud.yml docker-compose.yml
