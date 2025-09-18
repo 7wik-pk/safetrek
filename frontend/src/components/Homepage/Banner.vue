@@ -1,18 +1,14 @@
 <script setup>
-import ctaBg from "/img/bg/choose-02.jpg"
+import ctaBg from '/img/bg/choose-02.jpg'
 </script>
 
 <template>
-  <section
-    class="cta-section"
-    :style="{ backgroundImage: `url(${ctaBg})` }"
-  >
+  <section class="cta-section" :style="{ backgroundImage: `url(${ctaBg})` }">
     <div class="cta-overlay"></div>
     <div class="cta-container">
       <div class="cta-text">
         <span class="cta-subtitle">TURN DATA INTO ACTION</span>
-        <h2>Quality & Integrity Across Disciplines
-        </h2>
+        <h2>Quality & Integrity Across Disciplines</h2>
         <p>
           Discover how SafeTrek's comprehensive data platform serves diverse professional needs.
         </p>
@@ -74,25 +70,28 @@ import ctaBg from "/img/bg/choose-02.jpg"
   font-size: 1rem;
   line-height: 1.6;
   max-width: 620px;
-}.cta-btn {
-   position: relative;
-   padding: 14px 32px;
-   background: #f6b300;     /* base yellow */
-   color: #111;
-   border: none;
-   border-radius: 4px;
-   font-weight: 800;
-   font-size: 1rem;
-   cursor: pointer;
-   overflow: hidden;        /* keep fill inside button */
-   isolation: isolate;      /* new stacking context */
-   transition: color .35s ease, transform .2s ease;
-   will-change: transform;
- }
+}
+.cta-btn {
+  position: relative;
+  padding: 14px 32px;
+  background: #f6b300; /* base yellow */
+  color: #111;
+  border: none;
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  overflow: hidden; /* keep fill inside button */
+  isolation: isolate; /* new stacking context */
+  transition:
+    color 0.35s ease,
+    transform 0.2s ease;
+  will-change: transform;
+}
 
 /* small white dot (starts bottom-right, but centered for expansion) */
 .cta-btn::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 50%;
   top: 50%;
@@ -103,14 +102,14 @@ import ctaBg from "/img/bg/choose-02.jpg"
   z-index: -1;
   transform: translate(-50%, -50%) scale(0.05); /* tiny dot in center */
   transform-origin: center;
-  transition: transform .45s cubic-bezier(.22, .61, .36, 1);
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
   will-change: transform;
 }
 
 /* hover/focus expands the white circle to cover button */
 .cta-btn:hover,
 .cta-btn:focus-visible {
-  color: #111;  /* still dark text */
+  color: #111; /* still dark text */
   transform: translateY(-2px);
 }
 

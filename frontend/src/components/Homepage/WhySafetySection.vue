@@ -1,14 +1,14 @@
 <script setup>
-import { Swiper, SwiperSlide } from "swiper/vue"
-import "swiper/css"
-import "swiper/css/navigation"
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'swiper/css'
+import 'swiper/css/navigation'
 
-import { Navigation } from "swiper/modules"
+import { Navigation } from 'swiper/modules'
 
 // images
-import whySafetyImage from "/images/latest-projects/Building-Trades-373x373.jpg"
-import service1 from "/images/bg2.jpg"
-import service2 from "/images/bg3.jpg"
+import whySafetyImage from '/images/latest-projects/Building-Trades-373x373.jpg'
+import service1 from '/images/bg2.jpg'
+import service2 from '/images/bg3.jpg'
 </script>
 
 <template>
@@ -29,9 +29,9 @@ import service2 from "/images/bg3.jpg"
           <div class="slide-card">
             <h3>Why Safety First?</h3>
             <p>
-              Safety is the foundation of thriving communities and sustainable cities.
-              Every road crash not only impacts individuals and families but also
-              places a burden on health systems and economies.
+              Safety is the foundation of thriving communities and sustainable cities. Every road
+              crash not only impacts individuals and families but also places a burden on health
+              systems and economies.
             </p>
           </div>
         </div>
@@ -44,7 +44,8 @@ import service2 from "/images/bg3.jpg"
           <div class="slide-card">
             <h3>Promote equitable and safer communities</h3>
             <p>
-              Ensure interventions protect the most vulnerable road users and support sustainable urban growth.
+              Ensure interventions protect the most vulnerable road users and support sustainable
+              urban growth.
             </p>
           </div>
         </div>
@@ -57,7 +58,8 @@ import service2 from "/images/bg3.jpg"
           <div class="slide-card">
             <h3>Empower evidence-based decisions</h3>
             <p>
-              Equip planners and policymakers with tools to identify risks and design proactive safety measures.
+              Equip planners and policymakers with tools to identify risks and design proactive
+              safety measures.
             </p>
           </div>
         </div>
@@ -83,7 +85,7 @@ import service2 from "/images/bg3.jpg"
 
 /* ---- Swiper frame ---- */
 .services-swiper {
-  padding-inline: 70px;              /* space for arrows */
+  padding-inline: 70px; /* space for arrows */
   --slide-h: 520px;
 }
 
@@ -107,19 +109,19 @@ import service2 from "/images/bg3.jpg"
   height: var(--slide-h);
   margin: 0 auto;
   overflow: visible; /* allow image/card overflow */
-  box-shadow: 0 12px 38px rgba(0,0,0,.18);
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.18);
 }
 
 /* Image fills stage and bleeds past edges */
 .slide-image {
   position: absolute;
   inset: 0;
-  width: 112%;          /* wider than container */
+  width: 112%; /* wider than container */
   height: 100%;
-  left: -6%;            /* center the bleed */
+  left: -6%; /* center the bleed */
   object-fit: cover;
   display: block;
-  box-shadow: 0 12px 36px rgba(0,0,0,.18);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
 }
 
 /* Yellow overlay card */
@@ -133,7 +135,7 @@ import service2 from "/images/bg3.jpg"
   background: #f6b300;
   border-radius: 6px;
   padding: 28px 32px;
-  box-shadow: 0 10px 28px rgba(0,0,0,.25);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
   z-index: 2;
 }
 
@@ -162,9 +164,14 @@ import service2 from "/images/bg3.jpg"
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: transform .15s ease, background .2s ease;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease;
 }
-.btn:hover { background: #2c2c2c; transform: translateY(-1px); }
+.btn:hover {
+  background: #2c2c2c;
+  transform: translateY(-1px);
+}
 
 /* small square accent like ref */
 .btn::after {
@@ -184,7 +191,7 @@ import service2 from "/images/bg3.jpg"
   height: 56px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 10px 24px rgba(0,0,0,.15);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
 }
 .services-swiper :deep(.swiper-button-prev:after),
 .services-swiper :deep(.swiper-button-next:after) {
@@ -195,14 +202,18 @@ import service2 from "/images/bg3.jpg"
 
 /* ---- Responsive ---- */
 @media (max-width: 980px) {
-  .services-swiper { padding-inline: 0; }
-  .slide-content { height: 420px; }
+  .services-swiper {
+    padding-inline: 0;
+  }
+  .slide-content {
+    height: 420px;
+  }
   .slide-card {
     position: static;
     transform: none;
     width: auto;
     margin: 14px 16px 0;
-    box-shadow: 0 6px 18px rgba(0,0,0,.18);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
   }
   .services-swiper :deep(.swiper-button-prev),
   .services-swiper :deep(.swiper-button-next) {
@@ -211,8 +222,8 @@ import service2 from "/images/bg3.jpg"
 }
 
 @media (max-width: 600px) {
-  .slide-content { height: 360px; }
+  .slide-content {
+    height: 360px;
+  }
 }
-
 </style>
-

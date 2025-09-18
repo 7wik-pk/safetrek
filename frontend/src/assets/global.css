@@ -1,6 +1,9 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
 }
-body { overflow-x: hidden; } /* prevent any horizontal scroll */
+body {
+  overflow-x: hidden;
+} /* prevent any horizontal scroll */

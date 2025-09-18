@@ -18,7 +18,9 @@
           <div class="caption">
             <h2 class="title animate-fade-in-up">Identify Risky Areas</h2>
             <p class="subtitle animate-fade-in-up delay-1">Find out more</p>
-            <router-link to="stats-trends" class="btn animate-fade-in-up delay-2">Explore Statistics & Insights</router-link>
+            <router-link to="stats-trends" class="btn animate-fade-in-up delay-2"
+              >Explore Statistics & Insights</router-link
+            >
           </div>
         </div>
       </SwiperSlide>
@@ -33,7 +35,9 @@
             <p class="subtitle animate-fade-in-up delay-1">
               Helping planners make informed decisions with statistics, visuals and insights
             </p>
-            <router-link to="stats-trends" class="btn animate-fade-in-up delay-2">Explore Statistics & Insights</router-link>
+            <router-link to="stats-trends" class="btn animate-fade-in-up delay-2"
+              >Explore Statistics & Insights</router-link
+            >
           </div>
         </div>
       </SwiperSlide>
@@ -46,9 +50,11 @@
           <div class="caption">
             <h2 class="title animate-fade-in-up">Crash data</h2>
             <p class="subtitle animate-fade-in-up delay-1">
-               With Demographics, vehicle type, weather, and road conditions
+              With Demographics, vehicle type, weather, and road conditions
             </p>
-            <router-link to="stats-trends" class="btn animate-fade-in-up delay-2">Explore Statistics & Insights</router-link>
+            <router-link to="stats-trends" class="btn animate-fade-in-up delay-2"
+              >Explore Statistics & Insights</router-link
+            >
           </div>
         </div>
       </SwiperSlide>

@@ -1,13 +1,7 @@
 <template>
   <teleport to="body">
     <transition name="fade">
-      <div
-        v-show="open"
-        class="overlay"
-        role="dialog"
-        aria-modal="true"
-        @click="emit('close')"
-      >
+      <div v-show="open" class="overlay" role="dialog" aria-modal="true" @click="emit('close')">
         <div class="panel" @click.stop>
           <div class="panel__header">
             <span class="panel__title">Menu</span>
@@ -28,7 +22,7 @@
 
 <script setup>
 const props = defineProps({
-  open: { type: Boolean, default: false }
+  open: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['close'])
@@ -50,9 +44,9 @@ const emit = defineEmits(['close'])
   background: #111;
   color: #fff4c0;
   border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   padding: 16px;
-  border: 1px solid rgba(255,255,255,.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .panel__header {
@@ -62,7 +56,10 @@ const emit = defineEmits(['close'])
   margin-bottom: 12px;
 }
 
-.panel__title { font-weight: 800; letter-spacing: .02em; }
+.panel__title {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
 
 .close {
   appearance: none;
@@ -73,7 +70,11 @@ const emit = defineEmits(['close'])
   cursor: pointer;
 }
 
-.links { display: grid; gap: 10px; margin-top: 4px; }
+.links {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
 
 .link {
   display: block;
@@ -81,11 +82,19 @@ const emit = defineEmits(['close'])
   border-radius: 10px;
   text-decoration: none;
   color: #ffd05a;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.05);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
-.link:hover { background: rgba(255,255,255,.08); }
+.link:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
 
-.fade-enter-active, .fade-leave-active { transition: opacity .16s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.16s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>

@@ -7,10 +7,8 @@ import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import router from './router/index.js'
 import './styles/design-system.css'
+import 'leaflet/dist/leaflet.css'
 
-const appName = import.meta.env.VITE_APP_NAME;
+const appName = import.meta.env.VITE_APP_NAME
 
-createApp(App)
-.use(router)
-.provide('appName', appName)
-.mount('#app')
+createApp(App).use(router).provide('appName', appName).mount('#app')

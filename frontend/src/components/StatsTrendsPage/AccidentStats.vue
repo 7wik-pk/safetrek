@@ -7,26 +7,21 @@
         <!-- topbar across main column -->
         <div class="topbar">
           <label class="field">
-
             <span>Select region type</span>
             <select v-model="filterLevel">
               <option v-for="key in filterableLevels" :key="key" :value="key">
                 {{ levelMeta[key].label }}
               </option>
             </select>
-
           </label>
 
           <label class="field">
-
             <span :title="levelMeta[filterLevel].tooltip">
               {{ levelMeta[filterLevel].label }} name
             </span>
 
             <select v-model="filterAreaName">
-              <option disabled value="">
-                -- select {{ filterLevel.toUpperCase() }} --
-              </option>
+              <option disabled value="">-- select {{ filterLevel.toUpperCase() }} --</option>
               <option v-for="a in currentFilterOptions" :key="a" :value="a">
                 {{ a }}
               </option>
@@ -45,7 +40,6 @@
 
         <!-- sidebar left -->
         <aside class="sidebar">
-
           <h3 class="sidebar-title">Filters</h3>
 
           <label class="field">
@@ -58,7 +52,6 @@
                 :format="'yyyy-MM-dd'"
               />
             </div>
-
           </label>
 
           <label class="field">
@@ -71,7 +64,6 @@
                 :format="'yyyy-MM-dd'"
               />
             </div>
-
           </label>
 
           <p v-if="dateAdjusted" class="info-message">
@@ -101,21 +93,17 @@
           </label>
 
           <button class="btn" :disabled="!canQuery || loading" @click="fetchStats">
-            {{ loading ? "Loading..." : "Show Results" }}
+            {{ loading ? 'Loading...' : 'Show Results' }}
           </button>
         </aside>
 
         <!-- main results -->
         <main class="main">
-
           <!-- <div class="divider" /> -->
 
-          <div v-if="loading" class="loading">
-            <span class="spinner" /> Loading crash data...
-          </div>
+          <div v-if="loading" class="loading"><span class="spinner" /> Loading crash data...</div>
 
           <div v-else-if="results.length" class="results">
-
             <h3 v-if="lastUsedFilters.limit">
               Top {{ results.length }} by {{ lastUsedFilters.orderBy }}, Grouped by:
               <span :title="levelMeta[lastUsedFilters.groupLevel].tooltip">
@@ -125,20 +113,20 @@
 
             <table>
               <thead>
-              <tr>
-                <th>Area</th>
-                <th class="num">Crashes</th>
-                <th class="num">Area (km2)</th>
-                <th class="num">Density (/km2)</th>
-              </tr>
+                <tr>
+                  <th>Area</th>
+                  <th class="num">Crashes</th>
+                  <th class="num">Area (km2)</th>
+                  <th class="num">Density (/km2)</th>
+                </tr>
               </thead>
               <tbody>
-              <tr v-for="r in results" :key="r.sa_name">
-                <td>{{ r.sa_name }}</td>
-                <td class="num">{{ r.num_accs }}</td>
-                <td class="num">{{ fmt(r.geom_area_sq_km) }}</td>
-                <td class="num">{{ fmt(r.acc_per_sq_km) }}</td>
-              </tr>
+                <tr v-for="r in results" :key="r.sa_name">
+                  <td>{{ r.sa_name }}</td>
+                  <td class="num">{{ r.num_accs }}</td>
+                  <td class="num">{{ fmt(r.geom_area_sq_km) }}</td>
+                  <td class="num">{{ fmt(r.acc_per_sq_km) }}</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -151,7 +139,10 @@
             Select filters on the left and click <strong>Show Results</strong>.
           </div>
 
-          <p v-if="(lastUsedFilters.limit > results.length) && (results.length > 0)" class="placeholder">
+          <p
+            v-if="lastUsedFilters.limit > results.length && results.length > 0"
+            class="placeholder"
+          >
             Only {{ results.length }} regions found within {{ filterAreaName }}.
           </p>
 
@@ -163,128 +154,121 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
-import Datepicker from 'vue3-datepicker';
-import api from "@/lib/api";
+import { ref, computed, onMounted, watch } from 'vue'
+import Datepicker from 'vue3-datepicker'
+import api from '@/lib/api'
 
-const keyword = ref("");
-const filterLevel = ref<"sa4" | "sa3">("sa4");
-const groupLevel  = ref<"sa2" | "sa3">("sa2");
-const filterAreaName = ref("");
+const keyword = ref('')
+const filterLevel = ref<'sa4' | 'sa3'>('sa4')
+const groupLevel = ref<'sa2' | 'sa3'>('sa2')
+const filterAreaName = ref('')
 
 const levelLabels = {
   sa2: 'Suburb (SA2)',
   sa3: 'District (SA3)',
-  sa4: 'Regional Zone (SA4)'
+  sa4: 'Regional Zone (SA4)',
 }
 
 const levelMeta = {
   sa2: {
     label: 'Suburb (SA2)',
-    tooltip: 'Typically aligns with suburbs or small communities'
+    tooltip: 'Typically aligns with suburbs or small communities',
   },
   sa3: {
     label: 'District (SA3)',
-    tooltip: 'Groups multiple suburbs; may align with council or service regions'
+    tooltip: 'Groups multiple suburbs; may align with council or service regions',
   },
   sa4: {
     label: 'Regional Zone (SA4)',
-    tooltip: 'Large zones used for labor market and regional planning'
-  }
+    tooltip: 'Large zones used for labor market and regional planning',
+  },
 }
 
-const dateFrom = ref<Date | null>(new Date("2020-01-01"));
-const dateTo   = ref<Date | null>(new Date("2024-12-31"));
-const maxDate  = new Date("2024-12-31");
-const minDate  = new Date("2020-01-01");
-const orderBy  = ref<"count" | "density">("density");
-const orderDir = ref<"asc" | "desc">("desc");
-const limit    = ref<number>(5);
+const dateFrom = ref<Date | null>(new Date('2020-01-01'))
+const dateTo = ref<Date | null>(new Date('2024-12-31'))
+const maxDate = new Date('2024-12-31')
+const minDate = new Date('2020-01-01')
+const orderBy = ref<'count' | 'density'>('density')
+const orderDir = ref<'asc' | 'desc'>('desc')
+const limit = ref<number>(5)
 
 function formatDate(d: Date | null, human_readable: boolean = false): string | undefined {
-  if (!d) return undefined;
+  if (!d) return undefined
 
   return human_readable
-    ? d.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })
-    : d.toISOString().split("T")[0];
+    ? d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+    : d.toISOString().split('T')[0]
 }
 
 const lastUsedFilters = ref({
   limit: null,
   orderBy: '',
   groupLevel: '',
-});
+})
 
-const loading = ref(false);
-const error = ref("");
-const results = ref<any[]>([]);
+const loading = ref(false)
+const error = ref('')
+const results = ref<any[]>([])
 
-const sa4Options = ref<string[]>([]);
-const sa3Options = ref<string[]>([]);
+const sa4Options = ref<string[]>([])
+const sa3Options = ref<string[]>([])
 
-const emptyMessage = ref("");
+const emptyMessage = ref('')
 
 const sortOptions = computed(() => {
   if (orderBy.value === 'count') {
     return [
       { value: 'desc', label: 'Most accidents first' },
       { value: 'asc', label: 'Fewest accidents first' },
-    ];
+    ]
   } else if (orderBy.value === 'density') {
     return [
       { value: 'desc', label: 'Highest density (risky) first' },
       { value: 'asc', label: 'Lowest density (safe) first' },
-    ];
+    ]
   } else {
     return [
       { value: 'desc', label: 'Descending' },
       { value: 'asc', label: 'Ascending' },
-    ];
+    ]
   }
-});
+})
 
 const currentFilterOptions = computed(() =>
-  filterLevel.value === "sa4" ? sa4Options.value : sa3Options.value
-);
+  filterLevel.value === 'sa4' ? sa4Options.value : sa3Options.value,
+)
 
-const canQuery = computed(
-  () => !!filterAreaName.value && !!filterLevel.value && !!groupLevel.value
-);
+const canQuery = computed(() => !!filterAreaName.value && !!filterLevel.value && !!groupLevel.value)
 
-const filterableLevels = computed<("sa3" | "sa4")[]>(() => ['sa4', 'sa3'])
+const filterableLevels = computed<('sa3' | 'sa4')[]>(() => ['sa4', 'sa3'])
 
-const validGroupLevels = computed<("sa2" | "sa3")[]>(() => {
-  return filterLevel.value === 'sa4'
-    ? ['sa3', 'sa2']
-    : filterLevel.value === 'sa3'
-    ? ['sa2']
-    : []
+const validGroupLevels = computed<('sa2' | 'sa3')[]>(() => {
+  return filterLevel.value === 'sa4' ? ['sa3', 'sa2'] : filterLevel.value === 'sa3' ? ['sa2'] : []
 })
 
 onMounted(async () => {
   try {
     const [sa4, sa3] = await Promise.all([
-      api.get<string[]>("/distinct_sa4"),
-      api.get<string[]>("/distinct_sa3"),
-    ]);
-    sa4Options.value = sa4.data;
-    sa3Options.value = sa3.data;
+      api.get<string[]>('/distinct_sa4'),
+      api.get<string[]>('/distinct_sa3'),
+    ])
+    sa4Options.value = sa4.data
+    sa3Options.value = sa3.data
 
     // Set default area name based on initial filterLevel
-    if (filterLevel.value === "sa4" && sa4.data.length) {
-      filterAreaName.value = sa4.data[0];
-      await fetchStats();
-    } else if (filterLevel.value === "sa3" && sa3.data.length) {
-      filterAreaName.value = sa3.data[0];
+    if (filterLevel.value === 'sa4' && sa4.data.length) {
+      filterAreaName.value = sa4.data[0]
+      await fetchStats()
+    } else if (filterLevel.value === 'sa3' && sa3.data.length) {
+      filterAreaName.value = sa3.data[0]
     }
-
   } catch (e: any) {
-    error.value = e?.response?.data?.detail || e.message || "Failed to load area lists";
+    error.value = e?.response?.data?.detail || e.message || 'Failed to load area lists'
   }
-});
+})
 
 watch(filterLevel, (lvl) => {
-  filterAreaName.value = "";
+  filterAreaName.value = ''
 
   // Reset groupLevel to first valid option
   const valid = validGroupLevels.value
@@ -292,38 +276,38 @@ watch(filterLevel, (lvl) => {
     groupLevel.value = valid[0]
   }
 
-  if (lvl === "sa3") {
-    groupLevel.value = "sa2";
+  if (lvl === 'sa3') {
+    groupLevel.value = 'sa2'
     if (sa3Options.value.length) {
-      filterAreaName.value = sa3Options.value[0];
+      filterAreaName.value = sa3Options.value[0]
     }
   } else {
     if (sa4Options.value.length) {
-      filterAreaName.value = sa4Options.value[0];
+      filterAreaName.value = sa4Options.value[0]
     }
   }
-});
+})
 
-const dateAdjusted = ref(false);
+const dateAdjusted = ref(false)
 
 watch(dateFrom, (newFrom) => {
   if (newFrom && dateTo.value && newFrom > dateTo.value) {
-    dateTo.value = newFrom;
-    dateAdjusted.value = true;
+    dateTo.value = newFrom
+    dateAdjusted.value = true
   } else {
-    dateAdjusted.value = false;
+    dateAdjusted.value = false
   }
-});
+})
 
 function fmt(n: number) {
-  return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
+  return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 })
 }
 
 async function fetchStats() {
-  error.value = "";
-  results.value = [];
-  emptyMessage.value = "";
-  loading.value = true;
+  error.value = ''
+  results.value = []
+  emptyMessage.value = ''
+  loading.value = true
 
   try {
     const payload: any = {
@@ -333,72 +317,69 @@ async function fetchStats() {
       order_by: orderBy.value,
       order_dir: orderDir.value,
       limit: limit.value,
-    };
-
-    if (dateFrom.value) payload.date_from = formatDate(dateFrom.value);
-    if (dateTo.value)   payload.date_to   = formatDate(dateTo.value);
-
-    if (new Date(dateFrom.value) > new Date(dateTo.value)) {
-      error.value = "Start date cannot be after end date.";
-      loading.value = false;
-      return;
     }
 
-    const { data } = await api.post("/accident_stats", payload);
-    results.value = data;
+    if (dateFrom.value) payload.date_from = formatDate(dateFrom.value)
+    if (dateTo.value) payload.date_to = formatDate(dateTo.value)
+
+    if (new Date(dateFrom.value) > new Date(dateTo.value)) {
+      error.value = 'Start date cannot be after end date.'
+      loading.value = false
+      return
+    }
+
+    const { data } = await api.post('/accident_stats', payload)
+    results.value = data
 
     if (!data.length) {
+      results.value = []
+      const level = filterLevel.value.toUpperCase()
+      const name = filterAreaName.value
 
-      results.value = [];
-      const level = filterLevel.value.toUpperCase();
-      const name = filterAreaName.value;
-
-      emptyMessage.value = `No crash data was found for "${name}" between ${formatDate(dateFrom.value, true)} and ${formatDate(dateTo.value, true)}.\nOur system only stores data from ${formatDate(minDate, true)} to ${formatDate(maxDate, true)}.`;
-
+      emptyMessage.value = `No crash data was found for "${name}" between ${formatDate(dateFrom.value, true)} and ${formatDate(dateTo.value, true)}.\nOur system only stores data from ${formatDate(minDate, true)} to ${formatDate(maxDate, true)}.`
     } else {
-      results.value = data;
-      emptyMessage.value = '';
+      results.value = data
+      emptyMessage.value = ''
       lastUsedFilters.value = {
         limit: limit.value,
         orderBy: orderBy.value,
         groupLevel: groupLevel.value,
-      };
+      }
     }
-
   } catch (e: any) {
-    error.value = e?.response?.data?.detail || e.message || "Request failed";
+    error.value = e?.response?.data?.detail || e.message || 'Request failed'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 </script>
 
 <style scoped>
-:root{
-  --amber: #0047e1;         /* matches hero tint */
-  --amber-2: #000000;       /* lighter accent */
-  --charcoal: #0f1419;      /* near-black text */
-  --muted: #5b6470;         /* secondary text */
-  --panel: #ffffff;         /* cards */
-  --line: #ef0000;          /* borders */
-  --line-2:#cbd5e1;
+:root {
+  --amber: #0047e1; /* matches hero tint */
+  --amber-2: #000000; /* lighter accent */
+  --charcoal: #0f1419; /* near-black text */
+  --muted: #5b6470; /* secondary text */
+  --panel: #ffffff; /* cards */
+  --line: #ef0000; /* borders */
+  --line-2: #cbd5e1;
   --radius-lg: 14px;
   --radius: 10px;
-  --shadow: 0 12px 28px rgba(0,0,0,.12);
-  --shadow-soft: 0 2px 10px rgba(0,0,0,.06);
+  --shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 
 /* overall wrapper centers the white card */
-.acc-wrap{
+.acc-wrap {
   max-width: 1200px;
   margin: 22px auto 40px;
   padding: 0 16px;
 }
 
 /* white panel with soft shadow + rounded */
-.card{
+.card {
   background: var(--panel);
-  border: 1px solid rgba(15,20,25,.06);
+  border: 1px solid rgba(15, 20, 25, 0.06);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 22px 24px 26px;
@@ -420,7 +401,10 @@ async function fetchStats() {
   font-size: 0.95rem;
   font-weight: 600;
   /* box-shadow: var(--shadow-soft); */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
   appearance: none;
 }
 
@@ -443,18 +427,20 @@ async function fetchStats() {
 }
 
 /* title: bold + subtle amber underline */
-.title{
+.title {
   margin: 0 0 16px;
   font-size: 28px;
   font-weight: 900;
   color: var(--charcoal);
   position: relative;
 }
-.title::after{
-  content:"";
-  position:absolute;
-  left:0; bottom:-8px;
-  width:88px; height:4px;
+.title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 88px;
+  height: 4px;
   background: linear-gradient(90deg, var(--amber), transparent);
   border-radius: 2px;
 }
@@ -519,10 +505,16 @@ async function fetchStats() {
 }
 
 /* inputs */
-.field{ display:flex; flex-direction:column; gap:6px; }
-.field > span{
-  font-size:.9rem; font-weight:800; color:var(--charcoal);
-  letter-spacing:.1px;
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field > span {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--charcoal);
+  letter-spacing: 0.1px;
 }
 
 .field select,
@@ -535,7 +527,10 @@ async function fetchStats() {
   font-size: 0.95rem;
   font-weight: 600;
   box-shadow: var(--shadow-soft);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' fill='%230f1419' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.584l3.71-4.354a.75.75 0 111.14.976l-4.25 5a.75.75 0 01-1.14 0l-4.25-5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -572,26 +567,21 @@ async function fetchStats() {
 }
 
 /* keyword field */
-.keyword input{
-  width:100%;
-  padding:12px 14px;
-  border:1px solid var(--line-2);
+.keyword input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line-2);
   border-radius: 12px;
   box-shadow: var(--shadow-soft);
 }
 
 /* hazard-style divider between filters and table */
-.divider{
+.divider {
   height: 10px;
   width: 100%;
   border-radius: 6px;
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      #111 0 16px,
-      var(--amber) 16px 32px
-    );
-  opacity: .15;
+  background: repeating-linear-gradient(-45deg, #111 0 16px, var(--amber) 16px 32px);
+  opacity: 0.15;
 }
 
 /* primary action button (black/amber) */
@@ -600,17 +590,21 @@ async function fetchStats() {
   border: none;
   border-radius: 10px;
   background-color: #111111; /* solid black */
-  color: #f6b300;            /* gold text */
+  color: #f6b300; /* gold text */
   font-weight: 700;
   letter-spacing: 0.2px;
   cursor: pointer;
-  box-shadow: var(--shadow-soft, 0 2px 6px rgba(0,0,0,0.2));
-  transition: background-color 0.2s ease, transform 0.05s ease, filter 0.18s ease, opacity 0.15s ease;
+  box-shadow: var(--shadow-soft, 0 2px 6px rgba(0, 0, 0, 0.2));
+  transition:
+    background-color 0.2s ease,
+    transform 0.05s ease,
+    filter 0.18s ease,
+    opacity 0.15s ease;
 }
 
 .btn:hover {
   background-color: #1a1a1a; /* slightly lighter black for hover */
-  filter: brightness(1.2);   /* subtle glow */
+  filter: brightness(1.2); /* subtle glow */
 }
 
 .btn:active {
@@ -623,11 +617,11 @@ async function fetchStats() {
   opacity: 0.6;
   cursor: not-allowed;
   background-color: #111111; /* prevent transparency */
-  color: #999999;            /* muted text for disabled state */
+  color: #999999; /* muted text for disabled state */
 }
 
 /* results */
-.results h3{
+.results h3 {
   margin: 6px 6px 10px;
   font-size: 28px;
   font-weight: 900;
@@ -635,43 +629,45 @@ async function fetchStats() {
 }
 
 /* table */
-table{
-  width:100%;
-  border-collapse:collapse;
-  background:#fff;
-  border:1px solid var(--line);
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  overflow:hidden;
+  overflow: hidden;
   box-shadow: var(--shadow-soft);
 }
-thead th{
+thead th {
   background: linear-gradient(#fffdfa, #fff7e1);
-  color:#151922;
-  text-align:left;
-  padding:14px 16px;
-  border-bottom:1px solid var(--line);
-  font-weight:900;
+  color: #151922;
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 900;
 }
-tbody td{
-  padding:14px 16px;
-  border-bottom:1px solid var(--line);
-  color:#1b2330;
+tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  color: #1b2330;
 }
-tbody tr:nth-child(odd) td{
-  background:#fafbff;
+tbody tr:nth-child(odd) td {
+  background: #fafbff;
 }
-tbody tr:last-child td{
-  border-bottom:0;
+tbody tr:last-child td {
+  border-bottom: 0;
 }
-.num{ text-align:right; }
+.num {
+  text-align: right;
+}
 
 /* empty state + errors */
-.placeholder{
+.placeholder {
   padding: 22px;
   color: var(--muted);
-  border:1px dashed var(--line-2);
+  border: 1px dashed var(--line-2);
   border-radius: 12px;
-  background:#fffef7;
+  background: #fffef7;
 }
 
 .placeholder:hover {
@@ -689,7 +685,7 @@ tbody tr:last-child td{
   min-height: 200px;
   font-size: 1.25rem; /* larger text */
   font-weight: 600;
-  color: #090909;     /* gold text */
+  color: #090909; /* gold text */
   letter-spacing: 0.4px;
   text-align: center;
 }
@@ -699,33 +695,45 @@ tbody tr:last-child td{
   height: 52px;
   margin-bottom: 20px;
   border: 6px solid rgba(246, 179, 0, 0.2); /* gold tint */
-  border-top-color: #005ef6;               /* solid gold */
+  border-top-color: #005ef6; /* solid gold */
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.error{ color:#c81e1e; font-weight:700; }
+.error {
+  color: #c81e1e;
+  font-weight: 700;
+}
 
 /* responsive */
-@media (max-width: 980px){
-  .layout{
+@media (max-width: 980px) {
+  .layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
   }
-  .topbar{
+  .topbar {
     grid-column: 1 / 2;
     grid-template-columns: 1fr;
   }
-  .sidebar{
-    grid-column: 1 / 2; grid-row: auto;
-    flex-direction: row; flex-wrap: wrap;
+  .sidebar {
+    grid-column: 1 / 2;
+    grid-row: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
-  .sidebar .field{ min-width: 200px; flex: 1 1 220px; }
-  .btn{ width: 200px; }
+  .sidebar .field {
+    min-width: 200px;
+    flex: 1 1 220px;
+  }
+  .btn {
+    width: 200px;
+  }
 }
 .hazard {
   position: relative;
@@ -749,8 +757,8 @@ tbody tr:last-child td{
 /* Shell already looks good; make it interactive on focus */
 .date-input {
   position: relative;
-  padding: 0;           /* let the inner input control vertical rhythm */
-  height: 44px;         /* consistent with other fields */
+  padding: 0; /* let the inner input control vertical rhythm */
+  height: 44px; /* consistent with other fields */
   display: flex;
   align-items: center;
 }
@@ -769,7 +777,7 @@ tbody tr:last-child td{
   background: transparent;
   width: 100%;
   height: 100%;
-  padding: 0 42px 0 16px;     /* left padding matches selects; right leaves space for icon */
+  padding: 0 42px 0 16px; /* left padding matches selects; right leaves space for icon */
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--charcoal);
@@ -793,13 +801,15 @@ tbody tr:last-child td{
 }
 
 /* Custom calendar icon aligned with your selects’ chevrons */
-.date-input::after{
-  content:"";
-  position:absolute;
-  right: 12px; top: 50%;
+.date-input::after {
+  content: '';
+  position: absolute;
+  right: 12px;
+  top: 50%;
   transform: translateY(-50%);
-  width: 18px; height: 18px;
-  opacity: .6;
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
   pointer-events: none;
   background-repeat: no-repeat;
   background-size: 18px 18px;
@@ -826,7 +836,7 @@ tbody tr:last-child td{
 :deep(.dp__btn),
 :deep(.v3dp__nav-button) {
   color: var(--charcoal);
-  opacity: .7;
+  opacity: 0.7;
 }
 :deep(.dp__btn:hover),
 :deep(.v3dp__nav-button:hover) {
@@ -863,14 +873,14 @@ tbody tr:last-child td{
 
 /* In-range (if range mode is ever enabled) */
 :deep(.dp__range_between) {
-  background: rgba(0,71,225,0.08) !important;
+  background: rgba(0, 71, 225, 0.08) !important;
 }
 
 /* Disabled days */
 :deep(.dp__cell_disabled),
 :deep(.v3dp__day--disabled) {
   color: #999 !important;
-  opacity: .55;
+  opacity: 0.55;
 }
 
 /* Error state harmonized with your inputs (optional helper class) */
@@ -879,5 +889,4 @@ tbody tr:last-child td{
   border-color: #c81e1e;
   box-shadow: 0 0 0 3px rgba(200, 30, 30, 0.15);
 }
-
 </style>

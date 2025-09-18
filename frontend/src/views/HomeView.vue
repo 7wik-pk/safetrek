@@ -4,7 +4,7 @@ import MissionSection from '@/components/Homepage/MissionSection.vue'
 import WhySafetySection from '@/components/Homepage/WhySafetySection.vue'
 import BlogSection from '@/components/Homepage/BlogSection.vue'
 import FooterSection from '@/components/FooterSection.vue'
-import Banner from "@/components/Homepage/Banner.vue";
+import Banner from '@/components/Homepage/Banner.vue'
 </script>
 
 <template>
@@ -12,12 +12,10 @@ import Banner from "@/components/Homepage/Banner.vue";
     <HeroSection />
     <MissionSection />
     <WhySafetySection />
-    <Banner/>
+    <Banner />
     <BlogSection />
     <FooterSection />
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

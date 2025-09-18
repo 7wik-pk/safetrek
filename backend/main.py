@@ -38,6 +38,27 @@ def get_db():
     finally:
         db.close()
 
+# --- FastAPI app ---
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+
+    # allow all origins (temporary)
+    allow_credentials=False,
+    
+    # to disallow all origins later
+    # allow_credentials=True,
+
+    allow_origins = (settings.allowed_origins or ["*"]),
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 # --- Request schema ---
 class AccidentStatsRequest(BaseModel):
     filter_area_level: Literal["sa2", "sa3", "sa4"]
@@ -60,28 +81,6 @@ def validate_area_hierarchy(cls, values):
         raise ValueError("EW RULE: group_by must NOT be higher")
 
     return values
-
-# --- FastAPI app ---
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-
-    # allow all origins (temporary)
-    allow_credentials=False,
-    
-    # to disallow all origins later
-    # allow_credentials=True,
-
-    allow_origins = (settings.allowed_origins or ["*"]),
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
 
 @app.post("/accident_stats")
 def get_accident_stats(req: AccidentStatsRequest, db: Session = Depends(get_db)):

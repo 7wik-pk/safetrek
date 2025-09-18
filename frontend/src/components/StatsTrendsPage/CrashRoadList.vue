@@ -407,11 +407,13 @@ watch(sa_level, loadSANames)
           <div class="spinner"></div>
           <p class="muted">
             Fetching road-wise accident data...<br />
-            <small>[These queries can take up to 2 minutes depending on filters and volume of data]</small>
+            <small
+              >[These queries can take up to 2 minutes depending on filters and volume of
+              data]</small
+            >
           </p>
         </div>
       </div>
-
     </div>
   </div>
 </template>

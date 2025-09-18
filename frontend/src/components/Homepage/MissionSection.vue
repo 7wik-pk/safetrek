@@ -10,8 +10,11 @@
         <div class="intro-right">
           <h3>Identify Risky Areas & Roads with SafeTrek</h3>
           <p>
-            Road crashes cause 40,000+ serious injuries in Australia every year. The challenge isn’t lack of data – it’s that valuable crash information is fragmented, hard to access, and rarely presented in a way that helps policymakers act. SafeTrek is an interactive web platform that transforms raw crash records into actionable insights.
-            By combining crash data with demographics, vehicle type, weather, and road conditions.
+            Road crashes cause 40,000+ serious injuries in Australia every year. The challenge isn’t
+            lack of data – it’s that valuable crash information is fragmented, hard to access, and
+            rarely presented in a way that helps policymakers act. SafeTrek is an interactive web
+            platform that transforms raw crash records into actionable insights. By combining crash
+            data with demographics, vehicle type, weather, and road conditions.
           </p>
         </div>
       </div>
@@ -22,10 +25,7 @@
           <img src="/img/features/g4.jpg" alt="Electrical Engineering" />
           <div class="card-content">
             <h4>Traffic Safety</h4>
-            <router-link
-              :to="{ path: '/blog', hash: '#traffic-safety' }"
-              class="learn-more"
-            >
+            <router-link :to="{ path: '/blog', hash: '#traffic-safety' }" class="learn-more">
               LEARN MORE →
             </router-link>
           </div>
@@ -165,7 +165,9 @@
   padding: 16px;
   border-radius: 6px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 /* Hover only on devices that support hover */

@@ -17,10 +17,12 @@ import blog3 from '@/assets/images/Homepage/blog3.jpg'
           <img :src="blog1" alt="Transport accidents" />
         </div>
         <div class="card__body">
-          <h3 class="card__title">
-            Australian Institute of Health and Welfare
-          </h3>
-          <a class="card__link" href="https://www.aihw.gov.au/reports/injury/transport-accidents" target="_blank">
+          <h3 class="card__title">Australian Institute of Health and Welfare</h3>
+          <a
+            class="card__link"
+            href="https://www.aihw.gov.au/reports/injury/transport-accidents"
+            target="_blank"
+          >
             Read More →
           </a>
           <div class="card__meta">
@@ -38,7 +40,11 @@ import blog3 from '@/assets/images/Homepage/blog3.jpg'
           <h3 class="card__title">
             A journal paper published by Dr Ali Soltani from Flinders University
           </h3>
-          <a class="card__link" href="https://www.sciencedirect.com/science/article/pii/S2213624X2500077X?via%3Dihub" target="_blank">
+          <a
+            class="card__link"
+            href="https://www.sciencedirect.com/science/article/pii/S2213624X2500077X?via%3Dihub"
+            target="_blank"
+          >
             Read More →
           </a>
           <div class="card__meta">
@@ -53,10 +59,12 @@ import blog3 from '@/assets/images/Homepage/blog3.jpg'
           <img :src="blog3" alt="How work planners can improve road safety awareness" />
         </div>
         <div class="card__body">
-          <h3 class="card__title">
-            The Guardian's recent article on rising road accidents
-          </h3>
-          <a class="card__link" href="https://www.theguardian.com/australia-news/2025/jan/27/australia-road-toll-2024-1300-deaths-highest-in-more-than-a-decade" target="_blank">
+          <h3 class="card__title">The Guardian's recent article on rising road accidents</h3>
+          <a
+            class="card__link"
+            href="https://www.theguardian.com/australia-news/2025/jan/27/australia-road-toll-2024-1300-deaths-highest-in-more-than-a-decade"
+            target="_blank"
+          >
             Read More →
           </a>
           <div class="card__meta">
@@ -100,7 +108,9 @@ import blog3 from '@/assets/images/Homepage/blog3.jpg'
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
-  transition: transform .3s ease, box-shadow .3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
 }

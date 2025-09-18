@@ -3,11 +3,7 @@
     <!-- Brand -->
     <div class="nav__brand">
       <router-link to="/" class="link">
-        <img
-          src="@/assets/images/safetrek_logo.svg"
-          alt="SafeTrek Logo"
-          class="logo"
-        />
+        <img src="@/assets/images/safetrek_logo.svg" alt="SafeTrek Logo" class="logo" />
         <span class="brand-name">SafeTrek</span>
       </router-link>
     </div>
@@ -15,16 +11,18 @@
     <!-- Desktop menu -->
     <ul class="nav__links">
       <li><router-link to="/" class="link" active-class="active">Home</router-link></li>
-      <li><router-link to="/stats-trends" class="link" active-class="active">Statistics & Trends</router-link></li>
-      <li><router-link to="/risk-explorer" class="link" >Risk Explorer</router-link></li>
-      <li><router-link to="blog" class="link" >Blog</router-link></li>
-      <li><router-link to="" class="link" >Equity & Vulnerability</router-link></li>
+      <li>
+        <router-link to="/stats-trends" class="link" active-class="active"
+          >Statistics & Trends</router-link
+        >
+      </li>
+      <li><router-link to="/risk-explorer" class="link">Risk Explorer</router-link></li>
+      <li><router-link to="blog" class="link">Blog</router-link></li>
+      <li><router-link to="" class="link">Equity & Vulnerability</router-link></li>
     </ul>
 
     <!-- Mobile toggle -->
-    <button class="nav__toggle" type="button" @click="toggleMenu">
-      MENU
-    </button>
+    <button class="nav__toggle" type="button" @click="toggleMenu">MENU</button>
 
     <!-- Overlay menu for mobile -->
     <MenuOverlay :open="isMenuOpen" @close="closeMenu" />
@@ -51,7 +49,7 @@ watch(
   () => route.fullPath,
   () => {
     isMenuOpen.value = false
-  }
+  },
 )
 </script>
 

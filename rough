@@ -42,3 +42,35 @@ curl -X POST http://localhost:8000/accident_stats  \
  -d '{
     "area_level": "sa2"
   }'
+
+ex data from API 1:
+
+[
+    {
+        "num_accs": 2601,
+        "geom_area_sq_km": 918.8937808553652,
+        "acc_per_sq_km": 2.830577433638546,
+        "centroid_lat": -38.01884853485442,
+        "centroid_lon": 144.36565483107427,
+        "sa_name": "Geelong",
+        "geom": "MULTIPOLYGON(((144.823 -37.901,144.823 -37.902, ...)))"
+    },
+    {
+        "num_accs": 712,
+        "geom_area_sq_km": 929.9678569312814,
+        "acc_per_sq_km": 0.765617859470397,
+        "centroid_lat": -38.3380320884098,
+        "centroid_lon": 144.25891118830464,
+        "sa_name": "Surf Coast - Bellarine Peninsula",
+        "geom": "MULTIPOLYGON(((144.823 -37.901,144.823 -37.902, ...)))"
+    },
+    {
+        "num_accs": 331,
+        "geom_area_sq_km": 2579.8383511163993,
+        "acc_per_sq_km": 0.1283026123930451,
+        "centroid_lat": -38.0615921009053,
+        "centroid_lon": 143.99357300897563,
+        "sa_name": "Barwon - West",
+        "geom": "MULTIPOLYGON(((144.823 -37.901,144.823 -37.902, ...)))"
+    }
+]

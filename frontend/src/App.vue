@@ -1,16 +1,14 @@
 <script setup>
-import {ref, onMounted, watch} from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import LoadingScreen from './components/LoadingScreen.vue'
 import signUrl from './assets/images/roadwork.png'
 import Navbar from './components/Navbar.vue'
 import MenuOverlay from './components/MenuOverlay.vue'
-import HomeView from "@/views/HomeView.vue";
-import 'mapbox-gl-css'
+import HomeView from '@/views/HomeView.vue'
 
 const loading = ref(true)
 const progress = ref(0)
 const menuOpen = ref(false)
-
 
 onMounted(async () => {
   // simulate work
@@ -25,14 +23,21 @@ onMounted(async () => {
 
 <template>
   <main class="main">
-  <LoadingScreen :show="loading" :progress="progress" :signSrc="signUrl" />
-  <Navbar :open="menuOpen" @toggle="menuOpen = !menuOpen" />
-  <MenuOverlay :open="menuOpen" @close="menuOpen = false" />
-  <router-view></router-view>
+    <LoadingScreen :show="loading" :progress="progress" :signSrc="signUrl" />
+    <Navbar :open="menuOpen" @toggle="menuOpen = !menuOpen" />
+    <MenuOverlay :open="menuOpen" @close="menuOpen = false" />
+    <div class="view-container">
+      <router-view />
+    </div>
   </main>
 </template>
+
 <style scoped>
-.main{
+.main {
   background: #f0ae00;
+}
+
+.view-container {
+  padding-top: 90px; /* match navbar height */
 }
 </style>
