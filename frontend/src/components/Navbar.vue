@@ -17,6 +17,7 @@
       <li><router-link to="/" class="link" active-class="active">Home</router-link></li>
       <li><router-link to="/stats-trends" class="link" active-class="active">Statistics & Trends</router-link></li>
       <li><router-link to="/risk-explorer" class="link" >Risk Explorer</router-link></li>
+      <li><router-link to="blog" class="link" >Blog</router-link></li>
       <li><router-link to="" class="link" >Equity & Vulnerability</router-link></li>
     </ul>
 

@@ -11,10 +11,10 @@ import CrashRoadList from '@/components/StatsTrendsPage/CrashRoadList.vue'
 
 // Tabs shown on THIS page (RiskExplorer removed)
 const tabs = [
-  { label: 'Accident Stats',      comp: AccidentStats },
-  { label: 'Statistics & Trends', comp: TrendCharts },
-  { label: 'Forecast View',       comp: ForecastView },
-  { label: 'Accident Roads',      comp: CrashRoadList },
+  { label: 'Crash Statistics Explorer ',      comp: AccidentStats },
+  { label: 'Crash & Injury Trends', comp: TrendCharts },
+  { label: 'Crash & Injury Forecast',       comp: ForecastView },
+  { label: 'High Risk Accident Roads',      comp: CrashRoadList },
 ]
 
 const active = ref(0)

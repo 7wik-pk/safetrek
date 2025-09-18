@@ -10,16 +10,15 @@ import ctaBg from "/img/bg/choose-02.jpg"
     <div class="cta-overlay"></div>
     <div class="cta-container">
       <div class="cta-text">
-        <span class="cta-subtitle">WORK YOUR DREAM PROJECT</span>
-        <h2>Need Premium Quality Services</h2>
+        <span class="cta-subtitle">TURN DATA INTO ACTION</span>
+        <h2>Quality & Integrity Across Disciplines
+        </h2>
         <p>
-          On the other hand, we denounce with righteous indignation and
-          dislike men who are so beguiled and demoralized by the charms
-          of pleasure of the moment blinded.
+          Discover how SafeTrek's comprehensive data platform serves diverse professional needs.
         </p>
       </div>
       <div class="cta-action">
-        <button class="cta-btn">JOIN WITH US</button>
+        <router-link class="cta-btn" to="/stats-trends">Find out more</router-link>
       </div>
     </div>
   </section>

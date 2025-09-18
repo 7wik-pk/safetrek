@@ -13,7 +13,7 @@ import service2 from "/images/bg3.jpg"
 
 <template>
   <section class="why-safety">
-    <h2 class="section-title">Latest Services</h2>
+    <h2 class="section-title">Our Mission</h2>
 
     <Swiper
       :modules="[Navigation]"
@@ -33,7 +33,6 @@ import service2 from "/images/bg3.jpg"
               Every road crash not only impacts individuals and families but also
               places a burden on health systems and economies.
             </p>
-            <button class="btn">VIEW DETAILS</button>
           </div>
         </div>
       </SwiperSlide>
@@ -43,11 +42,10 @@ import service2 from "/images/bg3.jpg"
         <div class="slide-content">
           <img :src="service1" alt="Service 1" class="slide-image" />
           <div class="slide-card">
-            <h3>Building Construction</h3>
+            <h3>Promote equitable and safer communities</h3>
             <p>
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.
+              Ensure interventions protect the most vulnerable road users and support sustainable urban growth.
             </p>
-            <button class="btn">VIEW DETAILS</button>
           </div>
         </div>
       </SwiperSlide>
@@ -57,11 +55,10 @@ import service2 from "/images/bg3.jpg"
         <div class="slide-content">
           <img :src="service2" alt="Service 2" class="slide-image" />
           <div class="slide-card">
-            <h3>Road Planning</h3>
+            <h3>Empower evidence-based decisions</h3>
             <p>
-              Proactive planning ensures sustainable and safe urban growth.
+              Equip planners and policymakers with tools to identify risks and design proactive safety measures.
             </p>
-            <button class="btn">VIEW DETAILS</button>
           </div>
         </div>
       </SwiperSlide>

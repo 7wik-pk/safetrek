@@ -5,44 +5,59 @@
       <div class="mission__intro">
         <div class="intro-left">
           <h4>WHO WE ARE</h4>
-          <h2>Quality &amp; Integrity<br />Service Agency</h2>
+          <h2>SafeTrek<br />Road data provider</h2>
         </div>
         <div class="intro-right">
-          <h3>Company History</h3>
+          <h3>Identify Risky Areas & Roads with SafeTrek</h3>
           <p>
-            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-            accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-            quae ab illo inventore veritatis et quasi architecto beatae vitae
-            dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
-            aspernatur aut odit.
+            Road crashes cause 40,000+ serious injuries in Australia every year. The challenge isn’t lack of data – it’s that valuable crash information is fragmented, hard to access, and rarely presented in a way that helps policymakers act. SafeTrek is an interactive web platform that transforms raw crash records into actionable insights.
+            By combining crash data with demographics, vehicle type, weather, and road conditions.
           </p>
-          <a href="#" class="learn-more">LEARN MORE →</a>
         </div>
       </div>
 
       <!-- Bottom row (cards) -->
       <div class="mission__services">
         <div class="service-card">
-          <img src="/img/features/01.jpg" alt="Electrical Engineering" />
+          <img src="/img/features/g4.jpg" alt="Electrical Engineering" />
           <div class="card-content">
-            <h4>Electrical Engineering</h4>
-            <a href="#" class="learn-more">LEARN MORE →</a>
+            <h4>Traffic Safety</h4>
+            <router-link
+              :to="{ path: '/blog', hash: '#traffic-safety' }"
+              class="learn-more"
+            >
+              LEARN MORE →
+            </router-link>
           </div>
         </div>
 
         <div class="service-card">
           <img src="/img/features/02.jpg" alt="Construction Service" />
           <div class="card-content">
-            <h4>Construction Service</h4>
-            <a href="#" class="learn-more">LEARN MORE →</a>
+            <h4>Fleet Safety</h4>
+            <router-link :to="{ path: '/blog', hash: '#fleet-safety' }" class="learn-more">
+              LEARN MORE →
+            </router-link>
           </div>
         </div>
 
         <div class="service-card">
-          <img src="/img/features/03.jpg" alt="Chemical Services" />
+          <img src="/img/features/b1.jpg" alt="Chemical Services" />
           <div class="card-content">
-            <h4>Chemical Services</h4>
-            <a href="#" class="learn-more">LEARN MORE →</a>
+            <h4>Risk</h4>
+            <router-link :to="{ path: '/blog', hash: '#risk-pro' }" class="learn-more">
+              LEARN MORE →
+            </router-link>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <img src="/img/features/p4.jpg" alt="Chemical Services" />
+          <div class="card-content">
+            <h4>Insurance</h4>
+            <router-link :to="{ path: '/blog', hash: '#senior-analyst' }" class="learn-more">
+              LEARN MORE →
+            </router-link>
           </div>
         </div>
       </div>
@@ -122,14 +137,14 @@
 /* ---------- Bottom row (cards) ---------- */
 .mission__services {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
 }
 
 .service-card {
   position: relative;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background: #fff;
 }
