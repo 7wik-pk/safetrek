@@ -16,9 +16,9 @@
           <img class="bg" src="/images/slider/01.jpg" alt="Slide 1" />
           <div class="overlay"></div>
           <div class="caption">
-            <h2 class="title animate-fade-in-up">Offering Best Platform</h2>
-            <p class="subtitle animate-fade-in-up delay-1">BUILDER</p>
-            <a href="#" class="btn animate-fade-in-up delay-2">Purchase Now</a>
+            <h2 class="title animate-fade-in-up">Identify Risky Areas</h2>
+            <p class="subtitle animate-fade-in-up delay-1">Find out more</p>
+            <router-link to="stats-trends" class="btn animate-fade-in-up delay-2">Explore Statistics & Insights</router-link>
           </div>
         </div>
       </SwiperSlide>
@@ -29,11 +29,11 @@
           <img class="bg" src="/images/slider/02.jpg" alt="Slide 2" />
           <div class="overlay"></div>
           <div class="caption">
-            <h2 class="title animate-fade-in-up">We Build Your Dreams</h2>
+            <h2 class="title animate-fade-in-up">Roads with SafeTrek</h2>
             <p class="subtitle animate-fade-in-up delay-1">
-              From sketches to final construction
+              Helping planners make informed decisions with statistics, visuals and insights
             </p>
-            <a href="#" class="btn animate-fade-in-up delay-2">Get a Quote</a>
+            <router-link to="stats-trends" class="btn animate-fade-in-up delay-2">Explore Statistics & Insights</router-link>
           </div>
         </div>
       </SwiperSlide>
@@ -44,11 +44,11 @@
           <img class="bg" src="/images/slider/03.jpg" alt="Slide 3" />
           <div class="overlay"></div>
           <div class="caption">
-            <h2 class="title animate-fade-in-up">Sketching & Building</h2>
+            <h2 class="title animate-fade-in-up">Crash data</h2>
             <p class="subtitle animate-fade-in-up delay-1">
-              Sketching your ideas & building your future
+               With Demographics, vehicle type, weather, and road conditions
             </p>
-            <a href="#" class="btn animate-fade-in-up delay-2">Get Started</a>
+            <router-link to="stats-trends" class="btn animate-fade-in-up delay-2">Explore Statistics & Insights</router-link>
           </div>
         </div>
       </SwiperSlide>
