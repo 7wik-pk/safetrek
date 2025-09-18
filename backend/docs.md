@@ -1,5 +1,62 @@
 # 🚧 API Documentation
 
+## Region Accidents Endpoint
+`POST /accident_stats`
+
+Returns accident statistics grouped by SA2 or SA3 areas within a specified SA2/SA3/SA4 region. Results include accident counts, spatial density, and centroid coordinates.
+
+---
+
+### 🔐 Required Parameters
+
+| **Field**             | **Type**   | **Description** |
+|-----------------------|------------|------------------|
+| `filter_area_level`   | `string`   | Area level to filter by. Valid values:<br>`"sa2"`, `"sa3"`, `"sa4"` |
+| `filter_area_name`    | `string`   | Name of the area to filter (case-insensitive match) |
+| `group_by_area_level` | `string`   | Area level to group results by. Valid values:<br>`"sa2"`, `"sa3"`<br>**Must not be higher than `filter_area_level`** |
+
+---
+
+### 🗓️ Optional Filters
+
+| **Field**     | **Type** | **Description** |
+|---------------|----------|-----------------|
+| `date_from`   | `date`   | Start date for filtering accidents |
+| `date_to`     | `date`   | End date for filtering accidents |
+
+Dates should be provided as strings of the form "yyyy-MM-dd", for example "2020-01-01"
+
+---
+
+### 📐 Ordering & Limits
+
+| **Field**     | **Type**   | **Description** |
+|---------------|------------|-----------------|
+| `order_by`    | `string`   | Sort results by:<br>`"count"` or `"density"`<br>**Default:** `"count"` |
+| `order_dir`   | `string`   | Sort direction:<br>`"asc"` or `"desc"`<br>**Default:** `"desc"` |
+| `limit`       | `int`      | Max number of results to return<br>**Default:** `10`, range: `1–100` |
+
+---
+
+### 📦 Response Format
+
+Returns a list of grouped areas with accident statistics:
+
+```json
+[
+  {
+    "sa_name": "Example SA2",
+    "num_accs": 42,
+    "geom_area_sq_km": 12.34,
+    "acc_per_sq_km": 3.4,
+    "centroid_lat": -37.812,
+    "centroid_lon": 144.963,
+    "geom": "MULTIPOLYGON(...)"
+  },
+  ...
+]
+```
+
 ## Road Accident Density Endpoint
 `POST /road_accident_density`
 
