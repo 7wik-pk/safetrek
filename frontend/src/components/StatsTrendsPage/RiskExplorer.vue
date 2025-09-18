@@ -351,7 +351,7 @@ watch([filterAreaName, groupBy, dateFrom, dateTo, sortDir], () => isReady.value 
 </template>
 
 <style scoped>
-.page { display: grid; gap: 12px; padding: 12px; }
+.page { display: grid; gap: 12px; padding: 12px; padding-top: 100px}
 .panel { background: #fff3cd; border: 1px solid #f7e39c; border-radius: 10px; padding: 10px; }
 .row { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; }
 label { display: grid; gap: 6px; font-size: 14px; }

@@ -16,7 +16,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      'mapbox-gl-css': 'mapbox-gl/dist/mapbox-gl.css'
+      'mapbox-gl-css': 'mapbox-gl/dist/mapbox-gl.css',
+      buffer: 'buffer',
     },
   },
   build: {
@@ -32,5 +33,6 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
-  }
+  },
+  define:{globe:{}},
 })
