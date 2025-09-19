@@ -2,18 +2,12 @@
 import { ref, onMounted, nextTick, onBeforeUnmount } from 'vue'
 
 // Keep these three modules in the tabs
-import AccidentStats from './AccidentStats.vue'
-import TrendCharts from './TrendCharts.vue'
-import ForecastView from './ForecastView.vue'
-
-// New: the road list module
-import CrashRoadList from '@/components/StatsTrendsPage/CrashRoadList.vue'
+import RoadExplorer from "@/components/RiskExplorerPage/RoadExplorer.vue";
+import RiskExplorerLeaflet from "@/components/RiskExplorerPage/RiskExplorerLeaflet.vue";
 
 const tabs = [
-  { label: 'Crash Statistics Explorer ', comp: AccidentStats },
-  { label: 'Crash & Injury Trends', comp: TrendCharts },
-  { label: 'Crash & Injury Forecast', comp: ForecastView },
-  { label: 'High Risk Accident Roads', comp: CrashRoadList },
+  { label: 'Risk Regions Explorer ', comp: RiskExplorerLeaflet },
+  { label: 'Risk Roads Explorer', comp: RoadExplorer },
 ]
 
 const active = ref(0)
@@ -62,7 +56,7 @@ onBeforeUnmount(() => {
       <div class="hero-inner">
         <button class="back" @click="$router.back()">‹ Back</button>
         <p class="eyebrow">ANALYTICS</p>
-        <h1 class="title">Explore insights across four lenses.</h1>
+        <h1 class="title">Risk Explore</h1>
         <p class="sub">Switch between modules using the chips below.</p>
       </div>
     </div>
@@ -89,16 +83,10 @@ onBeforeUnmount(() => {
   <div class="content">
     <div class="container panels">
       <div class="panel" v-show="active === 0">
-        <AccidentStats />
+        <RiskExplorerLeaflet />
       </div>
       <div class="panel" v-show="active === 1">
-        <TrendCharts />
-      </div>
-      <div class="panel" v-show="active === 2">
-        <ForecastView />
-      </div>
-      <div class="panel" v-show="active === 3">
-        <CrashRoadList />
+        <RoadExplorer />
       </div>
     </div>
   </div>
@@ -174,7 +162,7 @@ onBeforeUnmount(() => {
 .metrics {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   margin: 14px auto 8px;
   background: #fff;
@@ -185,28 +173,23 @@ onBeforeUnmount(() => {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
 }
 .chip {
-  position: relative;
-  z-index: 1;
-  appearance: none;
-  border: 0;
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 42px;
+  padding: 0 14px;
   border-radius: 10px;
   font-weight: 800;
   font-size: clamp(13px, 1.6vw, 15px);
   letter-spacing: 0.02em;
   color: #333;
-  background: transparent;
   cursor: pointer;
-  transition:
-    color 0.2s ease,
-    transform 0.1s ease;
+  transition: color .2s ease, transform .1s ease;
 }
-.chip[aria-selected='true'] {
-  color: #111;
-}
-.chip:active {
-  transform: translateY(1px);
-}
+
+.chip[aria-selected='true'] { color: #111; }
+.chip:active { transform: translateY(1px); }
 
 .ink {
   position: absolute;
