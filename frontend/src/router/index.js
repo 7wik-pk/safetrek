@@ -4,11 +4,12 @@ import StatsTrendsView from '../views/StatsTrendsView.vue'
 import HomeView from '../views/HomeView.vue'
 import RiskExplorer from '@/components/StatsTrendsPage/RiskExplorer.vue'
 import BlogPage from '@/components/BlogPage.vue'
+import RiskView from "@/components/RiskExplorerPage/RiskView.vue";
 
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
   { path: '/stats-trends', name: 'stats-trends', component: StatsTrendsView },
-  { path: '/risk-explorer', name: 'risk-explorer', component: RiskExplorer },
+  { path: '/risk-explorer', name: 'risk-explorer', component: RiskView },
   { path: '/blog', name: 'blog', component: BlogPage },
 ]
 

@@ -1,18 +1,61 @@
 <template>
-  <div>
-    <select v-model="colorMetric" class="metric-selector">
-      <option value="num_accs">Accident Count</option>
-      <option value="acc_per_sq_km">Accidents per km²</option>
-    </select>
+  <div class="rx">
+    <!-- Filter bar (below your page’s slider) -->
+    <div class="filters">
+      <label>
+        <span>Region type</span>
+        <select v-model="filterAreaLevel">
+          <option value="sa4">Regional Zone (SA4)</option>
+          <option value="sa3">Area (SA3)</option>
+          <option value="sa2">Suburb (SA2)</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Region name</span>
+        <select v-model="filterAreaName" :disabled="loadingNames || !names.length">
+          <option disabled value="">{{ loadingNames ? 'Loading…' : 'Select region' }}</option>
+          <option v-for="n in names" :key="n" :value="n">{{ n }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Group by</span>
+        <select v-model="groupByAreaLevel">
+          <option v-for="g in groupOptions" :key="g.value" :value="g.value">{{ g.label }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>From</span>
+        <input type="date" v-model="dateFrom" />
+      </label>
+
+      <label>
+        <span>To</span>
+        <input type="date" v-model="dateTo" />
+      </label>
+
+      <label>
+        <span>Metric</span>
+        <select v-model="colorMetric">
+          <option value="num_accs">Accident Count</option>
+          <option value="acc_per_sq_km">Accidents per km²</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Map -->
     <div id="map" class="map-container"></div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
 import axios from 'axios'
 import L from 'leaflet'
 
+/* ----------- existing state ----------- */
 const API = import.meta.env.VITE_API_BASE ?? '/api'
 
 const colorMetric = ref('num_accs')
@@ -20,18 +63,73 @@ const map = ref(null)
 const geoLayer = ref(null)
 const regions = ref([])
 
-// API call
+/* ----------- NEW: filter state ----------- */
+const filterAreaLevel = ref('sa3')                 // 'sa2' | 'sa3' | 'sa4'
+const filterAreaName  = ref('')                    // region name from list
+const groupByAreaLevel = ref('sa2')               // constrained by filterAreaLevel
+const dateFrom        = ref('2020-01-01')
+const dateTo          = ref('2024-12-31')
+
+const names = ref([])
+const loadingNames = ref(false)
+
+/* group options depend on region level */
+const groupOptions = computed(() => {
+  if (filterAreaLevel.value === 'sa4') {
+    return [
+      { value: 'sa3', label: 'Area (SA3)' },
+      { value: 'sa2', label: 'Suburb (SA2)' },
+    ]
+  }
+  if (filterAreaLevel.value === 'sa3') {
+    return [{ value: 'sa2', label: 'Suburb (SA2)' }]
+  }
+  return [{ value: 'sa2', label: 'Suburb (SA2)' }]
+})
+
+/* load distinct names for the chosen level */
+async function loadNamesForLevel () {
+  loadingNames.value = true
+  try {
+    const endpoint =
+      filterAreaLevel.value === 'sa4' ? '/distinct_sa4' :
+        filterAreaLevel.value === 'sa3' ? '/distinct_sa3' :
+          '/distinct_sa2'
+    const { data } = await axios.get(`${API}${endpoint}`)
+    names.value = data
+    if (!names.value.includes(filterAreaName.value)) {
+      filterAreaName.value = names.value[0] || ''
+    }
+  } finally {
+    loadingNames.value = false
+  }
+}
+
+/* keep groupBy valid when level changes */
+watch(filterAreaLevel, async () => {
+  const valid = groupOptions.value.map(o => o.value)
+  if (!valid.includes(groupByAreaLevel.value)) {
+    groupByAreaLevel.value = valid[0]
+  }
+  await loadNamesForLevel()
+  await fetchAccidentStats()
+})
+
+/* ----------- YOUR functions (unchanged in logic) ----------- */
+
+// API call (payload now uses filter refs; everything else unchanged)
 async function fetchAccidentStats() {
   try {
     const response = await axios.post(`${API}/accident_stats`, {
-      filter_area_level: 'sa3',
-      filter_area_name: 'Melbourne city',
-      group_by_area_level: 'sa2',
-      date_from: '2020-01-01',
-      date_to: '2025-01-01',
-      order_by: 'count',
-      order_dir: 'desc',
-      limit: 100,
+      filter_area_level:    filterAreaLevel.value,
+      filter_area_name:     filterAreaName.value,
+      group_by_area_level:  groupByAreaLevel.value,
+      date_from:            dateFrom.value,
+      date_to:              dateTo.value,
+      // keep ordering tied to selected metric for a nicer default list
+      order_by:             colorMetric.value === 'num_accs' ? 'count' : 'density',
+      order_dir:            'desc',
+      limit:                100,
     })
     regions.value = response.data
     renderPolygons()
@@ -53,8 +151,8 @@ function centerMapOnBounds() {
   const bounds = group.getBounds()
 
   map.value.flyToBounds(bounds, {
-    padding: [40, 40], // optional: adds margin around edges
-    duration: 1.5, // smooth transition
+    padding: [40, 40],
+    duration: 1.5,
   })
 }
 
@@ -164,57 +262,74 @@ function renderPolygons() {
   addLegend(maxVal)
 }
 
-onMounted(() => {
+/* ----------- lifecycle / watchers ----------- */
+onMounted(async () => {
   map.value = L.map('map').setView([-38.2, 144.2], 9)
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors',
   }).addTo(map.value)
 
-  fetchAccidentStats()
+  await loadNamesForLevel()
+  if (filterAreaName.value) {
+    await fetchAccidentStats()
+  }
 })
 
 watch(colorMetric, () => {
   renderPolygons()
 })
+
+watch([filterAreaName, groupByAreaLevel, dateFrom, dateTo], () => {
+  // refetch when any filter changes
+  fetchAccidentStats()
+})
 </script>
 
 <style scoped>
-/* Leaflet map styling */
+.rx { display: grid; gap: 10px; }
 
+/* Filter bar styling to match your theme */
+.filters{
+  background:#fff3cd;
+  border:2px solid #f7e39c;
+  border-radius:12px;
+  padding:10px;
+  display:flex;
+  gap:12px;
+  grid-template-columns: repeat(6, minmax(180px, 1fr));
+}
+label{ display:grid; gap:6px; font-size:14px; }
+label > span{ color:#555; font-weight:700; font-size:12px; }
+
+select, input[type="date"]{
+  padding:10px 12px;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  background:#fff;
+}
+
+/* Map */
 .map-container {
   height: 600px;
   width: 100%;
+  border-radius:12px;
+  overflow:hidden;
+  background:#fff;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  border:1px solid #ececec;
 }
 
-.metric-selector {
-  margin-bottom: 10px;
-  padding: 6px;
-}
-</style>
-
-<style>
-.info.legend {
+/* Legend + popup styles you already had */
+:global(.info.legend) {
   background: white;
   padding: 10px;
   font-size: 14px;
   line-height: 1.4;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
-
-.info.legend h4 {
-  margin: 0 0 6px;
-  font-weight: bold;
-}
-
-.info.legend i {
-  width: 18px;
-  height: 18px;
-  display: inline-block;
-  margin-right: 8px;
-  background: #ccc; /* fallback */
-  vertical-align: middle;
-}
+:global(.info.legend h4) { margin: 0 0 6px; font-weight: bold; }
+:global(.info.legend i)  { width: 26px; height: 18px; display: inline-block; margin-right: 8px; background: #ccc; vertical-align: middle; }
 
 .popup-btn {
   display: inline-block;
@@ -227,8 +342,5 @@ watch(colorMetric, () => {
   font-weight: 600;
   transition: background 0.2s;
 }
-
-.popup-btn:hover {
-  background: #d94e1f;
-}
+.popup-btn:hover { background: #d94e1f; }
 </style>
