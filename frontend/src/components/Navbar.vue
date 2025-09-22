@@ -60,7 +60,7 @@ watch(
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(0, 0, 0, 0.7); /* semi-transparent over hero */
+  background: rgba(63, 37, 3, 0.705); /* semi-transparent over hero */
   position: fixed;
   width: 100%;
   top: 0;

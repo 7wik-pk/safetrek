@@ -119,9 +119,9 @@ const YEARS = [2020, 2021, 2022, 2023, 2024]
 const mode = ref<'monthly' | 'yearly'>('yearly')
 const year = ref<number>(2022)
 const yearFrom = ref<number>(2018 in YEARS ? 2018 : 2020) // guard
-const yearTo = ref<number>(2022)
+const yearTo = ref<number>(2024)
 
-// enforce 2020–2024 always
+// enforce 2020- 2024 always
 const clampYear = (y: number) => Math.min(2024, Math.max(2020, y))
 watchEffect(() => {
   if (mode.value === 'monthly') {

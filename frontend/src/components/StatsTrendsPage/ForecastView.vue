@@ -65,7 +65,7 @@
         </div>
       </div>
 
-      <div class="results-text card">
+      <div v-if="forecast" class="results-text card">
         Predictions for {{ targetYear }}: {{ forecast.crashes }} crashes,
         {{ forecast.total_injuries }} injuries in total
         and {{ forecast.serious_injuries }} serious injuries.
