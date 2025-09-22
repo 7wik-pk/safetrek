@@ -154,12 +154,18 @@ function buildBody() {
 async function refresh() {
   loading.value = true
   errorMsg.value = ''
+
+  const timeout = 120000
+  const controller = new AbortController()
+  const id = setTimeout(() => controller.abort(), timeout)
+
   try {
     if (!sa_name.value) throw new Error('Please select an SA name.')
     const res = await fetch(`${API}/road_accident_density`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(buildBody()),
+      signal: controller.signal
     })
     const text = await res.text()
     if (!res.ok) throw new Error(`${res.status} ${res.statusText} — ${text}`)
@@ -170,6 +176,7 @@ async function refresh() {
     rows.value = []
   } finally {
     loading.value = false
+    clearTimeout(id)
   }
 }
 

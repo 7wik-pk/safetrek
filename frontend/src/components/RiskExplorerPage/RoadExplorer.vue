@@ -235,7 +235,7 @@ async function fetchRoads() {
 
     const { data } = await axios.post(`${API}/road_accident_density`, payload, {
       signal: abortCtrl.signal,
-      timeout: 30000,
+      timeout: 120000,
     })
 
     if (token !== reqToken) return
