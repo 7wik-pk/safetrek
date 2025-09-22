@@ -409,8 +409,7 @@ watch(sa_level, loadSANames)
             Fetching road-wise accident data...<br />
             <small
               >[These queries can take up to 2 minutes depending on filters and volume of
-              data]</small
-            >
+              data]</small>
           </p>
         </div>
       </div>

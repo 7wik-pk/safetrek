@@ -8,9 +8,14 @@ from db import get_db
 
 app = APIRouter()
 
-def build_sql(source: str, category_expr: str, table: str, joins: str = "", filters: str = "") -> str:
+def build_sql(source: str, sax_level_name: str, sax_name: str, category_expr: str, table: str, joins: str = "", filters: str = "") -> str:
     return f"""
-        WITH {source}_prepared AS (
+        WITH sax AS (
+            select st_union(mbv.geom ) geom
+            from mesh_block_vic_21 mbv
+            where lower(mbv.{sax_level_name}) = lower('{sax_name}') -- param, required and no default value
+        ),
+        {source}_prepared AS (
           SELECT
             a.accident_no,
             CASE
@@ -20,6 +25,7 @@ def build_sql(source: str, category_expr: str, table: str, joins: str = "", filt
             END AS severity,
             {category_expr} AS category
           FROM {table}
+          JOIN sax ON st_contains(sax.geom, a.geom)
           {joins}
           WHERE a.severity IN ('Other injury accident', 'Serious injury accident')
           {filters}
@@ -217,6 +223,8 @@ VALID_FACTORS = set(ORDER_CASES.keys())
 @app.get("/factor_counts", response_model=List[FactorCountItem])
 def get_factor_counts(
     factor: str = Query(..., description="factor: time_bucket | light_condition | road_geometry | speed_zone | atmospheric_condition | sex | age_group | helmet_belt_worn"),
+    sa_level: str = Query(..., description="SA region level : sa2 | sa3 | sa4"),
+    sa_name: str = Query(..., description="SA2/3/4 region name - supplied value must be something from one of the /distinct_saX endpoints"),
     db: Session = Depends(get_db),
 ):
     if factor not in VALID_FACTORS:
@@ -226,8 +234,10 @@ def get_factor_counts(
     order_by = ORDER_CASES[factor]
 
     sql = build_sql(
-        source=config["source"],
-        category_expr=config["category_expr"],
+        source = config["source"],
+        sax_level_name = sa_level.lower() + '_name21',
+        sax_name = sa_name,
+        category_expr = config["category_expr"],
         table=config["table"],
         joins=config.get("joins", ""),
         filters=config.get("filters", "")

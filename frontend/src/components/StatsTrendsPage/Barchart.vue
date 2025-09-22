@@ -4,9 +4,30 @@
       <h2 class="title">Factor Insights</h2>
 
       <div class="controls">
-        <select v-model="selectedFactor" class="select">
-          <option v-for="f in factors" :key="f.value" :value="f.value">{{ f.label }}</option>
-        </select>
+
+        <label>
+          <span>Region type</span>
+          <select v-model="selectedSALvl" :disabled="loading" class="select">
+            <option value="sa3">Area (SA3)</option>
+            <option value="sa2">Suburb (SA2)</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Region name</span>
+          <select v-model="selectedSAName" :disabled="loading || loadingNames || !saNamesList.length" class="select">
+            <option disabled value="">{{ loadingNames ? "Loading..." : "Select region" }}</option>
+            <option v-for="n in saNamesList" :key="n" :value="n">{{ n }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Factor to examine by</span>
+          <select v-model="selectedFactor" class="select">
+            <option v-for="f in factors" :key="f.value" :value="f.value">{{ f.label }}</option>
+          </select>
+        </label>
+
 
         <button class="btn" @click="load" :disabled="loading">
           {{ loading ? 'Loading...' : 'Refresh' }}
@@ -24,8 +45,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, watch, ref } from 'vue'
 import api from '@/lib/api'
+
+import axios from 'axios'
+
+const API = import.meta.env.VITE_API_BASE ?? "/api"
 
 // Chart.js
 import { Bar } from 'vue-chartjs'
@@ -59,16 +84,39 @@ const factors = [
 ]
 
 const selectedFactor = ref('time_bucket')
+
+const hasPending = ref(false)
+const ready = ref(false)
+
+const selectedSALvl = ref('sa2')
+const selectedSAName = ref('')
+const saNamesList = ref([])
+const loadingNames = ref(false)
+
 const loading = ref(false)
 const error = ref('')
 const chartData = ref<any | null>(null)
+
+/* --- SA names list --- */
+async function loadNames() {
+  loadingNames.value = true
+
+  try {
+    const ep = selectedSALvl.value === "sa3" ? "/distinct_sa3" : "/distinct_sa2"
+    const { data } = await axios.get(`${API}${ep}`)
+    saNamesList.value = data
+    if (!saNamesList.value.includes(selectedSAName.value)) selectedSAName.value = saNamesList.value[0] || ""
+  } finally {
+    loadingNames.value = false
+  }
+}
 
 async function load() {
   error.value = ''
   loading.value = true
   try {
     const { data } = await api.get<FactorItem[]>('/factor_counts', {
-      params: { factor: selectedFactor.value }
+      params: { factor: selectedFactor.value, sa_level: selectedSALvl.value, sa_name: selectedSAName.value }
     })
 
     const categories = [...new Set(data.map((d) => d.category))]
@@ -83,12 +131,12 @@ async function load() {
       labels: categories,
       datasets: [
         {
-          label: 'Injury',
+          label: 'Injuries',
           data: injuryCounts,
           backgroundColor: '#4caf50'
         },
         {
-          label: 'Serious Injury',
+          label: 'Serious Injuries',
           data: seriousCounts,
           backgroundColor: '#f44336'
         }
@@ -128,6 +176,21 @@ const chartOptions = {
     }
   }
 }
+
+onMounted(async () => {
+  await loadNames()
+  if (selectedSAName.value) await load()
+  ready.value = true
+})
+
+watch(selectedSALvl, async () => {
+  await loadNames()
+  if (ready.value) {
+    selectedSAName.value = saNamesList.value[0]
+    hasPending.value = true
+  }
+})
+
 </script>
 
 <style scoped>

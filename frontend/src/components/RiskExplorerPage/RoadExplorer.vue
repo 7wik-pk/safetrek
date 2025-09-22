@@ -1,5 +1,6 @@
 <template>
   <div class="rx">
+
     <!-- Filters -->
     <div class="filters">
       <label>
@@ -13,7 +14,7 @@
       <label>
         <span>Region name</span>
         <select v-model="saName" :disabled="loading || loadingNames || !names.length">
-          <option disabled value="">{{ loadingNames ? "Loading…" : "Select region" }}</option>
+          <option disabled value="">{{ loadingNames ? "Loading..." : "Select region" }}</option>
           <option v-for="n in names" :key="n" :value="n">{{ n }}</option>
         </select>
       </label>
@@ -55,19 +56,29 @@
 
       <div class="actions">
         <button class="btn" :disabled="loading || !canSearch" @click="onSearch">
-          {{ loading ? 'Searching…' : 'Search' }}
+          {{ loading ? 'Searching...' : 'Search' }}
         </button>
-        <small v-if="hasPending && !loading" class="dirty">Filters changed — press Search</small>
+        <small v-if="hasPending && !loading" class="dirty">Filters changed - press Search</small>
       </div>
     </div>
 
+    <!-- <div id="roads-map" class="map-container"></div> -->
+
     <!-- Map + loading overlay -->
     <div class="map-wrap">
+
       <div id="roads-map" class="map-container"></div>
 
       <div v-if="loading" class="loading-overlay" aria-live="polite">
         <span class="spinner"></span>
-        <div>Fetching roads…</div>
+        <div class="muted">
+          Fetching roads...
+          <br/>
+          <small>
+            [These queries can take up to 2 minutes depending on filters and volume of data]
+          </small>
+        </div>
+
       </div>
     </div>
 
@@ -75,9 +86,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from "vue"
+import { ref, onMounted, onBeforeUnmount, watch, computed, nextTick } from "vue"
 import axios from "axios"
 import L from "leaflet"
+import "leaflet/dist/leaflet.css"
 
 const API = import.meta.env.VITE_API_BASE ?? "/api"
 
@@ -95,6 +107,7 @@ const loadingNames = ref(false)
 
 /* map */
 const map = ref(null)
+let resizeObserver = null
 const roadsLayer = ref(null)
 
 /* loading + request cancellation */
@@ -102,7 +115,7 @@ const loading = ref(false)
 let abortCtrl = null
 let reqToken = 0
 
-/* “pending changes” + ready gate */
+/* "pending changes" + ready gate */
 const hasPending = ref(false)
 const ready = ref(false)
 const canSearch = computed(() => !!saName.value)
@@ -128,7 +141,7 @@ function parseLineWKT(wkt) {
   const toLine = (s) => s.split(",").map((pair) => {
     const [lon, lat] = pair.trim().split(/\s+/).map(Number)
     return [lat, lon]
-  })
+  }).filter(Boolean)
   if (isMulti) return clean.split(/\)\s*,\s*\(/).map(toLine)
   return toLine(clean)
 }
@@ -227,12 +240,34 @@ async function fetchRoads() {
 
     if (token !== reqToken) return
     renderRoads(data)
+    centerMapOnRoads()
   } catch (e) {
     if (axios.isCancel?.(e) || e?.name === "CanceledError") return
     console.error(e)
   } finally {
     if (token === reqToken) loading.value = false
   }
+}
+
+function centerMapOnRoads() {
+  if (!map.value || !roadsLayer.value) return
+
+  const polylines = []
+  roadsLayer.value.eachLayer((layer) => {
+    if (layer instanceof L.Polyline) {
+      polylines.push(layer)
+    }
+  })
+
+  if (!polylines.length) return
+
+  const group = L.featureGroup(polylines)
+  const bounds = group.getBounds()
+
+  map.value.flyToBounds(bounds, {
+    padding: [40, 40],
+    duration: 1.5,
+  })
 }
 
 /* Button handler */
@@ -243,20 +278,52 @@ function onSearch() {
 
 /* lifecycle */
 onMounted(async () => {
+
   map.value = L.map("roads-map").setView([-37.81, 144.96], 9)
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "© OpenStreetMap contributors",
   }).addTo(map.value)
+
+  resizeObserver = new ResizeObserver(() => {
+    map.value?.invalidateSize()
+  })
+
+  nextTick(() => {
+    const container = map.value?.getContainer?.()
+    if (container) {
+      resizeObserver.observe(container)
+      // immediate fix at mount
+      map.value.invalidateSize()
+      centerMapOnRoads()
+    } else {
+      console.warn('No map container found')
+    }
+  })
 
   await loadNames()
   if (saName.value) await fetchRoads()
   ready.value = true
 })
 
-/* don’t auto-fetch; just mark “pending” when filters change */
+onBeforeUnmount(() => {
+  if (resizeObserver && map.value) {
+    resizeObserver.unobserve(map.value)
+    resizeObserver.disconnect()
+  }
+})
+
+/* don't auto-fetch; just mark "pending" when filters change */
 watch(saLevel, async () => {
   await loadNames()
-  if (ready.value) hasPending.value = true
+  if (ready.value) {
+    hasPending.value = true
+    saName.value = names.value[0]
+    if (saLevel.value === 'sa2') {
+      roadType.value = 'suburban'
+    } else {
+      roadType.value = 'major'
+    }
+  }
 })
 watch([saName, roadType, dateFrom, dateTo, metric, limit], () => {
   if (ready.value) hasPending.value = true
@@ -346,15 +413,29 @@ watch([saName, roadType, dateFrom, dateTo, metric, limit], () => {
 /* ===== Map & loading (unchanged) ===== */
 .map-wrap{ position: relative; }
 .map-container{
-  height: 600px; width: 100%;
+  height: 60vh; width: 100%;
   border-radius: 12px; overflow: hidden; background: #fff;
   box-shadow: 0 2px 10px rgba(0,0,0,.06);
   border: 1px solid #ececec;
+  z-index: 9999;
 }
+/* .map-container {
+  min-width: 400px;
+  height: 600px;
+  width: 100%;
+  border-radius:12px;
+  overflow:hidden;
+  background:#fff;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  border:1px solid #ececec;
+  z-index: 9999;
+} */
 
 /* loading overlay */
 .loading-overlay{
   position: absolute; inset: 0;
+  text-align: center;
+  z-index: 9999;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
   background: rgba(255,255,255,.75); backdrop-filter: blur(1px);
   font-weight: 700; color: #111;
