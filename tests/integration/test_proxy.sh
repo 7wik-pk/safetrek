@@ -2,4 +2,4 @@
 DOMAIN=${1:-7wik-pk.online}
 echo "Testing nginx proxy routing..."
 
-curl -I "https://$DOMAIN" | grep -q "200 OK" && echo "Proxy routing OK" || echo "ERROR: Proxy routing failed"
+curl -I "https://$DOMAIN" | grep -q "HTTP/2 200" && echo "Proxy routing OK" || echo "ERROR: Proxy routing failed"
