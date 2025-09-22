@@ -1,0 +1,1 @@
+./tests/integration/run_all.sh
