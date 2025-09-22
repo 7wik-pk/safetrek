@@ -25,7 +25,7 @@
           <img src="/img/features/g4.jpg" alt="Electrical Engineering" />
           <div class="card-content">
             <h4>Traffic Safety</h4>
-            <router-link :to="{ path: '/blog', hash: '#traffic-safety' }" class="learn-more">
+            <router-link :to="{ path: '/about', hash: '#traffic-safety' }" class="learn-more">
               LEARN MORE →
             </router-link>
           </div>
@@ -35,7 +35,7 @@
           <img src="/img/features/02.jpg" alt="Construction Service" />
           <div class="card-content">
             <h4>Fleet Safety</h4>
-            <router-link :to="{ path: '/blog', hash: '#fleet-safety' }" class="learn-more">
+            <router-link :to="{ path: '/about', hash: '#fleet-safety' }" class="learn-more">
               LEARN MORE →
             </router-link>
           </div>
@@ -45,7 +45,7 @@
           <img src="/img/features/b1.jpg" alt="Chemical Services" />
           <div class="card-content">
             <h4>Risk</h4>
-            <router-link :to="{ path: '/blog', hash: '#risk-pro' }" class="learn-more">
+            <router-link :to="{ path: '/about', hash: '#risk-pro' }" class="learn-more">
               LEARN MORE →
             </router-link>
           </div>
@@ -55,7 +55,7 @@
           <img src="/img/features/p4.jpg" alt="Chemical Services" />
           <div class="card-content">
             <h4>Insurance</h4>
-            <router-link :to="{ path: '/blog', hash: '#senior-analyst' }" class="learn-more">
+            <router-link :to="{ path: '/about', hash: '#senior-analyst' }" class="learn-more">
               LEARN MORE →
             </router-link>
           </div>
@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-// No JS needed — static section
+// No JS needed - static section
 </script>
 
 <style scoped>

@@ -17,7 +17,7 @@
         >
       </li>
       <li><router-link to="/risk-explorer" class="link">Risk Explorer</router-link></li>
-      <li><router-link to="blog" class="link">Blog</router-link></li>
+      <li><router-link to="about" class="link">About</router-link></li>
       <li><router-link to="" class="link">Equity & Vulnerability</router-link></li>
     </ul>
 

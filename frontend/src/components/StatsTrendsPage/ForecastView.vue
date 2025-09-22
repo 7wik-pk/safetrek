@@ -8,9 +8,9 @@
         <div class="cards">
           <!-- Card 1: Time range -->
           <div class="card">
-            <h3 class="card-title">Time range</h3>
+            <h3 class="card-title">Target year</h3>
             <div class="fields">
-              <label class="field">
+              <!-- <label class="field">
                 <span>From year</span>
                 <select v-model.number="yearFrom">
                   <option disabled value="">Select year</option>
@@ -24,10 +24,10 @@
                   <option disabled value="">Select year</option>
                   <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
                 </select>
-              </label>
+              </label> -->
 
               <label class="field">
-                <span>Target year</span>
+                <!-- <span>Target year</span> -->
                 <input type="number" v-model.number="targetYear" :min="yearTo" max="2100" />
               </label>
             </div>
@@ -35,10 +35,10 @@
 
           <!-- Card 2: Options -->
           <div class="card">
-            <h3 class="card-title">Forecast options</h3>
+            <h3 class="card-title">Forecast method</h3>
             <div class="fields">
               <label class="field">
-                <span>Method</span>
+                <!-- <span>Method</span> -->
                 <select v-model="method">
                   <option value="ols">Trend (OLS)</option>
                   <option value="mean">Average (Mean)</option>
@@ -47,7 +47,7 @@
 
               <div class="field action-slot">
                 <button class="btn" :disabled="loading" @click="load">
-                  {{ loading ? 'Loading…' : 'Refresh' }}
+                  {{ loading ? 'Loading...' : 'Refresh' }}
                 </button>
               </div>
             </div>
@@ -63,6 +63,12 @@
           <Line v-if="chartData" :data="chartData" :options="chartOptions" />
           <div v-else class="placeholder">Pick a range and press <b>Refresh</b>.</div>
         </div>
+      </div>
+
+      <div class="results-text card">
+        Predictions for {{ targetYear }}: {{ forecast.crashes }} crashes,
+        {{ forecast.total_injuries }} injuries in total
+        and {{ forecast.serious_injuries }} serious injuries.
       </div>
 
       <div class="divider"></div>
@@ -135,7 +141,7 @@ type ForecastPayload = {
 }
 const minYear = 2012
 const maxYear = 2024
-const yearFrom = ref(2019)
+const yearFrom = ref(2012)
 const yearTo = ref(2024)
 
 const years = computed(() => {
@@ -149,13 +155,13 @@ const yearError = computed(() => {
   if (yearFrom.value == null || yearTo.value == null) return ''
 
   if (yearFrom.value < minYear || yearFrom.value > maxYear) {
-    return `“From year” must be between ${minYear} and ${maxYear}.`
+    return `"From year" must be between ${minYear} and ${maxYear}.`
   }
   if (yearTo.value < minYear || yearTo.value > maxYear) {
-    return `“To year” must be between ${minYear} and ${maxYear}.`
+    return `"To year" must be between ${minYear} and ${maxYear}.`
   }
   if (yearFrom.value > yearTo.value) {
-    return '“From year” cannot be after “To year”.'
+    return '"From year" cannot be after "To year".'
   }
   return '' // valid
 })
@@ -361,7 +367,7 @@ function fmt(n: number) {
 /* Fields grid inside a card */
 .fields {
   display: grid;
-  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
   gap: 10px;
 }
 @media (max-width: 960px) {
@@ -450,6 +456,11 @@ input[type='number']:focus {
 .placeholder {
   color: #666;
   padding: 30px 6px;
+}
+
+.results-text {
+  margin: 14px;
+  font-size: large;
 }
 
 /* Divider */
