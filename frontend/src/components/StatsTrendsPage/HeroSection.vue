@@ -5,7 +5,7 @@ import { ref, onMounted, nextTick, onBeforeUnmount } from 'vue'
 import AccidentStats from './AccidentStats.vue'
 import TrendCharts from './TrendCharts.vue'
 import ForecastView from './ForecastView.vue'
-
+import Barchart from '@/components/StatsTrendsPage/Barchart.vue'
 // New: the road list module
 import CrashRoadList from '@/components/StatsTrendsPage/CrashRoadList.vue'
 
@@ -14,6 +14,7 @@ const tabs = [
   { label: 'Crash & Injury Trends', comp: TrendCharts },
   { label: 'Crash & Injury Forecast', comp: ForecastView },
   { label: 'High Risk Accident Roads', comp: CrashRoadList },
+  { label: 'Factor Insights', comp: Barchart },
 ]
 
 const active = ref(0)
@@ -100,6 +101,9 @@ onBeforeUnmount(() => {
       <div class="panel" v-show="active === 3">
         <CrashRoadList />
       </div>
+      <div class="panel" v-show="active === 4">
+        <Barchart />
+      </div>
     </div>
   </div>
 </template>
@@ -174,7 +178,7 @@ onBeforeUnmount(() => {
 .metrics {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   margin: 14px auto 8px;
   background: #fff;
