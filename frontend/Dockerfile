@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . .
 
 RUN npm install
-RUN npm install mapbox-gl
+# RUN npm install mapbox-gl
 RUN npm run build -- --mode development
 
 # Stage 2: Serve with Nginx
