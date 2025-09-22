@@ -31,10 +31,12 @@ app.add_middleware(
 def health_check():
     return {"status": "ok"}
 
-from api import basic_data, stats_trends
+# Registering endpoints from different modules/groups of endpoints
+from api import basic_data, stats_trends, factors_dry as factors
 
 app.include_router(basic_data.app)
 app.include_router(stats_trends.app)
+app.include_router(factors.app)
 
 ### Additional endpoints for distinct area names
 
