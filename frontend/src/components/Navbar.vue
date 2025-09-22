@@ -3,8 +3,8 @@
     <!-- Brand -->
     <div class="nav__brand">
       <router-link to="/" class="link">
-        <img src="@/assets/images/safetrek_logo.svg" alt="SafeTrek Logo" class="logo" />
-        <span class="brand-name">SafeTrek</span>
+        <img src="@/assets/images/safetrek_logo.png" alt="SafeTrek Logo" class="logo" />
+        <!-- <span class="brand-name">SafeTrek</span> -->
       </router-link>
     </div>
 
@@ -18,7 +18,7 @@
       </li>
       <li><router-link to="/risk-explorer" class="link">Risk Explorer</router-link></li>
       <li><router-link to="about" class="link">About</router-link></li>
-      <li><router-link to="" class="link">Equity & Vulnerability</router-link></li>
+      <!-- <li><router-link to="" class="link disabled">Equity & Vulnerability</router-link></li> -->
     </ul>
 
     <!-- Mobile toggle -->
