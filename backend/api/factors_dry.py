@@ -25,8 +25,8 @@ def build_sql(source: str, sax_level_name: str, sax_name: str, category_expr: st
             END AS severity,
             {category_expr} AS category
           FROM {table}
-          JOIN sax ON st_contains(sax.geom, a.geom)
           {joins}
+          JOIN sax ON st_contains(sax.geom, a.geom)
           WHERE a.severity IN ('Other injury accident', 'Serious injury accident')
           {filters}
         )
