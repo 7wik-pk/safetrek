@@ -63,7 +63,7 @@ onBeforeUnmount(() => {
       <div class="hero-inner">
         <button class="back" @click="$router.back()">‹ Back</button>
         <p class="eyebrow">ANALYTICS</p>
-        <h1 class="title">Explore insights across four lenses.</h1>
+        <h1 class="title">Explore insights across five lenses.</h1>
         <p class="sub">Switch between modules using the chips below.</p>
       </div>
     </div>

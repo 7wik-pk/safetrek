@@ -39,7 +39,7 @@ const AGE_GROUPS = [
   '65-69',
   '70+',
 ]
-const SEXES = ['M', 'F', 'U']
+const SEXES = ['Male', 'Female', 'Unknown']
 const ROAD_USERS = [
   'bicyclists',
   'drivers',
@@ -50,7 +50,7 @@ const ROAD_USERS = [
   'pedestrians',
   'pillion passengers',
 ]
-const HOSPITALISED = ['y', 'n']
+const HOSPITALISED = ['yes', 'no']
 const WEATHER = ['clear', 'dust', 'fog', 'not known', 'raining', 'smoke', 'snowing', 'strong winds']
 const ROAD_TYPES = [
   'major',

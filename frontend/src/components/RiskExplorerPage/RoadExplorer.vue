@@ -306,11 +306,14 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  if (resizeObserver && map.value) {
-    resizeObserver.unobserve(map.value)
+  if (resizeObserver) {
+    if (map.value instanceof Element) {
+      resizeObserver.unobserve(map.value)
+    }
     resizeObserver.disconnect()
   }
 })
+
 
 /* don't auto-fetch; just mark "pending" when filters change */
 watch(saLevel, async () => {
