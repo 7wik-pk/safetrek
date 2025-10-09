@@ -1,6 +1,6 @@
 <template>
   <main class="page">
-    <h1 class="title">Young Driver Education</h1>
+    <h1 class="title">Young Driver Education Infographic</h1>
 
     <!-- Card Grid -->
     <div class="grid">
@@ -40,12 +40,51 @@
             <!-- Mitigation Section -->
             <div v-if="cards[expandedIndex].mitigation" class="mitigation-box">
               <h3>Mitigation</h3>
-              <p>{{ cards[expandedIndex].mitigation }}</p>
+              <ul>
+                <li v-for="(line, i) in formatMitigation(cards[expandedIndex].mitigation)" :key="i">
+                  {{ line }}
+                </li>
+              </ul>
             </div>
+
           </div>
         </div>
       </div>
     </transition>
+    <!-- Sources Section -->
+    <section class="sources mt-5">
+      <h2>Sources</h2>
+      <ul>
+        <li>
+          <a
+            href="https://teendriversource.research.chop.edu/teen-crash-risks-prevention/rules-of-the-road/seat-belt-use-facts-and-stats"
+            target="_blank"
+            rel="noopener"
+          >
+            Teen Driver Source – Seat Belt Use Facts and Stats
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.tac.vic.gov.au/road-safety/road-users/p-plate-drivers/risks-for-young-drivers"
+            target="_blank"
+            rel="noopener"
+          >
+            Risks for Young Drivers – TAC (Transport Accident Commission), 2025
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.vicroads.vic.gov.au/"
+            target="_blank"
+            rel="noopener"
+          >
+            VicRoads – Guide for Young Driver Safety Programs
+          </a>
+        </li>
+      </ul>
+    </section>
+
   </main>
 </template>
 
@@ -60,54 +99,69 @@ interface Card {
   mitigation?: string
   image: string
 }
+function formatMitigation(text: string): string[] {
+  return text
+    .split(/\r?\n+/) // split by new lines
+    .map(line => line.trim())
+    .filter(line => line.length > 0) // remove empty lines
+}
 
 const cards: Card[] = [
   {
-    title: "Speed Awareness",
-    desc: "Speed is a major contributing factor to crashes and road deaths. Young drivers often underestimate the dangers of speeding and overestimate their control. Some speed to impress peers.",
-    tag: "Safety",
-    mitigation:
-      "At 60 km/h it takes about 45 m to stop — at 50 km/h it’s 35 m. That 10 m can mean avoiding or causing a crash.",
+    title: "Speeding Awareness",
+    desc: "Speed is a major contributing factor to crashes and road deaths. Young drivers underestimate the dangers of speed and overestimate their ability to control a vehicle safely. Some also speed to impress peers.",
+    tag: "Speeding",
+    mitigation: `The faster you drive the higher the chances that you’ll be seriously injured if you crash. You don’t have to be speeding to die — if you crash at 70km/h it’s likely that your injuries will be fatal. Even just 30km/h is enough to kill a pedestrian.
+As a young driver it’s important to pay attention to not only the posted speed limit but the recommended speed. When you are driving too fast you will have less time to notice and avoid hazards.
+Many newer cars have features that allow you to set your maximum speed. The car will then sound a warning if you go over your set speed. This is a useful feature for ensuring that you’re keeping below the signed speed limit.`,
     image: new URL("@/assets/images/education/speed.jpg", import.meta.url).href,
   },
   {
     title: "Night Driving Risks",
-    desc: "Nighttime and weekends pose higher crash risks, especially for new drivers. Reduced visibility and fatigue increase danger.",
-    tag: "Awareness",
-    mitigation:
-      "Complete at least 120 hours of supervised driving. Avoid unnecessary night trips and plan safe transport.",
+    desc: "Night time and weekend driving are high crash risk times for all drivers, but pose a particularly high risk for inexperienced drivers. This may be because they are carrying passengers of similar age, who may distract the inexperienced driver. Some drive while affected by alcohol or other drugs.",
+    tag: "Night Driving",
+    mitigation: `Avoid driving at night in the first few months of having your Ps.
+If it’s possible, ask your supervising driver or a fully licensed driver to accompany you when driving at night.
+Don’t drive when you’d usually be sleeping — fatigue will increase the risk of crashing.
+If you need to drive at night, try to stick to short trips and avoid long road trips at this time.`,
     image: new URL("@/assets/images/education/night.jpg", import.meta.url).href,
   },
   {
     title: "Driving Under the Influence",
-    desc: "Some young drivers feel pressured to drive after drinking or drug use, impairing alertness and reaction time.",
-    tag: "Responsibility",
-    mitigation:
-      "Victorian learner and probationary drivers must have zero BAC. Never drive under influence — plan alternatives.",
+    desc: "Some young people use alcohol and other drugs as a part of their lifestyle and social behaviour. They can also be pressured by peers to drive when impaired by alcohol and other drugs.",
+    tag: "DUI",
+    mitigation: `Under Victoria’s Graduated Licensing System, all learner and probationary drivers must have a zero blood alcohol concentration (BAC).
+Alcohol slows your reaction times and can affect your decision making ability, which increases your chances of making a mistake when driving.
+To reduce the risks, you are required to have a 0.00 Blood Alcohol Concentration at all times when driving.
+If you’re drinking, leave the car and organise a designated driver, arrange to have someone pick you up, or use public transport and rideshare options.
+If you get caught drink driving you will lose your licence, need to complete a behaviour change program and, after you get it back, you’ll have to get an alcohol interlock fitted in your car.`,
     image: new URL("@/assets/images/education/dui.jpeg", import.meta.url).href,
   },
   {
     title: "Driver Distraction",
-    desc: "Young drivers are more prone to distraction due to inexperience. Phone use or multitasking multiplies crash risk.",
-    tag: "Focus",
-    mitigation:
-      "Using any phone can increase crash risk 4×. Learners and P1 drivers can’t use phones — even hands-free.",
+    desc: "Research has shown that young drivers are at increased risk of a crash due to distraction, because of their inexperience in dealing with the demands of driving. Texting is very dangerous and illegal, as is speaking on a hand-held phone while driving. Under Victoria’s Graduated Licensing System, a learner or P1 driver is not permitted to use a mobile phone of any kind — this includes hand-held, hands-free, or sending text messages.",
+    tag: "Distraction",
+    mitigation: `Just a couple of seconds is all it takes for a crash to happen. In fact, at 50km/h, even a 2 second glance at your phone means you’ll travel up to 28 metres blind.
+As a P Plate driver you’re not allowed to use your phone for anything when you’re driving. So it’s best to put it on silent, turn it off, or put it on “Do Not Disturb While Driving.”
+If you find you’re still tempted, then put your phone somewhere out of reach so you can’t get to it.`,
     image: new URL("@/assets/images/education/distraction.jpg", import.meta.url).href,
   },
   {
     title: "Fatigue and Long Drives",
-    desc: "Young drivers often lead busy lives with little rest. Fatigue slows reactions and causes microsleeps.",
-    tag: "Health",
-    mitigation:
-      "Get 6+ hours of sleep before long drives. Take breaks every 2 hours, and nap if drowsy — only sleep cures fatigue.",
+    desc: "Tiredness is especially relevant for young drivers due to their lifestyle, which may include socialising late at night, and working and/or studying for long hours. Young people lead busy lifestyles that can lead to not having enough sleep or having to drive at times when they would normally be asleep, which can lead to crashes where fatigue is either the cause or a contributing factor.",
+    tag: "Fatigue",
+    mitigation: `Plan your route in advance so that you’re not relying on your phone to find your way, or get a passenger to be your navigator. Planning your route will help you become familiar with where you’re going and work out where to take breaks along the way.
+Long drives can be draining, and if you’ve had a late night you might find that you’re feeling tired. It’s important to break up long drives and stop every two hours, or swap with another driver.
+Avoid driving at times when you would usually be sleeping. If you’ve got a drive that’s more than a few hours long, then it’s worth thinking about doing the drive over a couple of days.
+If you’re tired, then pull over and take a power nap. It will mean you’ll take a little longer to get where you’re going, but it’s better than never arriving at all.`,
     image: new URL("@/assets/images/education/fatigue.jpg", import.meta.url).href,
   },
   {
-    title: "Seatbelt Saves Lives",
-    desc: "Some young people neglect seatbelts on short trips. This drastically increases injury or ejection risk.",
-    tag: "Protection",
-    mitigation:
-      "Seatbelts cut fatal injury risk by 45%. Unbelted passengers are 30× more likely to be ejected — always buckle up.",
+    title: "Seatbelts Save Lives",
+    desc: "Seat belts save lives and prevent injuries. However, young people’s perceptions about risk and risk-taking can lead to a tendency not to wear seatbelts. This may be due to a low perception of risk, the ‘short trip’ syndrome, driving in familiar territory, not developing a routine, or simply forgetting due to distractions. Failing to wear seatbelts is also often related to other risks, such as carrying more passengers than seatbelts or poor vehicle condition.",
+    tag: "Seatbelt",
+    mitigation: `When used properly, seat belts reduce the risk of fatal injury to front seat passengers by 45% and the risk of moderate to critical injury by 50%.
+People not wearing a seat belt are 30 times more likely to be ejected from a vehicle during a crash.`,
     image: new URL("@/assets/images/education/seatbelt.jpg", import.meta.url).href,
   },
 ]
@@ -123,7 +177,7 @@ async function expandCard(i: number) {
   if (!expanded) return
   gsap.fromTo(
     expanded,
-    { scale: 0.8, opacity: 0 },
+    { scale: 0.85, opacity: 0 },
     { scale: 1, opacity: 1, duration: 0.5, ease: "power3.out" }
   )
 }
@@ -141,11 +195,14 @@ function closeCard() {
 }
 </script>
 
+
 <style scoped>
 .page {
   padding: 40px;
   background: #fdfaf3;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .title {
@@ -159,6 +216,7 @@ function closeCard() {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 24px;
+  margin-bottom: 30px; /* reduce from large default spacing */
 }
 
 /* ===== CARD ===== */
@@ -275,6 +333,30 @@ function closeCard() {
   color: #e0f2fe;
   line-height: 1.5;
 }
+.mitigation-box[data-tag="Speeding"] {
+  background: rgba(255, 61, 61, 0.9);
+  border-left: 4px solid #ff3b3b;
+}
+.mitigation-box[data-tag="Night Driving"] {
+  background: rgba(40, 75, 160, 0.9);
+  border-left: 4px solid #4169e1;
+}
+.mitigation-box[data-tag="DUI"] {
+  background: rgba(155, 0, 130, 0.9);
+  border-left: 4px solid #ff5ff6;
+}
+.mitigation-box[data-tag="Distraction"] {
+  background: rgba(240, 160, 0, 0.9);
+  border-left: 4px solid #ffb300;
+}
+.mitigation-box[data-tag="Fatigue"] {
+  background: rgba(0, 123, 255, 0.9);
+  border-left: 4px solid #00bfff;
+}
+.mitigation-box[data-tag="Seatbelt"] {
+  background: rgba(0, 160, 80, 0.9);
+  border-left: 4px solid #00cc66;
+}
 
 /* Fade transition */
 .fade-enter-active,
@@ -285,4 +367,41 @@ function closeCard() {
 .fade-leave-to {
   opacity: 0;
 }
+.sources {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid #ddd;
+  font-size: 0.95rem;
+}
+
+.sources h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.sources ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sources li {
+  margin-bottom: 6px;
+}
+
+.sources a {
+  color: #0077b6;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sources a:hover {
+  color: #0096c7;
+  text-decoration: underline;
+}
+
+
 </style>

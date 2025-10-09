@@ -17,7 +17,6 @@
         <div class="brand-plate__logo">🛡️</div>
         <div class="brand-plate__text">
           <div class="brand-plate__name">SafeTrek</div>
-          <div class="brand-plate__sub">Construction &amp; Industry</div>
         </div>
       </div>
     </div>
@@ -34,9 +33,9 @@
           <li>
             <router-link to="/stats-trends" class="link">Statistics &amp; Trends</router-link>
           </li>
-          <li><a class="a-disabled">Crash Risk Explorer</a></li>
-          <li><a class="a-disabled">Blackspot &amp; Corridor</a></li>
-          <li><a class="a-disabled">Equity &amp; Vulnerability</a></li>
+          <li><router-link to="/risk-explorer" class="link">Risk Explorer</router-link></li>
+          <li><router-link to="about" class="link">About</router-link></li>
+          <li><router-link to="education" class="link">Young Driver Education</router-link></li>
         </ul>
       </nav>
     </div>
@@ -44,11 +43,6 @@
     <div class="footer__copy">
       <div class="container copy__inner">
         <span>Copyright © 2025 SafeTrek. All rights reserved.</span>
-        <div class="copy__links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Cookies</a>
-        </div>
       </div>
     </div>
   </footer>
@@ -128,6 +122,7 @@
   font-size: 18px;
 }
 .brand-plate__name {
+  color: white;
   font-weight: 900;
 }
 .brand-plate__sub {
@@ -306,3 +301,5 @@
   }
 }
 </style>
+<script setup lang="ts">
+</script>
