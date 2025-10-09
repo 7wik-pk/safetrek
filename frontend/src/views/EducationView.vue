@@ -1,5 +1,4 @@
 <template>
-  <LearningRoadmap @topic-selected="filterCards" />
   <!-- FULL-WIDTH: Interactive Video -->
   <section class="section-full section-blue">
     <div class="inner">
