@@ -131,7 +131,7 @@ Returns a list of distinct roads within a specified SA2 region, including their 
 | Name         | Type           | Required | Description |
 |--------------|----------------|----------|-------------|
 | `sa2_name`   | `string`       | ✅ Yes   | Name of the SA2 region (case-insensitive). |
-| `road_types` | `List[str]`    | ❌ No    | Optional list of road types to filter by. Valid values include:<br>• `ambiguous`<br>• `commerical_and_civic`<br>• `infrastructure`<br>• `major`<br>• `pedestrian_and_recreational_paths`<br>• `rural_and_low_traffic`<br>• `suburban`<br>• `-NULL-` |
+| `road_types` | `List[str]`    | ❌ No    | Optional list of road types to filter by. Valid values include:<br>• `ambiguous`<br>• `commerical_and_civic`<br>• `infrastructure`<br>• `major`<br>• `pedestrian_and_recreational_paths`<br>• `rural_and_low_traffic`<br>• `suburban` |
 
 ---
 
@@ -146,7 +146,6 @@ Returns a list of distinct roads within a specified SA2 region, including their 
 | `pedestrian_and_recreational_paths`| Pedestrian & Recreational Paths      |
 | `rural_and_low_traffic`            | Rural & Low-Traffic Roads            |
 | `suburban`                         | Suburban Roads                       |
-| `-NULL-`                           | Unclassified                         |
 
 
 
