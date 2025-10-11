@@ -32,11 +32,12 @@ def health_check():
     return {"status": "ok"}
 
 # Registering endpoints from different modules/groups of endpoints
-from api import basic_data, stats_trends, factors_dry as factors
+from api import basic_data, stats_trends, factors_dry as factors, blackspot_corridor
 
 app.include_router(basic_data.app)
 app.include_router(stats_trends.app)
 app.include_router(factors.app)
+app.include_router(blackspot_corridor.router)
 
 ### Additional endpoints for distinct area names
 

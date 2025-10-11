@@ -118,3 +118,82 @@ Returns a list of roads with accident density metrics:
   },
   ...
 ]
+```
+
+## 🚧 GET `/corridor_crash_density`
+
+Returns crash density statistics for segments of a specified road within a given SA2 or SA3 region. Useful for identifying high-risk corridors based on crash count or crash density (accidents per km).
+
+---
+
+### 🔧 Query Parameters
+
+| Name            | Type                          | Required | Description |
+|-----------------|-------------------------------|----------|-------------|
+| `region_level`  | `"sa2"` or `"sa3"`             | ✅ Yes   | The spatial aggregation level to filter by. |
+| `region_name`   | `string`                      | ✅ Yes   | Name of the SA2 or SA3 region (case-insensitive). |
+| `road_name`     | `string`                      | ✅ Yes   | Name of the road to analyze (e.g., `"Clayton Road"`). |
+| `start_date`    | `YYYY-MM-DD`                  | ✅ Yes   | Start of the accident date range. |
+| `end_date`      | `YYYY-MM-DD`                  | ✅ Yes   | End of the accident date range. |
+| `start_time`    | `HH:MM:SS`                    | ❌ No    | Start of the accident time range (optional). |
+| `end_time`      | `HH:MM:SS`                    | ❌ No    | End of the accident time range (optional). |
+| `order_by`      | `"density"` or `"count"`      | ❌ No    | Sort results by crash density (`accidents_per_km`) or raw count (`num_accidents`). Default: `"density"`. |
+| `order_dir_asc` | `true` or `false`             | ❌ No    | Sort in ascending order if `true`, descending if `false`. Default: `false`. |
+
+---
+
+### 📦 Response Format
+
+Returns a list of up to 10 road segments with crash statistics:
+
+```json
+[
+  {
+    "road_name": "Clayton Road",
+    "segment_geom_wkt": "LINESTRING(145.123 -37.912, 145.125 -37.913)",
+    "segment_type": "Road Segment",
+    "num_accidents": 8,
+    "accidents_per_km": 42.8
+  },
+  ...
+]
+```
+
+## 🚧 GET `/blackspot_crash_density`
+
+Returns crash counts for road structures (e.g., roundabouts, bridges) located along a specified road within a given SA2 or SA3 region. Useful for identifying high-risk blackspots based on structure type and proximity to crash clusters.
+
+---
+
+### 🔧 Query Parameters
+
+| Name             | Type                          | Required | Description |
+|------------------|-------------------------------|----------|-------------|
+| `region_level`   | `"sa2"` or `"sa3"`             | ✅ Yes   | The spatial aggregation level to filter by. |
+| `region_name`    | `string`                      | ✅ Yes   | Name of the SA2 or SA3 region (case-insensitive). |
+| `road_name`      | `string`                      | ✅ Yes   | Name of the road to analyze (e.g., `"Clayton Road"`). |
+| `start_date`     | `YYYY-MM-DD`                  | ✅ Yes   | Start of the accident date range. |
+| `end_date`       | `YYYY-MM-DD`                  | ✅ Yes   | End of the accident date range. |
+| `start_time`     | `HH:MM:SS`                    | ❌ No    | Start of the accident time range (optional). |
+| `end_time`       | `HH:MM:SS`                    | ❌ No    | End of the accident time range (optional). |
+| `structure_types`| `List[str]`                   | ❌ No    | Optional list of structure types to filter by. Valid values include:<br>• `bridge`<br>• `road`<br>• `roundabout`<br>• `tunnel`<br>• `foot_bridge` |
+| `order_dir_asc`  | `true` or `false`             | ❌ No    | Sort results in ascending order if `true`, descending if `false`. Default: `false`. |
+| `limit`          | `integer`                     | ❌ No    | Maximum number of results to return. Default: `10`. |
+
+---
+
+### 📦 Response Format
+
+Returns a list of up to `limit` structures with crash statistics:
+
+```json
+[
+  {
+    "road_name": "Clayton Road",
+    "structure_geom_wkt": "POINT(145.123 -37.912)",
+    "structure_type": "Roundabout",
+    "num_accidents": 7
+  },
+  ...
+]
+```
