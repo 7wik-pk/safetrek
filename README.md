@@ -42,6 +42,14 @@ Before being able to build/run the whole system the very first time on a given P
 
 Follow the instructions in data/instructions.md to download and unzip the necessary data, but DON'T run `docker compose up -d` there as instructed in that file unless you wish to spin up the database docker service in a standalone form. Just unzip the files/folders as instructed after downloading the zip file, and the database service will be created and populated while building the whole system natively as described soon.
 
+#### Videos from Git-LFS
+You will ofcourse need `git` CLI tools to clone our repository, (although you could download the zip, we do not recommend this, because-) initially, however, you will also need to have the `git-lfs` utility installed. On Ubuntu, you would need to run `sudo apt install git-lfs`, similarly on other platforms, you can look up how to install `git-lfs`. Right after cloning the repository, you will need to install this utility if you don't already have it and run the following commands on the terminal/command-line utility:
+
+`git lfs install`
+`git lfs pull`
+
+to download some videos we have in our "Young Driver Education" page.
+
 ### Building & Running Locally
 
 Building and running the whole system with all the necessary components locally is fairly simple and straightfoward once you have finished the initial setup - all you really need is docker installed (and the daemon must be running), along with all the relevant user permissions (typically achieved by adding the currently logged-in user to the docker usergroup on UNIX-like machines).

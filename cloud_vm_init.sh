@@ -12,7 +12,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docke
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io
+sudo apt install -y docker-ce docker-ce-cli containerd.io git git-lfs
 
 # Start Docker and enable on boot
 sudo systemctl start docker
@@ -23,6 +23,9 @@ sudo usermod -aG docker $USER
 newgrp docker
 
 chmod 777 ./cloud_deploy.sh
+
+git lfs install
+git lfs pull
 
 # rm docker-compose.yml
 # mv docker-compose-cloud.yml docker-compose.yml
