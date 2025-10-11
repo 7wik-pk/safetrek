@@ -120,6 +120,55 @@ Returns a list of roads with accident density metrics:
 ]
 ```
 
+## 🛣️ GET `/roads_by_region`
+
+Returns a list of distinct roads within a specified SA2 region, including their type and total length in kilometers. Optionally filters by road type.
+
+---
+
+### 🔧 Query Parameters
+
+| Name         | Type           | Required | Description |
+|--------------|----------------|----------|-------------|
+| `sa2_name`   | `string`       | ✅ Yes   | Name of the SA2 region (case-insensitive). |
+| `road_types` | `List[str]`    | ❌ No    | Optional list of road types to filter by. Valid values include:<br>• `ambiguous`<br>• `commerical_and_civic`<br>• `infrastructure`<br>• `major`<br>• `pedestrian_and_recreational_paths`<br>• `rural_and_low_traffic`<br>• `suburban`<br>• `-NULL-` |
+
+---
+
+### 🏷️ Road Type → Frontend Label
+
+| All possible `road_types` values                         | 💡 Frontend Label                     |
+|------------------------------------|--------------------------------------|
+| `ambiguous`                        | Ambiguous Classification             |
+| `commerical_and_civic`             | Commercial & Civic Roads             |
+| `infrastructure`                   | Infrastructure Roads                 |
+| `major`                            | Major Roads                          |
+| `pedestrian_and_recreational_paths`| Pedestrian & Recreational Paths      |
+| `rural_and_low_traffic`            | Rural & Low-Traffic Roads            |
+| `suburban`                         | Suburban Roads                       |
+| `-NULL-`                           | Unclassified                         |
+
+
+
+### 📦 Response Format
+
+Returns a list of roads with type and length:
+
+```json
+[
+  {
+    "road_name": "Springvale Rd",
+    "road_type": "Major Roads",
+    "road_length_km": 4.72
+  },
+  {
+    "road_name": "Wellington Rd",
+    "road_type": "Suburban Roads",
+    "road_length_km": 2.15
+  }
+]
+```
+
 ## 🚧 GET `/corridor_crash_density`
 
 Returns crash density statistics for segments of a specified road within a given SA2 or SA3 region. Useful for identifying high-risk corridors based on crash count or crash density (accidents per km).
@@ -176,11 +225,31 @@ Returns crash counts for road structures (e.g., roundabouts, bridges) located al
 | `end_date`       | `YYYY-MM-DD`                  | ✅ Yes   | End of the accident date range. |
 | `start_time`     | `HH:MM:SS`                    | ❌ No    | Start of the accident time range (optional). |
 | `end_time`       | `HH:MM:SS`                    | ❌ No    | End of the accident time range (optional). |
-| `structure_types`| `List[str]`                   | ❌ No    | Optional list of structure types to filter by. Valid values include:<br>• `bridge`<br>• `road`<br>• `roundabout`<br>• `tunnel`<br>• `foot_bridge` |
+| `structure_types`| `List[str]`                   | ❌ No    | Optional list of structure types to filter by. Valid values include:<br>• `barrier`<br>• `bridge`<br>• `ford`<br>• `gate`<br>• `int_attribute`<br>• `int_coast`<br>• `int_locality`<br>• `int_nosignal`<br>• `int_paper`<br>• `int_signal`<br>• `level_crossing`<br>• `road_end`<br>• `roundabout`<br>• `tunnel` |
 | `order_dir_asc`  | `true` or `false`             | ❌ No    | Sort results in ascending order if `true`, descending if `false`. Default: `false`. |
 | `limit`          | `integer`                     | ❌ No    | Maximum number of results to return. Default: `10`. |
 
 ---
+
+### 🏷️ Structure Type → Frontend Label
+
+| `structure_type`     | 💡 Frontend Label                     |
+|----------------------|--------------------------------------|
+| `barrier`            | Road Barrier                         |
+| `bridge`             | Bridge                               |
+| `ford`               | Low-Water Crossing (Ford)            |
+| `gate`               | Road Gate                            |
+| `int_attribute`      | Intersection (Attribute Only)        |
+| `int_coast`          | Coastal Intersection                 |
+| `int_locality`       | Locality Intersection                |
+| `int_nosignal`       | Unsignalized Intersection            |
+| `int_paper`          | Paper Road Intersection              |
+| `int_signal`         | Signalized Intersection              |
+| `level_crossing`     | Railway Level Crossing               |
+| `road_end`           | Road End                             |
+| `roundabout`         | Roundabout                           |
+| `tunnel`             | Tunnel                               |
+
 
 ### 📦 Response Format
 
