@@ -202,63 +202,31 @@
       </div>
     </div>
 
-    <!-- PAGE 3: Results as list -->
+    <!-- PAGE 3: Results as map -->
     <div v-if="step===3" class="card shadow-sm" id="tour-step3">
       <div class="card-body">
         <h2 class="h5 mb-3">Results</h2>
 
-        <div v-if="mode==='corridors'">
-          <div v-if="loading.results" class="text-center py-5">
-            <div class="spinner-border text-dark" role="status"></div>
-            <div class="fw-semibold mt-2">Loading…</div>
+        <div class="map-wrap">
+          <div id="results-map" class="map-container" />
+          <!-- Overlay message when no results -->
+          <div
+            v-if="!loading.results && step === 3 && ((mode==='corridors' && !corridors.length) || (mode==='blackspots' && !blackspots.length))"
+            class="no-results-overlay"
+          >
+            <div class="no-results-message">
+              <div class="fw-semibold mb-1">No results found. Try selecting bigger (or more prominent) roads, adjusting filters,
+                {{ mode==='corridors'
+                  ? 'or widening the date range.'
+                  : 'or adjusting structure types.' }}
+              </div>
+            </div>
           </div>
-          <template v-else>
-            <ul v-if="corridors.length" class="list-group">
-              <li v-for="(row,i) in corridors" :key="i" class="list-group-item">
-                <div class="row g-2 align-items-center">
-                  <div class="col-12 col-sm-2"><span class="text-muted small">#</span> {{ i+1 }}</div>
-                  <div class="col-12 col-sm-4">
-                    <span class="text-muted small">Segment type</span>
-                    <div class="fw-semibold">{{ row.segment_type }}</div>
-                  </div>
-                  <div class="col-6 col-sm-3">
-                    <span class="text-muted small">Accidents</span>
-                    <div class="fw-semibold">{{ row.num_accidents }}</div>
-                  </div>
-                  <div class="col-6 col-sm-3">
-                    <span class="text-muted small">Accidents / km</span>
-                    <div class="fw-semibold">{{ row.accidents_per_km }}</div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-            <div v-else class="text-muted">No results. Try widening dates or removing time window.</div>
-          </template>
-        </div>
 
-        <div v-if="mode==='blackspots'">
-          <div v-if="loading.results" class="text-center py-5">
-            <div class="spinner-border text-dark" role="status"></div>
-            <div class="fw-semibold mt-2">Loading…</div>
+          <div v-if="loading.results" class="loading-overlay" aria-live="polite">
+            <span class="spinner-border text-dark" role="status"></span>
+            <div class="fw-semibold mt-2">Loading map...</div>
           </div>
-          <template v-else>
-            <ul v-if="blackspots.length" class="list-group">
-              <li v-for="(row,i) in blackspots" :key="i" class="list-group-item">
-                <div class="row g-2 align-items-center">
-                  <div class="col-12 col-sm-2"><span class="text-muted small">#</span> {{ i+1 }}</div>
-                  <div class="col-12 col-sm-6">
-                    <span class="text-muted small">Structure type</span>
-                    <div class="fw-semibold">{{ row.structure_type }}</div>
-                  </div>
-                  <div class="col-12 col-sm-4">
-                    <span class="text-muted small">Accidents</span>
-                    <div class="fw-semibold">{{ row.num_accidents }}</div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-            <div v-else class="text-muted">No results. Try widening dates or removing filters.</div>
-          </template>
         </div>
 
         <div class="d-flex gap-2 mt-4">
@@ -275,7 +243,7 @@
       style="z-index:1050;"
     >
       <div class="spinner-border text-dark" role="status"></div>
-      <div class="fw-semibold mt-2">Loading…</div>
+      <div class="fw-semibold mt-2">Loading...</div>
     </div>
   </section>
 
@@ -283,8 +251,11 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue'
 import FooterSection from '@/components/FooterSection.vue'
+
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 // version-agnostic import for driver.js (works with v1.3.6 or v2)
 import * as DriverNS from 'driver.js'
@@ -356,6 +327,173 @@ const selectedStructTypes = computed(() =>
 const canRun = computed(() => !!state.selectedSA2 && !!state.selectedRoad)
 const busy = computed(() => loading.sa2 || loading.roads || loading.results)
 const progressPct = computed(() => (step.value === 1 ? 33 : step.value === 2 ? 66 : 100))
+
+const map = ref<L.Map | null>(null)
+const resultsLayer = ref<L.LayerGroup | null>(null)
+
+function parseLineWKT(wkt: string): [number, number][][] {
+  if (!wkt || typeof wkt !== "string") return []
+
+  const isMulti = wkt.startsWith("MULTILINESTRING")
+  const clean = wkt.replace(/^(MULTI)?LINESTRING\s*/i, "").replace(/^\(+|\)+$/g, "").trim()
+
+  const parseCoords = (s: string): [number, number][] =>
+    s.split(",").map(pair => {
+      const [lon, lat] = pair.trim().split(/\s+/).map(Number)
+      return [lat, lon]
+    })
+
+  if (isMulti) {
+    return clean.split(/\)\s*,\s*\(/).map(parseCoords)
+  } else {
+    return [parseCoords(clean)]
+  }
+}
+
+let legendControl: L.Control | null = null
+
+function setLegend(title: string, maxVal: number) {
+  if (legendControl) legendControl.remove()
+
+  legendControl = L.control({ position: "bottomright" })
+  legendControl.onAdd = () => {
+    const div = L.DomUtil.create("div", "info legend")
+    const grades = [0, 0.2, 0.4, 0.6, 0.8, 1]
+      .map(g => Math.round(g * maxVal))
+      .filter((v, i, arr) => i === 0 || v !== arr[i - 1])
+
+    div.innerHTML = `<h4>${title}</h4>` + grades.map(v => {
+      const c = getColor(v, maxVal)
+      return `<i style="background:${c}"></i> ${v}`
+    }).join("<br>")
+    return div
+  }
+
+  legendControl.addTo(map.value!)
+}
+
+function renderCorridorResults(rows: any[]) {
+  if (!map.value) return
+  if (resultsLayer.value) resultsLayer.value.remove()
+  resultsLayer.value = L.layerGroup()
+
+  const maxDensity = Math.max(...rows.map(r => r.accidents_per_km || 0))
+
+  const polylines: L.Polyline[] = []
+
+  rows.forEach(row => {
+    const segments = parseLineWKT(row.segment_geom_wkt)
+    if (!segments.length) return
+
+    const color = getColor(row.accidents_per_km, maxDensity)
+    const weight = 3 + Math.min(7, (row.accidents_per_km / (maxDensity || 1)) * 7)
+
+    segments.forEach(coords => {
+      const polyline = L.polyline(coords, {
+        color,
+        weight,
+        opacity: 0.9
+      }).bindPopup(`
+        <strong>${row.road_name}</strong><br/>
+        Segment type: ${row.segment_type}<br/>
+        Accidents: ${row.num_accidents}<br/>
+        Density: ${row.accidents_per_km} / km
+      `)
+
+      polyline.addTo(resultsLayer.value!)
+      polylines.push(polyline)
+    })
+
+  })
+
+  resultsLayer.value.addTo(map.value)
+  setLegend("Accidents / km", maxDensity)
+
+  if (polylines.length) {
+    const group = L.featureGroup(polylines)
+    map.value.fitBounds(group.getBounds(), { padding: [40, 40] })
+  }
+}
+
+function renderBlackspotResults(rows: any[]) {
+  if (!map.value) return
+  if (resultsLayer.value) resultsLayer.value.remove()
+  resultsLayer.value = L.layerGroup()
+
+  const maxAccidents = Math.max(...rows.map(r => r.num_accidents || 0))
+
+  const points: L.CircleMarker[] = []
+
+  rows.forEach(row => {
+    const match = row.structure_geom_wkt.match(/^POINT\(([^ ]+) ([^ ]+)\)$/)
+    if (!match) return
+    const [lon, lat] = [parseFloat(match[1]), parseFloat(match[2])]
+
+    const radius = 6 + Math.min(10, (row.num_accidents / (maxAccidents || 1)) * 10)
+    const color = getColor(row.num_accidents, maxAccidents)
+
+    const marker = L.circleMarker([lat, lon], {
+      radius,
+      color,
+      fillColor: color,
+      fillOpacity: 0.8,
+      weight: 1
+    }).bindPopup(`
+      <strong>${row.road_name}</strong><br/>
+      Structure type: ${row.structure_type}<br/>
+      Accidents: ${row.num_accidents}
+    `)
+
+    marker.addTo(resultsLayer.value!)
+    points.push(marker)
+  })
+
+  resultsLayer.value.addTo(map.value)
+  setLegend("Accident count", maxAccidents)
+
+  if (points.length) {
+    const group = L.featureGroup(points)
+    map.value.fitBounds(group.getBounds(), { padding: [40, 40] })
+  }
+}
+
+function getColor(value: number, max: number): string {
+  const ratio = max > 0 ? value / max : 0
+  const r = Math.floor(255 * ratio)
+  const g = Math.floor(255 * (1 - ratio))
+  return `rgb(${r},${g},0)`
+}
+
+watch(step, async (newStep) => {
+  if (newStep === 3 && !map.value) {
+    await nextTick()
+    const container = document.getElementById("results-map")
+    if (!container) {
+      console.warn("Map container not found")
+      return
+    }
+
+    map.value = L.map(container).setView([-37.81, 144.96], 12)
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors"
+    }).addTo(map.value)
+
+    if (mode.value === 'corridors') renderCorridorResults(corridors.value)
+    else renderBlackspotResults(blackspots.value)
+  }
+})
+
+watch(step, (newStep) => {
+  if (newStep !== 3 && map.value) {
+    map.value.remove()
+    map.value = null
+    resultsLayer.value = null
+    if (legendControl) {
+      legendControl.remove()
+      legendControl = null
+    }
+  }
+})
 
 /** GUARD to prevent late responses navigating UI **/
 let inflightToken: symbol | null = null
@@ -472,7 +610,17 @@ async function runBlackspots() {
 
 // Navigation + in-flight guarded run actions
 const goTo = (n: number) => { cancelInflight(); step.value = n }
-const setMode = (m: 'corridors' | 'blackspots') => { if (!busy.value) mode.value = m }
+const setMode = (m: 'corridors' | 'blackspots') => {
+  if (busy.value) return
+  mode.value = m
+
+  if (m === 'blackspots') {
+    // Check all structure types
+    Object.keys(state.structTypeSelected).forEach(key => {
+      state.structTypeSelected[key] = true
+    })
+  }
+}
 
 const runCorridorsAndGo = async () => {
   if (!canRun.value || busy.value) return
@@ -481,7 +629,9 @@ const runCorridorsAndGo = async () => {
   try {
     const res = await runCorridors()
     if (inflightToken !== token) return
-    corridors.value = res; blackspots.value = []; step.value = 3
+    corridors.value = res;
+    renderCorridorResults(res);
+    blackspots.value = []; step.value = 3
   } finally {
     if (inflightToken === token) loading.results = false
   }
@@ -494,13 +644,16 @@ const runBlackspotsAndGo = async () => {
   try {
     const res = await runBlackspots()
     if (inflightToken !== token) return
-    blackspots.value = res; corridors.value = []; step.value = 3
+    blackspots.value = res;
+    renderBlackspotResults(res);
+    corridors.value = [];
+    step.value = 3
   } finally {
     if (inflightToken === token) loading.results = false
   }
 }
 
-/** Guided tour — works with driver.js v1 or v2 */
+/** Guided tour - works with driver.js v1 or v2 */
 function startTour() {
   try {
     const options: any = {
@@ -575,4 +728,71 @@ onMounted(async () => {
 
 <style scoped>
 /* Bootstrap handles styling; wrapper ensures white background */
+
+.map-wrap {
+  position: relative;
+  margin-top: 1rem;
+}
+.map-container {
+  height: 60vh;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #ececec;
+}
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.75);
+  font-weight: 600;
+  z-index: 10;
+}
+
+.info.legend {
+  background: #fff;
+  padding: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0,0,0,.18);
+  border: 1px solid #e5e7eb;
+}
+.info.legend h4 {
+  margin: 0 0 6px;
+  font-weight: 900;
+  font-size: 13px;
+  color: #0f1419;
+}
+.info.legend i {
+  width: 24px;
+  height: 14px;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.no-results-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  pointer-events: none;
+}
+
+.no-results-message {
+  text-align: center;
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  max-width: 300px;
+}
+
 </style>
