@@ -93,9 +93,9 @@
           <label class="form-label">Road</label>
           <div class="d-flex gap-2 align-items-center">
             <select v-model="state.selectedRoad" class="form-select" :disabled="!roads.length || busy">
-              <option value="" disabled>Select a road…</option>
+              <option value="" disabled>Select a road...</option>
               <option v-for="r in roads" :key="r.road_name" :value="r.road_name">
-                {{ r.road_name }} — {{ r.road_type }}<span v-if="r.road_length_km != null"> ({{ r.road_length_km.toFixed(2) }} km)</span>
+                {{ r.road_name }} - {{ r.road_type }}<span v-if="r.road_length_km != null"> ({{ r.road_length_km.toFixed(2) }} km)</span>
               </option>
             </select>
             <button
@@ -205,7 +205,7 @@
     <!-- PAGE 3: Results as map -->
     <div v-if="step===3" class="card shadow-sm" id="tour-step3">
       <div class="card-body">
-        <h2 class="h5 mb-3">Results</h2>
+        <h2 class="h5 mb-3">Most dangerous {{ mode }} on {{ state.selectedRoad }}, {{ state.selectedSA2 }}</h2>
 
         <div class="map-wrap">
           <div id="results-map" class="map-container" />
