@@ -5,7 +5,7 @@ import HomeView from '../views/HomeView.vue'
 import BlogPage from '@/components/AboutPage.vue'
 import RiskView from "@/components/RiskExplorerPage/RiskView.vue";
 import EducationView from '@/views/EducationView.vue'
-import DangerExplorer from '@/components/DangerExplorer.vue'
+import BlackspotCorridorAnalysis from '@/components/BlackspotCorridorAnalysis.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
@@ -13,7 +13,7 @@ const routes = [
   { path: '/risk-explorer', name: 'risk-explorer', component: RiskView },
   { path: '/about', name: 'about', component: BlogPage },
   { path: '/education', name: 'education', component: EducationView },
-  { path: '/risk-finder', name: 'risk-finder', component: DangerExplorer },
+  { path: '/blackspot-corridor', name: 'blackspot-corridor', component: BlackspotCorridorAnalysis },
 ]
 
 const router = createRouter({

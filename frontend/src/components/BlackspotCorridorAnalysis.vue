@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div>
         <div class="text-uppercase text-muted fw-semibold small">Analytics</div>
-        <h1 class="h3 fw-bold m-0">Road Safety Hotspots Explorer</h1>
+        <h1 class="h3 fw-bold m-0">Blackspot & Corridor Analysis</h1>
         <div class="text-muted">Switch between modules and follow the guided steps.</div>
       </div>
       <button class="btn btn-outline-secondary btn-sm" @click="startTour">❓ Tour</button>
@@ -32,7 +32,7 @@
     <div v-if="step===1" class="card shadow-sm" id="tour-step1">
       <div class="card-body">
         <div class="d-flex align-items-baseline gap-2 mb-2">
-          <h2 class="h5 m-0">Choose Suburb & road types</h2>
+          <h2 class="h5 m-0">Which suburb & road types are you interested in exploring?</h2>
           <small class="text-muted">These choices fetch roads, then you set filters.</small>
         </div>
 
@@ -40,7 +40,7 @@
           <label class="form-label">Suburb (SA2)</label>
           <div class="d-flex gap-2 align-items-center">
             <select v-model="state.selectedSA2" class="form-select" @change="resetRoads">
-              <option value="" disabled>Select a suburb…</option>
+              <option value="" disabled>Select a suburb...</option>
               <option v-for="name in sa2Options" :key="name" :value="name">{{ name }}</option>
             </select>
             <button
@@ -54,7 +54,7 @@
         </div>
 
         <div class="mb-3" id="tour-roadtypes">
-          <label class="form-label">Road types</label>
+          <label class="form-label">Road types (for fetching roads within the suburb)</label>
           <div class="row g-2">
             <div v-for="opt in ROAD_TYPE_OPTIONS" :key="opt.value" class="col-12 col-sm-6 col-lg-4">
               <div class="border rounded-3 p-3 h-100">
@@ -76,7 +76,7 @@
         </div>
 
         <button id="tour-fetch" class="btn btn-dark w-100" @click="fetchRoadsAndNext" :disabled="!state.selectedSA2 || busy">
-          {{ loading.roads ? 'Fetching…' : 'Fetch & Next →' }}
+          {{ loading.roads ? 'Fetching...' : 'Select road to analyse →' }}
         </button>
       </div>
     </div>
@@ -86,7 +86,7 @@
       <div class="card-body">
         <div class="d-flex align-items-baseline gap-2 mb-2">
           <h2 class="h5 m-0">Choose road & filters</h2>
-          <small class="text-muted">Roads were fetched using your selections on Page 1.</small>
+          <small class="text-muted">Roads were fetched using your selections in the previous step.</small>
         </div>
 
         <div class="mb-3" id="tour-road">
@@ -161,14 +161,14 @@
             </select>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Direction</label>
+            <label class="form-label">Order direction</label>
             <select v-model.number="state.orderAsc" class="form-select" :disabled="busy">
-              <option :value="0">Desc</option>
-              <option :value="1">Asc</option>
+              <option :value="0">Riskiest first</option>
+              <option :value="1">Safest first</option>
             </select>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Limit</label>
+            <label class="form-label">Limit number of results</label>
             <input type="number" class="form-control" v-model.number="state.limit" min="1" max="100" :disabled="busy" />
           </div>
         </div>
@@ -231,7 +231,7 @@
 
         <div class="d-flex gap-2 mt-4">
           <button class="btn btn-outline-secondary" @click="goTo(2)" :disabled="busy">← Filters</button>
-          <button class="btn btn-outline-secondary" @click="goTo(1)" :disabled="busy">↺ Start</button>
+          <button class="btn btn-outline-secondary" @click="goTo(1)" :disabled="busy">↺ Start over</button>
         </div>
       </div>
     </div>
@@ -298,7 +298,7 @@ const STRUCTURE_TYPE_OPTIONS = [
 /** STATE **/
 const sa2Options = ref<string[]>([])
 const state = reactive({
-  selectedSA2: '',
+  selectedSA2: 'Clayton - Central', // default for easier testing
   roadTypeSelected: Object.fromEntries(ROAD_TYPE_OPTIONS.map(o => [o.value, true])) as Record<string, boolean>,
   selectedRoad: '',
   startDate: '',
@@ -703,15 +703,15 @@ function startTour() {
       steps.push(
         { element: '#tour-step1', popover: { title: 'Step 1: Suburb', description: 'Pick the suburb and road types to include.' } },
         { element: '#tour-sa2', popover: { title: 'Suburb (SA2)', description: 'Choose the suburb to analyze.' } },
-        { element: '#tour-roadtypes', popover: { title: 'Road types', description: 'Uncheck the types you don’t want.' } },
-        { element: '#tour-fetch', popover: { title: 'Fetch roads', description: 'Fetch all roads and continue to filters.' } },
+        { element: '#tour-roadtypes', popover: { title: 'Road types', description: 'Uncheck the types you don\'t want.' } },
+        { element: '#tour-fetch', popover: { title: 'Choose road', description: 'Proceed to choose the road to analyse within the given suburb with filters.' } },
       )
     }
     if (document.querySelector('#tour-step2')) {
       steps.push(
         { element: '#tour-step2', popover: { title: 'Step 2: Filters', description: 'Choose the road and set filters for analysis.' } },
-        { element: '#tour-analysis', popover: { title: 'Analysis type', description: 'Corridors vs Blackspots.' } },
-        { element: '#tour-dates', popover: { title: 'Date & time', description: 'Pick the analysis window.' } },
+        { element: '#tour-analysis', popover: { title: 'Analysis type', description: 'Decide whether you wish to analyse corridors (short stretches of a given road) or blackspots (isolated points of interest such as intersections or roundabouts.)' } },
+        { element: '#tour-dates', popover: { title: 'Date & time', description: 'Define the analysis window.' } },
         { element: '#tour-structures', popover: { title: 'Blackspot structures', description: 'Optional filters for blackspots.' } },
       )
     }
