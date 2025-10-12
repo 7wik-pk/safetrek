@@ -262,7 +262,7 @@ import * as DriverNS from 'driver.js'
 import 'driver.js/dist/driver.css'
 
 /** CONFIG **/
-const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000'
+const API_BASE = import.meta.env.VITE_API_BASE ?? '/api'
 const REGION_LEVEL: 'sa2' | 'sa3' = 'sa2'
 
 const ROAD_TYPE_OPTIONS = [
