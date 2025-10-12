@@ -96,7 +96,7 @@ def get_roads_by_region(
         AND vr.h_road_type IS NOT NULL
         {road_type_filter}
         GROUP BY vr.ezirdnmlbl, vr.h_road_type
-        ORDER BY vr.ezirdnmlbl;
+        ORDER BY ST_Length(ST_Union(vr.geom)::geography)/1000 DESC;
     """
 
     result = db.execute(text(query), {"region_name": sa2_name}).fetchall()
