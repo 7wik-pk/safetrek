@@ -644,8 +644,9 @@ const setMode = (m: 'corridors' | 'blackspots') => {
 
   if (m === 'blackspots') {
     // Check all structure types
+    const defaults = ['int_locality', 'int_signal', 'level_crossing', 'int_nosignal', 'road_end', 'roundabout']
     Object.keys(state.structTypeSelected).forEach(key => {
-      state.structTypeSelected[key] = true
+      state.structTypeSelected[key] = defaults.includes(key)
     })
   }
 }
