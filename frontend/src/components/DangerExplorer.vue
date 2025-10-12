@@ -245,7 +245,7 @@
       <div class="spinner-border text-dark" role="status"></div>
       <div class="fw-semibold mt-2">
         Loading, please wait...
-        <div class="text-muted small">Blackspots can take up to 2 minutes to query, please be patient.</div>
+        <div v-if="mode==='blackspots'" class="text-muted small">Blackspots can take up to 2 minutes to query, please be patient.</div>
       </div>
     </div>
   </section>
@@ -506,10 +506,26 @@ const cancelInflight = () => { inflightToken = newToken() }
 /** HELPERS **/
 import axios from 'axios'
 
-async function fetchJSON<T>(url: string, timeoutMs = 180000): Promise<T> {
+async function fetchJSON<T>(
+  url: string,
+  options?: {
+    method?: 'GET' | 'POST'
+    payload?: any
+    timeoutMs?: number
+  }
+): Promise<T> {
+  const method = options?.method ?? 'GET'
+  const timeout = options?.timeoutMs ?? 180000 // default 3mins
+  const payload = options?.payload ?? {}
+
   try {
-    const response = await axios.get<T>(url, { timeout: timeoutMs })
-    return response.data
+    if (method === 'POST') {
+      const response = await axios.post<T>(url, payload, { timeout })
+      return response.data
+    } else {
+      const response = await axios.get<T>(url, { timeout })
+      return response.data
+    }
   } catch (err: any) {
     if (axios.isAxiosError(err) && err.code === 'ECONNABORTED') {
       throw new Error('Request timed out')
@@ -598,7 +614,7 @@ async function runCorridors() {
     params.set('end_time', state.endTime + ':00')
   }
   const url = `${API_BASE}/corridor_crash_density?${params.toString()}`
-  return await fetchJSON<any[]>(url, 180000) // allow 3 min timeout
+  return await fetchJSON<any[]>(url, {method: 'POST', timeoutMs: 180000}) // allow 3 min timeout
 }
 
 async function runBlackspots() {
@@ -617,7 +633,7 @@ async function runBlackspots() {
   }
   selectedStructTypes.value.forEach(st => params.append('structure_types', st))
   const url = `${API_BASE}/blackspot_crash_density?${params.toString()}`
-  return await fetchJSON<any[]>(url, 180000) // allow 3 min timeout
+  return await fetchJSON<any[]>(url, {method: 'POST', timeoutMs: 180000}) // allow 3 min timeout
 }
 
 // Navigation + in-flight guarded run actions

@@ -7,7 +7,7 @@ from db import get_db
 
 router = APIRouter()
 
-@router.get("/corridor_crash_density")
+@router.post("/corridor_crash_density")
 def get_corridor_crash_density(
     region_level: Literal["sa2", "sa3"],
     region_name: str,
@@ -104,7 +104,7 @@ def get_corridor_crash_density(
     ]
 
 
-@router.get("/blackspot_crash_density")
+@router.post("/blackspot_crash_density")
 def get_blackspot_crash_density(
     region_level: Literal["sa2", "sa3"],
     region_name: str,
