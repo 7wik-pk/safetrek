@@ -243,7 +243,10 @@
       style="z-index:1050;"
     >
       <div class="spinner-border text-dark" role="status"></div>
-      <div class="fw-semibold mt-2">Loading...</div>
+      <div class="fw-semibold mt-2">
+        Loading, please wait...
+        <div class="text-muted small">Blackspots can take up to 2 minutes to query, please be patient.</div>
+      </div>
     </div>
   </section>
 
@@ -501,11 +504,19 @@ const newToken = () => Symbol('inflight')
 const cancelInflight = () => { inflightToken = newToken() }
 
 /** HELPERS **/
-async function fetchJSON<T>(url: string) {
-  const r = await fetch(url)
-  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
-  return (await r.json()) as T
+async function fetchJSON<T>(url: string, timeoutMs = 180000): Promise<T> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const r = await fetch(url, { signal: controller.signal })
+    if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
+    return await r.json()
+  } finally {
+    clearTimeout(timeout)
+  }
 }
+
 function toIsoDate(d: Date) { return d.toISOString().slice(0, 10) }
 function resetRoads() { roads.value = []; state.selectedRoad = '' }
 
@@ -586,7 +597,7 @@ async function runCorridors() {
     params.set('end_time', state.endTime + ':00')
   }
   const url = `${API_BASE}/corridor_crash_density?${params.toString()}`
-  return await fetchJSON<any[]>(url)
+  return await fetchJSON<any[]>(url, 180000) // allow 3 min timeout
 }
 
 async function runBlackspots() {
@@ -605,7 +616,7 @@ async function runBlackspots() {
   }
   selectedStructTypes.value.forEach(st => params.append('structure_types', st))
   const url = `${API_BASE}/blackspot_crash_density?${params.toString()}`
-  return await fetchJSON<any[]>(url)
+  return await fetchJSON<any[]>(url, 180000) // allow 3 min timeout
 }
 
 // Navigation + in-flight guarded run actions
@@ -644,10 +655,13 @@ const runBlackspotsAndGo = async () => {
   try {
     const res = await runBlackspots()
     if (inflightToken !== token) return
-    blackspots.value = res;
-    renderBlackspotResults(res);
-    corridors.value = [];
+    blackspots.value = res
+    renderBlackspotResults(res)
+    corridors.value = []
     step.value = 3
+  } catch (err) {
+    console.error("Blackspot query failed:", err)
+    alert("Blackspot query failed due to a timeout/internal server error. Please try again or adjust filters.")
   } finally {
     if (inflightToken === token) loading.results = false
   }
