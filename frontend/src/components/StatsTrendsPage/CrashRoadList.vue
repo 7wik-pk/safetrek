@@ -1,6 +1,10 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 
+// Guided tour (works with driver.js v1.3.6 or v2)
+import * as DriverNS from 'driver.js'
+import 'driver.js/dist/driver.css'
+
 const API = import.meta.env.VITE_API_BASE ?? '/api'
 
 /* ---------- Allowed values ---------- */
@@ -64,7 +68,6 @@ const ORDER_BY_OPTS = {
   accident_count: 'Accident Count',
   accident_density_per_km: 'Accident Density (/km)',
 }
-
 const MIN_ACCIDENTS_OPTIONS = [0, 1, 2, 3, 5, 10]
 const MIN_LENGTH_OPTIONS = [0.2, 0.5, 1, 2, 5]
 const LIMIT_OPTIONS = [5, 10, 20, 50, 100]
@@ -129,7 +132,7 @@ function buildBody() {
     sa_name: sa_name.value,
     road_type: road_type.value,
     order_by: order_by.value,
-    order_desc: order_descending.value, // always descending
+    order_desc: order_descending.value, // always descending flag in your backend
     limit: Number(limit.value),
   }
   const opt = {
@@ -205,6 +208,23 @@ async function clearForm() {
   errorMsg.value = ''
 }
 
+/* CSV export used by template button */
+function downloadCSV() {
+  if (!rows.value.length) return
+  const headers = ['road_name','accident_count','road_length_km','accident_density_per_km']
+  const csv = [
+    headers.join(','),
+    ...rows.value.map(r => headers.map(h => JSON.stringify(r[h] ?? '')).join(',')),
+  ].join('\n')
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'road_accident_density.csv'
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 /* ---------- Table helpers ---------- */
 const totalCount = computed(() => rows.value.reduce((s, r) => s + Number(r.accident_count || 0), 0))
 const avgDensity = computed(() =>
@@ -219,54 +239,124 @@ onMounted(async () => {
   if (sa_name.value) refresh()
 })
 watch(sa_level, loadSANames)
+
+/* ---------- Guided tour that opens Filters for “Minimums” ---------- */
+function startTour() {
+  try {
+    const filtersEl = document.querySelector('#tour-filters')
+    const wasOpen = !!filtersEl?.open
+    if (filtersEl && !filtersEl.open) filtersEl.open = true // ensure visible for spotlight
+
+    const opts = {
+      showProgress: true,
+      animate: true,
+      opacity: 0.4,
+      smoothScroll: true,
+      stagePadding: 8,
+      popperOptions: { strategy: 'fixed' }, // avoids top-left glitch
+      // driver.js v2 only:
+      onDestroyed: () => { if (filtersEl) filtersEl.open = wasOpen }
+    }
+
+    const steps = []
+    const add = (sel, title, description) => {
+      const el = document.querySelector(sel)
+      if (el && el.offsetParent !== null) {
+        steps.push({ element: sel, popover: { title, description } })
+      }
+    }
+
+    // Order matters
+    add('#tour-title',     'Road accident density', 'This page ranks roads by crash density within your selected region.')
+    add('#tour-top',       'Quick setup',           'Pick SA level and area, road type, sorting and result limit.')
+    add('#tour-sa-level',  'SA level',              'Switch between District (SA3) and Suburb (SA2).')
+    add('#tour-sa-name',   'SA name',               'Choose the region to analyse.')
+    add('#tour-road-type', 'Road type',             'Filter roads by category.')
+    add('#tour-order-by',  'Sort by',               'Density or total crash counts.')
+    add('#tour-order-dir', 'Direction',             'Highest risk first vs safest first.')
+    add('#tour-limit',     'Limit',                 'How many rows to return.')
+    add('#tour-filters',   'Advanced filters',      'Narrow by dates, times, severity, weather, and more.')
+    add('#tour-actions',   'Run & export',          'Run the query, reset filters, or export results as CSV.')
+    add('#tour-results',   'Results',               'Review ranked roads and metrics.')
+
+    if (!steps.length) { alert('Open the page and click Tour again.'); return }
+
+    // v2 API
+    if (typeof (DriverNS).driver === 'function') {
+      const d = (DriverNS).driver(opts)
+      d.setSteps?.(steps) ?? d.defineSteps?.(steps)
+      d.drive?.()
+      setTimeout(() => d.refresh?.(), 0)
+      return
+    }
+
+    // v1 API
+    const Ctor = (DriverNS).default || (DriverNS)
+    const d = new Ctor(opts)
+    const restore = () => { if (filtersEl) filtersEl.open = wasOpen }
+    d.on?.('reset', restore)            // some v1 builds expose events
+    d.on?.('destroyed', restore)
+    d.defineSteps?.(steps)
+    ;(d.start || d.drive).call(d)
+    setTimeout(() => d.refresh?.(), 0)
+  } catch (e) {
+    console.warn('driver.js failed to start', e)
+    alert('To use the guided tour, please install driver.js:\n\n  npm i driver.js')
+  }
+}
 </script>
 
 <template>
   <div class="wrap">
     <div class="panel">
-      <h2 class="title">Road accident density</h2>
+      <div class="titlebar">
+        <h2 id="tour-title" class="title">Road accident density</h2>
+        <button class="tour-btn" @click="startTour">❓ Tour</button>
+      </div>
 
-      <div class="grid">
+      <!-- Quick setup row -->
+      <div id="tour-top" class="grid">
         <label>SA level</label>
-        <select v-model="sa_level">
+        <select id="tour-sa-level" v-model="sa_level">
           <option value="sa3">District (SA3)</option>
           <option value="sa2">Suburb (SA2)</option>
         </select>
 
         <label>SA name</label>
-        <select v-model="sa_name" :disabled="saLoading || !saNames.length">
+        <select id="tour-sa-name" v-model="sa_name" :disabled="saLoading || !saNames.length">
           <option v-for="n in saNames" :key="n" :value="n">{{ n }}</option>
         </select>
 
         <label>Road type</label>
-        <select v-model="road_type">
+        <select id="tour-road-type" v-model="road_type">
           <option v-for="t in ROAD_TYPES" :key="t" :value="t">{{ t }}</option>
         </select>
 
         <label>Sort by</label>
-        <select v-model="order_by">
+        <select id="tour-order-by" v-model="order_by">
           <option v-for="(label, o) in ORDER_BY_OPTS" :key="o" :value="o">{{ label }}</option>
         </select>
 
         <label>Sort direction</label>
-        <select v-model="order_descending">
+        <select id="tour-order-dir" v-model="order_descending">
           <option :value="false">Safest First (Ascending)</option>
           <option :value="true">Riskiest First (Descending)</option>
         </select>
 
         <label>Limit</label>
-        <select v-model="limit">
+        <select id="tour-limit" v-model="limit">
           <option v-for="n in LIMIT_OPTIONS" :key="n" :value="n">{{ n }}</option>
         </select>
       </div>
 
-      <details>
+      <!-- Filters (collapsed by default) -->
+      <details id="tour-filters">
         <summary>Filters</summary>
         <div class="grid">
-          <label>From</label><input type="date" v-model="date_from" /> <label>To</label
-          ><input type="date" v-model="date_to" /> <label>Time from</label
-          ><input type="time" step="1" v-model="time_from" /> <label>Time to</label
-          ><input type="time" step="1" v-model="time_to" />
+          <label>From</label><input type="date" v-model="date_from" />
+          <label>To</label><input type="date" v-model="date_to" />
+          <label>Time from</label><input type="time" step="1" v-model="time_from" />
+          <label>Time to</label><input type="time" step="1" v-model="time_to" />
 
           <label>Severity</label>
           <select v-model="severity">
@@ -310,13 +400,9 @@ watch(sa_level, loadSANames)
             <option v-for="w in WEATHER" :key="w" :value="w">{{ w }}</option>
           </select>
 
-          <label>
+          <label id="tour-mins">
             Min acc/road
-            <span
-              class="hint"
-              title="Ignore roads with fewer than this many crashes in the selected period."
-              >ⓘ</span
-            >
+            <span class="hint" title="Ignore roads with fewer than this many crashes in the selected period.">ⓘ</span>
           </label>
           <select v-model="min_accidents_per_road">
             <option v-for="n in MIN_ACCIDENTS_OPTIONS" :key="n" :value="n">{{ n }}</option>
@@ -324,11 +410,7 @@ watch(sa_level, loadSANames)
 
           <label>
             Min len (km)
-            <span
-              class="hint"
-              title="Ignore very short road segments. Length is measured along the road centreline."
-              >ⓘ</span
-            >
+            <span class="hint" title="Ignore very short road segments. Length is measured along the road centreline.">ⓘ</span>
           </label>
           <select v-model="min_road_length_km">
             <option v-for="n in MIN_LENGTH_OPTIONS" :key="n" :value="n">{{ n }}</option>
@@ -336,7 +418,8 @@ watch(sa_level, loadSANames)
         </div>
       </details>
 
-      <div class="actions">
+      <!-- Actions -->
+      <div id="tour-actions" class="actions">
         <button @click="refresh" :disabled="loading || !sa_name">Run query</button>
         <button @click="clearForm" class="secondary">Clear filters</button>
         <button @click="downloadCSV" :disabled="!rows.length">Export CSV</button>
@@ -344,79 +427,43 @@ watch(sa_level, loadSANames)
 
       <p v-if="errorMsg" class="err">{{ errorMsg }}</p>
 
-      <!-- <div v-if="loading" class="loading-block">
-        <div class="spinner"></div>
-        <p class="muted">
-          Fetching road-wise accident data...<br/>[these queries can take upto 2 minutes depending on
-          filters and volume of data, please wait]
-        </p>
-      </div> -->
-
       <div v-if="rows.length" class="stats">
-        <span
-          ><strong>{{ rows.length }}</strong> roads</span
-        >
-        <span
-          ><strong>{{ totalCount.toLocaleString() }}</strong> accidents</span
-        >
-        <span
-          >avg density <strong>{{ avgDensity.toFixed(2) }}</strong> /km</span
-        >
+        <span><strong>{{ rows.length }}</strong> roads</span>
+        <span><strong>{{ totalCount.toLocaleString() }}</strong> accidents</span>
+        <span>avg density <strong>{{ avgDensity.toFixed(2) }}</strong> /km</span>
       </div>
 
       <p v-else-if="!loading && !errorMsg" class="muted">No results. Try adjusting filters.</p>
 
-      <!-- <div class="table-wrap" v-if="rows.length">
-        <table>
-          <thead>
+      <!-- Results -->
+      <div id="tour-results" class="table-container">
+        <div class="table-wrap" v-if="rows.length">
+          <table>
+            <thead>
             <tr>
               <th style="width: 44%">Road</th>
               <th class="num">Crashes</th>
               <th class="num">Length (km)</th>
               <th class="num">Density (/km)</th>
             </tr>
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             <tr v-for="(r, i) in rows" :key="i">
               <td>{{ r.road_name || 'Unnamed road' }}</td>
               <td class="num">{{ Number(r.accident_count ?? 0) }}</td>
               <td class="num">{{ Number(r.road_length_km ?? 0).toFixed(2) }}</td>
               <td class="num">{{ Number(r.accident_density_per_km ?? 0).toFixed(2) }}</td>
             </tr>
-          </tbody>
-        </table>
-      </div> -->
-
-      <div class="table-container">
-        <div class="table-wrap" v-if="rows.length">
-          <table>
-            <thead>
-              <tr>
-                <th style="width: 44%">Road</th>
-                <th class="num">Crashes</th>
-                <th class="num">Length (km)</th>
-                <th class="num">Density (/km)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(r, i) in rows" :key="i">
-                <td>{{ r.road_name || 'Unnamed road' }}</td>
-                <td class="num">{{ Number(r.accident_count ?? 0) }}</td>
-                <td class="num">{{ Number(r.road_length_km ?? 0).toFixed(2) }}</td>
-                <td class="num">{{ Number(r.accident_density_per_km ?? 0).toFixed(2) }}</td>
-              </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Overlay shown only when loading -->
+        <!-- Overlay during loading -->
         <div v-if="loading" class="overlay">
           <div class="spinner"></div>
           <p class="muted">
             Fetching road-wise accident data...<br />
-            <small
-              >[These queries can take up to 2 minutes depending on filters and volume of
-              data]</small>
+            <small>[These queries can take up to 2 minutes depending on filters and data]</small>
           </p>
         </div>
       </div>
@@ -438,9 +485,23 @@ watch(sa_level, loadSANames)
   padding: 16px;
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.06);
 }
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 .title {
   margin: 0 0 10px;
   font-size: 20px;
+}
+.tour-btn {
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: #111827;
+  color: #fff;
+  cursor: pointer;
 }
 .grid {
   display: grid;
@@ -497,15 +558,9 @@ watch(sa_level, loadSANames)
   opacity: 1;
   transition: opacity 0.3s ease;
 }
-
 .table-container {
   position: relative;
 }
-
-.table-container.loading .table-wrap {
-  opacity: 0.4; /* dim the table when loading */
-}
-
 table {
   width: 100%;
   border-collapse: collapse;
@@ -535,6 +590,7 @@ details {
   border-radius: 8px;
 }
 
+/* Loading overlay */
 .overlay {
   position: absolute;
   top: 0;
@@ -551,7 +607,6 @@ details {
   text-align: center;
   padding: 1em;
 }
-
 .spinner {
   width: 32px;
   height: 32px;
@@ -561,10 +616,7 @@ details {
   animation: spin 0.8s linear infinite;
   margin-bottom: 1em;
 }
-
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 </style>

@@ -17,8 +17,9 @@
         >
       </li>
       <li><router-link to="/risk-explorer" class="link">Risk Explorer</router-link></li>
-      <li><router-link to="about" class="link">About</router-link></li>
+      <li><router-link to="/risk-finder" class="link">Road Safety Hotspots Explorer</router-link></li>
       <li><router-link to="education" class="link">Young Driver Education</router-link></li>
+      <li><router-link to="about" class="link">About</router-link></li>
       <!-- <li><router-link to="" class="link disabled">Equity & Vulnerability</router-link></li> -->
     </ul>
 

@@ -1,0 +1,107 @@
+/* ---------- TOKENS ---------- */
+:root{
+  --hazard-bg: #ffffff;
+  --hazard-ink: #0f1419;          /* near-black text */
+  --hazard-ink-muted: #5b6470;
+  --hazard-accent: #f6b300;       /* gold */
+  --hazard-accent-2: #ffe396;     /* pale gold */
+  --hazard-line: #e5e7eb;
+  --hazard-radius: 12px;
+  --hazard-shadow: 0 8px 26px rgba(0,0,0,.06);
+}
+
+/* ---------- LAYOUT PRIMS ---------- */
+.hz-container { max-width: 1100px; margin: 22px auto; padding: 0 16px; }
+.hz-stack { display: grid; gap: 14px; }
+.hz-grid { display: grid; gap: 12px; grid-template-columns: repeat(12, 1fr); }
+
+.hz-card{
+  background: var(--hazard-bg);
+  border: 1px solid var(--hazard-line);
+  border-radius: var(--hazard-radius);
+  box-shadow: var(--hazard-shadow);
+  padding: 16px;
+}
+
+/* section title */
+.hz-title{
+  margin: 0 0 12px;
+  font-size: 28px; font-weight: 900; color: var(--hazard-ink);
+  position: relative;
+}
+.hz-title::after{
+  content:''; position:absolute; left:0; bottom:-8px; width:90px; height:4px;
+  border-radius:2px; background: linear-gradient(90deg, var(--hazard-accent), transparent);
+}
+
+/* hazard divider (use anywhere) */
+.hz-divider{ height:10px; border-radius:6px;
+  background: repeating-linear-gradient(-45deg,#111 0 16px,var(--hazard-accent) 16px 32px);
+  opacity: .15;
+}
+
+/* ---------- CONTROLS ---------- */
+.hz-field{ display:grid; gap:6px; }
+.hz-field > label{ font-size:.85rem; font-weight:800; color:var(--hazard-ink-muted); }
+
+.hz-input, .hz-select{
+  padding: 12px 14px;
+  border: 1px solid var(--hazard-line);
+  border-radius: 12px;
+  background: #f9fafb;
+  color: var(--hazard-ink);
+  font-weight: 600;
+}
+.hz-input:focus, .hz-select:focus{
+  outline: none; border-color: var(--hazard-accent);
+  box-shadow: 0 0 0 3px rgba(246,179,0,.25); background:#fff;
+}
+
+/* date/time wrapper that looks great around native pickers */
+.hz-datewrap{ display:flex; align-items:center; gap:8px; }
+.hz-date{ composes: hz-input; } /* (if your tooling supports) */
+.hz-time{ composes: hz-input; }
+
+/* slider (range) — hazard style */
+.hz-range{
+  -webkit-appearance:none; appearance:none; width:100%; height:12px; border-radius:999px;
+  background: repeating-linear-gradient(90deg,#111 0 18px,var(--hazard-accent) 18px 36px);
+  outline:none;
+}
+.hz-range::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none; width:22px; height:22px; border-radius:50%;
+  background:#fff; border:3px solid #111; box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.hz-range::-moz-range-thumb{
+  width:22px; height:22px; border-radius:50%; background:#fff; border:3px solid #111;
+}
+
+/* buttons */
+.hz-btn{
+  padding:10px 16px; border-radius:10px; font-weight:800; letter-spacing:.2px; cursor:pointer;
+  transition: filter .18s, transform .05s;
+}
+.hz-btn:active{ transform: scale(.98); }
+
+.hz-btn--primary{ background:#111; color:var(--hazard-accent); border:none; }
+.hz-btn--primary:hover{ filter:brightness(1.1); }
+.hz-btn--ghost{ background:#fff; color:#111; border:1px solid var(--hazard-line); }
+.hz-badge{ display:inline-flex; gap:6px; align-items:center; padding:6px 10px;
+  border-radius:999px; background:#fffbe6; border:1px solid #ffe9a6; color:#5a4d00; font-weight:700;
+}
+
+/* tables */
+.hz-table{ width:100%; border-collapse:collapse; font-size:14px; }
+.hz-table thead th{
+  text-align:left; background:linear-gradient(#fffdfa,#fff7e1); padding:12px 14px;
+  border-bottom:1px solid var(--hazard-line); font-weight:900; color:#151922;
+}
+.hz-table tbody td{ padding:12px 14px; border-bottom:1px solid var(--hazard-line); }
+.hz-num{ text-align:right; }
+
+/* map legend / popup helpers (Leaflet) */
+.info.legend{
+  background:#fff; padding:10px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+.info.legend h4{ margin:0 0 6px; font-weight:900; }
+.info.legend i{ width:24px; height:14px; display:inline-block; margin-right:8px; }

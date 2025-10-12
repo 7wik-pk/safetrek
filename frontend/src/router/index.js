@@ -5,6 +5,7 @@ import HomeView from '../views/HomeView.vue'
 import BlogPage from '@/components/AboutPage.vue'
 import RiskView from "@/components/RiskExplorerPage/RiskView.vue";
 import EducationView from '@/views/EducationView.vue'
+import DangerExplorer from '@/components/DangerExplorer.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
@@ -12,6 +13,7 @@ const routes = [
   { path: '/risk-explorer', name: 'risk-explorer', component: RiskView },
   { path: '/about', name: 'about', component: BlogPage },
   { path: '/education', name: 'education', component: EducationView },
+  { path: '/risk-finder', name: 'risk-finder', component: DangerExplorer },
 ]
 
 const router = createRouter({

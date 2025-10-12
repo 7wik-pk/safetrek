@@ -1,9 +1,19 @@
 <template>
   <div class="rx">
 
+    <!-- Header -->
+    <div class="rx-topbar">
+      <div>
+        <div class="eyebrow">Analytics</div>
+        <h1 class="title">Road Corridor Risk (by Road Type)</h1>
+        <div class="sub">Choose a region and filters, then draw risk-weighted road lines on the map.</div>
+      </div>
+      <button class="tour-btn" @click="startTour">❓ Tour</button>
+    </div>
+
     <!-- Filters -->
-    <div class="filters">
-      <label>
+    <div class="filters" id="tour-filters">
+      <label id="tour-level">
         <span>Region type</span>
         <select v-model="saLevel" :disabled="loading">
           <option value="sa3">Area (SA3)</option>
@@ -11,7 +21,7 @@
         </select>
       </label>
 
-      <label>
+      <label id="tour-name">
         <span>Region name</span>
         <select v-model="saName" :disabled="loading || loadingNames || !names.length">
           <option disabled value="">{{ loadingNames ? "Loading..." : "Select region" }}</option>
@@ -19,7 +29,7 @@
         </select>
       </label>
 
-      <label>
+      <label id="tour-roadtype">
         <span>Road type</span>
         <select v-model="roadType" :disabled="loading">
           <option value="major">Major</option>
@@ -31,17 +41,17 @@
         </select>
       </label>
 
-      <label>
+      <label id="tour-from">
         <span>From</span>
         <input type="date" v-model="dateFrom" :disabled="loading" @keyup.enter="onSearch" />
       </label>
 
-      <label>
+      <label id="tour-to">
         <span>To</span>
         <input type="date" v-model="dateTo" :disabled="loading" @keyup.enter="onSearch" />
       </label>
 
-      <label>
+      <label id="tour-metric">
         <span>Metric</span>
         <select v-model="metric" :disabled="loading">
           <option value="accident_count">Accident count</option>
@@ -49,47 +59,44 @@
         </select>
       </label>
 
-      <label>
+      <label id="tour-limit">
         <span>Limit roads</span>
         <input type="number" v-model.number="limit" min="1" max="100" :disabled="loading" @keyup.enter="onSearch" />
       </label>
 
-      <div class="actions">
+      <div class="actions" id="tour-actions">
         <button class="btn" :disabled="loading || !canSearch" @click="onSearch">
           {{ loading ? 'Searching...' : 'Search' }}
         </button>
-        <small v-if="hasPending && !loading" class="dirty">Filters changed - press Search</small>
+        <small v-if="hasPending && !loading" class="dirty">Filters changed — press Search</small>
       </div>
     </div>
 
-    <!-- <div id="roads-map" class="map-container"></div> -->
-
     <!-- Map + loading overlay -->
     <div class="map-wrap">
-
-      <div id="roads-map" class="map-container"></div>
-
+      <div id="roads-map" class="map-container" />
       <div v-if="loading" class="loading-overlay" aria-live="polite">
         <span class="spinner"></span>
         <div class="muted">
           Fetching roads...
           <br/>
-          <small>
-            [These queries can take up to 2 minutes depending on filters and volume of data]
-          </small>
+          <small>[These queries can take up to 2 minutes depending on filters and volume of data]</small>
         </div>
-
       </div>
     </div>
 
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, computed, nextTick } from "vue"
 import axios from "axios"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
+
+/* Guided tour (version-agnostic: works with driver.js v1 or v2) */
+import * as DriverNS from "driver.js"
+import "driver.js/dist/driver.css"
 
 const API = import.meta.env.VITE_API_BASE ?? "/api"
 
@@ -133,7 +140,7 @@ async function loadNames() {
   }
 }
 
-/* --- your helpers for rendering --- */
+/* --- geometry + render helpers --- */
 function parseLineWKT(wkt) {
   if (!wkt || typeof wkt !== "string") return null
   const isMulti = /^MULTILINESTRING/i.test(wkt)
@@ -212,7 +219,7 @@ function renderRoads(rows) {
   }
 }
 
-/* --- your fetch --- */
+/* --- fetch --- */
 async function fetchRoads() {
   if (!saName.value) return
   if (abortCtrl) abortCtrl.abort()
@@ -251,23 +258,14 @@ async function fetchRoads() {
 
 function centerMapOnRoads() {
   if (!map.value || !roadsLayer.value) return
-
   const polylines = []
   roadsLayer.value.eachLayer((layer) => {
-    if (layer instanceof L.Polyline) {
-      polylines.push(layer)
-    }
+    if (layer instanceof L.Polyline) polylines.push(layer)
   })
-
   if (!polylines.length) return
-
   const group = L.featureGroup(polylines)
   const bounds = group.getBounds()
-
-  map.value.flyToBounds(bounds, {
-    padding: [40, 40],
-    duration: 1.5,
-  })
+  map.value.flyToBounds(bounds, { padding: [40, 40], duration: 1.2 })
 }
 
 /* Button handler */
@@ -278,25 +276,18 @@ function onSearch() {
 
 /* lifecycle */
 onMounted(async () => {
-
   map.value = L.map("roads-map").setView([-37.81, 144.96], 9)
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "© OpenStreetMap contributors",
   }).addTo(map.value)
 
-  resizeObserver = new ResizeObserver(() => {
-    map.value?.invalidateSize()
-  })
-
+  resizeObserver = new ResizeObserver(() => map.value?.invalidateSize())
   nextTick(() => {
     const container = map.value?.getContainer?.()
     if (container) {
       resizeObserver.observe(container)
-      // immediate fix at mount
       map.value.invalidateSize()
       centerMapOnRoads()
-    } else {
-      console.warn('No map container found')
     }
   })
 
@@ -306,139 +297,169 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  if (resizeObserver) {
-    if (map.value instanceof Element) {
-      resizeObserver.unobserve(map.value)
-    }
-    resizeObserver.disconnect()
-  }
+  try { resizeObserver?.disconnect() } catch {}
 })
 
-
-/* don't auto-fetch; just mark "pending" when filters change */
+/* mark "pending" when filters change */
 watch(saLevel, async () => {
   await loadNames()
   if (ready.value) {
     hasPending.value = true
     saName.value = names.value[0]
-    if (saLevel.value === 'sa2') {
-      roadType.value = 'suburban'
-    } else {
-      roadType.value = 'major'
-    }
+    roadType.value = saLevel.value === 'sa2' ? 'suburban' : 'major'
   }
 })
 watch([saName, roadType, dateFrom, dateTo, metric, limit], () => {
   if (ready.value) hasPending.value = true
 })
-</script>
 
-<style scoped>/* ===== Filter panel (yellow box) ===== */
-:root{
-  --panel-bg:   #fff3cd;  /* pale yellow */
-  --panel-bdr:  #f7e39c;  /* soft gold border */
+/* -------- Guided tour (robust targets + recenter) -------- */
+function startTour() {
+  try {
+    const options: any = {
+      showProgress: true,
+      animate: true,
+      opacity: 0.4,
+      stagePadding: 6,
+      allowClose: true,
+      nextBtnText: 'Next',
+      prevBtnText: 'Back',
+      doneBtnText: 'Done',
+    };
+
+    // helper: return a step only if the element exists & is visible
+    const step = (selector: string, title: string, description: string) => {
+      const el = document.querySelector(selector) as HTMLElement | null;
+      if (!el) return null;
+
+      const recenter = () => {
+        // make sure it’s in view (works for window-scrolling pages)
+        try { el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' as any }); } catch {}
+      };
+
+      return {
+        element: el,                                  // pass the node, not the selector
+        popover: { title, description, side: 'bottom', align: 'start' }, // v2 props
+        // v2 callback name:
+        onHighlightStarted: recenter,
+        // v1 callback name (kept too for compatibility):
+        onHighlighted: recenter,
+      };
+    };
+
+    const steps = [
+      step('#tour-filters',   'Filters',        'Choose region, road type, dates, and metric.'),
+      step('#tour-level select',    'Region type',   'Pick Area (SA3) or Suburb (SA2).'),
+      step('#tour-name select',     'Region name',   'Select the specific region to analyse.'),
+      step('#tour-roadtype select', 'Road type',     'Limit results to a road category.'),
+      step('#tour-from input[type="date"]', 'Start date', 'Set the beginning of the time window.'),
+      step('#tour-to input[type="date"]',   'End date',   'Set the end of the time window.'),
+      step('#tour-metric select',   'Metric',        'Colour/weight lines by crashes or crashes per km.'),
+      step('#tour-limit input',     'Limit roads',   'Cap how many roads to draw on the map.'),
+      step('#tour-actions .btn',    'Run search',    'Click Search to fetch and render the roads.'),
+      step('#roads-map',            'Map',           'Hover for values; click lines for details.'),
+    ].filter(Boolean);
+
+    if (!steps.length) {
+      alert('Open the page and then click Tour again.');
+      return;
+    }
+
+    // v2 API
+    if (typeof (DriverNS as any).driver === 'function') {
+      const d = (DriverNS as any).driver(options);
+      if (typeof (d as any).setSteps === 'function') (d as any).setSteps(steps);
+    else if (typeof (d as any).defineSteps === 'function') (d as any).defineSteps(steps);
+    else (d as any).steps = steps;
+      if (typeof (d as any).drive === 'function') (d as any).drive();
+      return;
+    }
+
+    // v1 API
+    const DriverCtor: any = (DriverNS as any).default || (DriverNS as any);
+    const d = new DriverCtor(options);
+    if (typeof d.defineSteps === 'function') d.defineSteps(steps);
+    else if (typeof d.setSteps === 'function') d.setSteps(steps);
+    else (d as any).steps = steps;
+    if (typeof d.start === 'function') d.start();
+    else if (typeof (d as any).drive === 'function') (d as any).drive();
+  } catch (e) {
+    console.warn('driver.js failed to start', e);
+    alert('To launch the guided tour, please install driver.js:\n\n  npm i driver.js');
+  }
 }
 
-.rx { display: grid; gap: 10px; }
+</script>
 
+<style scoped>
+/* ===== Header ===== */
+.rx { display: grid; gap: 12px; }
 
-/* =============== Filter panel (yellow card) =============== */
+.rx-topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:6px 2px;
+}
+.eyebrow{ text-transform:uppercase; letter-spacing:.08em; font-size:12px; color:#6b7280; font-weight:700; }
+.title{ margin:2px 0 0; font-size:22px; font-weight:900; color:#0f1419; }
+.sub{ color:#6b7280; }
+.tour-btn{
+  padding:8px 12px; border-radius:10px; border:1px solid #e5e7eb;
+  background:#fff; color:#111; font-weight:800; cursor:pointer;
+}
+.tour-btn:hover{ background:#fff7cc; border-color:#f6b300; }
+
+/* ===== Filter panel (yellow card) ===== */
 .filters{
-  /* card look */
   background:#fff3cd;                 /* pale yellow */
   border:1px solid #f7e39c;           /* soft gold edge */
   border-radius:12px;
   padding:12px 14px;
   box-shadow:0 1px 0 rgba(0,0,0,.03) inset;
 
-  /* layout */
   display:grid;
   grid-template-columns: repeat(6, minmax(180px, 1fr));
-  column-gap:16px;
-  row-gap:12px;
+  column-gap:16px; row-gap:12px;
   align-items:end;
-}
 
-/* label + control blocks */
-.filters > label{
-  display:grid;
-  gap:6px;
-  min-width:0;                        /* prevent overlap when tight */
+  overflow: visible; /* let tour popovers show fully */
 }
-.filters > label > span{
-  color:#555;
-  font-weight:700;
-  font-size:12px;
-}
-
-/* inputs */
+.filters > label{ display:grid; gap:6px; min-width:0; }
+.filters > label > span{ color:#555; font-weight:800; font-size:12px; }
 .filters select,
 .filters input[type="date"],
-.filters input[type="text"],
 .filters input[type="number"]{
-  width:100%;
-  box-sizing:border-box;
-  padding:10px 12px;
-  border:1px solid #cbd5e1;
-  border-radius:8px;
+  width:100%; box-sizing:border-box; padding:10px 12px;
+  border:1px solid #cbd5e1; border-radius:8px; background:#fff; font-weight:600;
+}
+.filters select:focus,
+.filters input[type="date"]:focus,
+.filters input[type="number"]:focus{
+  outline:none; border-color:#f6b300; box-shadow:0 0 0 .2rem rgba(246,179,0,.25);
   background:#fff;
 }
 
-/* action area (e.g., Search button) */
-.filters .actions{
-  display:flex;
-  align-items:end;
-  gap:10px;
-}
-
-.filters .btn:disabled{ opacity:.6; cursor:not-allowed; }
-/* action area (e.g., Search button) */
-.actions{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  align-self: end;
-}
-
-/* primary button */
+.actions{ display:flex; align-items:center; gap:10px; align-self:end; }
 .btn{
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  background: #111;
-  color: #f6b300;
-  font-weight: 800;
+  padding:10px 16px; border:none; border-radius:10px; cursor:pointer;
+  background:#111; color:#f6b300; font-weight:800;
 }
-.btn:disabled{ opacity: .6; cursor: not-allowed; }
+.btn:disabled{ opacity:.6; cursor:not-allowed; }
 .dirty{ color:#7a5a00; font-weight:700; }
 
-/* ===== Map & loading (unchanged) ===== */
+/* ===== Map & loading ===== */
 .map-wrap{ position: relative; }
 .map-container{
   height: 60vh; width: 100%;
   border-radius: 12px; overflow: hidden; background: #fff;
   box-shadow: 0 2px 10px rgba(0,0,0,.06);
   border: 1px solid #ececec;
-  z-index: 9999;
+  position: relative;
+  z-index: 0; /* let Driver.js overlay sit above */
 }
-/* .map-container {
-  min-width: 400px;
-  height: 600px;
-  width: 100%;
-  border-radius:12px;
-  overflow:hidden;
-  background:#fff;
-  box-shadow:0 2px 10px rgba(0,0,0,.06);
-  border:1px solid #ececec;
-  z-index: 9999;
-} */
-
-/* loading overlay */
 .loading-overlay{
   position: absolute; inset: 0;
   text-align: center;
-  z-index: 9999;
+  z-index: 10;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
   background: rgba(255,255,255,.75); backdrop-filter: blur(1px);
   font-weight: 700; color: #111;
@@ -449,16 +470,22 @@ watch([saName, roadType, dateFrom, dateTo, metric, limit], () => {
   border-top-color: #005ef6; animation: spin 1s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+.filters { overflow: visible; }
+.map-container { position: relative; z-index: 0; }
 
-/* legend (global) */
+/* v2 + v1 popovers above everything */
+:deep(.driver-popover),
+:deep(.driver-popover-item) { z-index: 2147483647 !important; }
+
+/* Legend */
 :global(.info.legend){
   background:#fff; padding:10px; font-size:14px; line-height:1.4;
-  border-radius:6px; box-shadow:0 0 10px rgba(0,0,0,.2);
+  border-radius:8px; box-shadow:0 0 12px rgba(0,0,0,.18); border:1px solid #e5e7eb;
 }
-:global(.info.legend h4){ margin:0 0 6px; font-weight:700; }
+:global(.info.legend h4){ margin:0 0 6px; font-weight:900; font-size:13px; color:#0f1419; }
 :global(.info.legend i){ width:24px; height:14px; display:inline-block; margin-right:8px; }
 
-/* ===== Responsive tweaks ===== */
+/* ===== Responsive ===== */
 @media (max-width: 1100px){
   .filters{ grid-template-columns: repeat(3, minmax(200px, 1fr)); }
 }
