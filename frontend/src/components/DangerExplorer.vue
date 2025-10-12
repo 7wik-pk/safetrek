@@ -504,16 +504,17 @@ const newToken = () => Symbol('inflight')
 const cancelInflight = () => { inflightToken = newToken() }
 
 /** HELPERS **/
-async function fetchJSON<T>(url: string, timeoutMs = 180000): Promise<T> {
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+import axios from 'axios'
 
+async function fetchJSON<T>(url: string, timeoutMs = 180000): Promise<T> {
   try {
-    const r = await fetch(url, { signal: controller.signal })
-    if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
-    return await r.json()
-  } finally {
-    clearTimeout(timeout)
+    const response = await axios.get<T>(url, { timeout: timeoutMs })
+    return response.data
+  } catch (err: any) {
+    if (axios.isAxiosError(err) && err.code === 'ECONNABORTED') {
+      throw new Error('Request timed out')
+    }
+    throw err
   }
 }
 
