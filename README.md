@@ -1,5 +1,5 @@
 # SafeTrek
-### FIT5120 Project
+### This project was built by Monash University's FIT students under the Industry Experience Studio Project unit (FIT5120)
 
 SafeTrek is an interactive web platform that juxtaposes road crash data with vehicle, weather, and road condition variables on top of convenient and intuitive geographic visualizations to provide a powerful decision-support tool to city planners and policymakers.
 
