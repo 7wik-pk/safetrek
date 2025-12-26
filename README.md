@@ -3,6 +3,8 @@
 
 SafeTrek is an interactive web platform that juxtaposes road crash data with vehicle, weather, and road condition variables on top of convenient and intuitive geographic visualizations to provide a powerful decision-support tool to city planners and policymakers.
 
+Currently hosted at https://7wik-pk.online/
+
 At a high-level, the system shall:
 
 - Aggregate and process open crash datasets from trusted government sources.
